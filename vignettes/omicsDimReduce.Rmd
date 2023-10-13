@@ -1,0 +1,34 @@
+---
+title: "omicsDimReduce"
+author: "Jack Gisby"
+date: "`r Sys.Date()`" 
+output:
+    BiocStyle::html_document:
+        number_sections: yes
+        toc: true
+vignette: >
+    %\VignetteIndexEntry{omicsDimReduce}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8} 
+---
+
+```{r setup, include = FALSE}
+BiocStyle::markdown()
+
+library(omicsDimReduce)
+
+dir.create("tempOutput")
+```
+
+# Introduction
+
+```{r omicsDimReduceInstall, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))  {
+    install.packages("BiocManager")
+}
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("omicsDimReduce")
+```
