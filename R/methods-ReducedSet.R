@@ -1,56 +1,47 @@
 setMethod(
     "initialize",
-    signature = "ReducedSet",
-    definition = function(.Object,
-                          assayData,
-                          phenoData,
-                          featureData,
-                          reducedData,
-                          L,
-                          exprs = new("matrix"),
-                          ...)
-    {
-        #TODO: store X scaling/centering attr (in assayData or own slot)
-        #TODO: store original S / M but provide options to scale/center
+    signature="ReducedSet",
+    definition=function(
+        .Object,
+        assayData,
+        phenoData,
+        featureData,
+        reducedData,
+        L,
+        exprs=new("matrix"),
+        ...)
+{
+    #TODO: store X scaling/centering attr (in assayData or own slot)
+    #TODO: store original S / M but provide options to scale/center
 
-        # New slots
-        .Object@reducedData <- reducedData
-        .Object@L <- L
+    # New slots
+    .Object@reducedData <- reducedData
+    .Object@L <- L
 
-        # For consistency with ExpressionSet
-        if (missing(assayData)) {
-            if (missing(phenoData))
-                phenoData <-
-                    Biobase::annotatedDataFrameFrom(exprs, byrow = FALSE)
-            if (missing(featureData))
-                featureData <-
-                    Biobase::annotatedDataFrameFrom(exprs, byrow = TRUE)
-            .Object <- callNextMethod(
-                .Object,
-                phenoData = phenoData,
-                featureData = featureData,
-                exprs = exprs,
-                ...
-            )
-        } else {
-            if (missing(phenoData))
-                phenoData <-
-                    Biobase::annotatedDataFrameFrom(assayData, byrow = FALSE)
-            if (missing(featureData))
-                featureData <-
-                    Biobase::annotatedDataFrameFrom(assayData, byrow = TRUE)
-            .Object <- callNextMethod(
-                .Object,
-                assayData = assayData,
-                phenoData = phenoData,
-                featureData = featureData,
-                ...
-            )
-        }
+    # For consistency with ExpressionSet
+    if (missing(assayData)) {
+        if (missing(phenoData))
+            phenoData <- Biobase::annotatedDataFrameFrom(exprs, byrow=FALSE)
 
-        Biobase:::.harmonizeDimnames(.Object)
+        if (missing(featureData))
+            featureData <- Biobase::annotatedDataFrameFrom(exprs, byrow=TRUE)
+
+        .Object <- callNextMethod(.Object, phenoData=phenoData,
+                                  featureData=featureData, exprs=exprs, ...)
+    } else {
+        if (missing(phenoData))
+            phenoData <- Biobase::annotatedDataFrameFrom(assayData, byrow=FALSE)
+        if (missing(featureData))
+            featureData <- Biobase::annotatedDataFrameFrom(assayData,
+                                                           byrow=TRUE)
+
+        .Object <- callNextMethod(.Object, assayData=assayData,
+                                  phenoData=phenoData, featureData=featureData,
+                                  ...)
     }
-)
+
+    return(Biobase:::.harmonizeDimnames(.Object))
+})
 
 setValidity("ReducedSet", function(object) {
     msg <- Biobase::validMsg(
@@ -103,84 +94,67 @@ setValidity("ReducedSet", function(object) {
 })
 
 setAs("ReducedSet", "data.frame",
-      function (from) data.frame(reduced(from), pData(from)))
+      function (from) {data.frame(reduced(from), pData(from))})
 
 as.data.frame.ReducedSet <- Biobase:::as.data.frame.ExpressionSet
 
 setMethod("reducedData", "ReducedSet", function(object) {object@reducedData})
 
 setReplaceMethod("reducedData",
-                 signature = signature(object = "ReducedSet",
-                                       value = "AssayData"),
+                 signature=signature(object="ReducedSet", value="AssayData"),
                  function(object, value) {
                      object@reducedData <- value
                      return(object)
                  })
 
-setMethod("exprs", signature(object = "ReducedSet"),
-          function(object)
-              assayDataElement(object, "exprs"))
+setMethod("exprs",
+          signature(object="ReducedSet"),
+          function(object) {assayDataElement(object, "exprs")})
 
-setReplaceMethod("exprs", signature(object = "ReducedSet", value = "matrix"),
+setReplaceMethod("exprs",
+                 signature=signature(object="ReducedSet", value="matrix"),
                  function(object, value)
-                     assayDataElementReplace(object, "exprs", value))
+                     {assayDataElementReplace(object, "exprs", value)})
 
-setMethod("reduced", signature(object="ReducedSet"), function(object) {return(object@reducedData)})
+setMethod("reduced", signature(object="ReducedSet"),
+          function(object) {return(object@reducedData)})
 
-setReplaceMethod("reduced", signature(object = "ReducedSet", value = "matrix"),
+setReplaceMethod("reduced",
+                 signature=signature(object="ReducedSet", value="matrix"),
                  function(object, value) {
                      object@reducedData <- value
                      return(object)
                  })
 
-setMethod("loadings", signature(object = "ReducedSet"), function(object) {return(object@L)})
+setMethod("loadings", signature(object="ReducedSet"),
+          function(object) {return(object@L)})
 
-setReplaceMethod("loadings", signature(object = "ReducedSet", value = "matrix"),
+setReplaceMethod("loadings",
+                 signature=signature(object="ReducedSet", value="matrix"),
                  function(object, value) {
                      object@L <- value
                      return(object)
                  })
 
-setMethod("write.exprs",
-          signature(x = "ReducedSet"),
-          function(x,
-                   file = "tmp.txt",
-                   quote = FALSE,
-                   sep = "\t",
-                   col.names = NA,
+setMethod("write.exprs", signature(x="ReducedSet"),
+          function(x, file="tmp.txt", quote=FALSE, sep="\t", col.names=NA,
                    ...) {
-              write.table(
-                  exprs(x),
-                  file = file,
-                  quote = quote,
-                  sep = sep,
-                  col.names = col.names,
-                  ...
-              )
+              write.table(exprs(x), file=file, quote=quote, sep=sep,
+                          col.names=col.names, ...)
           })
 
 setMethod("write.reduced",
-          signature(x = "ReducedSet"),
-          function(x,
-                   file = "tmp.txt",
-                   quote = FALSE,
-                   sep = "\t",
-                   col.names = NA,
+          signature(x="ReducedSet"),
+          function(x, file="tmp.txt", quote=FALSE, sep="\t", col.names=NA,
                    ...) {
-              write.table(
-                  reduced(x),
-                  file = file,
-                  quote = quote,
-                  sep = sep,
-                  col.names = col.names,
-                  ...
-              )
+              write.table(reduced(x), file=file, quote=quote, sep=sep,
+                          col.names=col.names, ...)
           })
 
 setMethod("show", "ReducedSet" ,
           function(object) {
               cat(nComponents(object), " components\n")
-              callNextMethod()
+              return(callNextMethod())
           })
 
 .whichToKeep <- function(idx, xnames) {
@@ -197,16 +171,15 @@ setMethod("show", "ReducedSet" ,
     return(x_to_keep)
 }
 
-setMethod("[",
-          "ReducedSet",
-          function(x, i, j, k, ..., drop = FALSE)
+setMethod("[", "ReducedSet",
+          function(x, i, j, k, ..., drop=FALSE)
 {
     if (missing(i) & missing(j) & missing(k)) {
         stop("Specify a dimension for slicing")
     }
 
     if (!missing(i) | !missing(j)) {
-        x <- callNextMethod(x, i, j, ..., drop = drop)
+        x <- callNextMethod(x, i, j, ..., drop=drop)
 
         if (!missing(i)) {  # Features
             loadings(x) <- loadings(x)[.whichToKeep(i, rownames(loadings(x))), ]
@@ -226,15 +199,12 @@ setMethod("[",
     return(x)
 })
 
-setMethod("dim", "ReducedSet", function(x) {
-    return(c(callNextMethod(x), "Components" = ncol(loadings(x))))
-})
+setMethod("dim", "ReducedSet", function(x)
+    {c(callNextMethod(x), "Components"=ncol(loadings(x)))})
 
-setMethod("dims", "ReducedSet", function(x) {
-    return(rbind(
-        callNextMethod(x),
-        matrix(ncol(l),  dimnames = list("Components"))
-    ))
-})
+setMethod("dims", "ReducedSet", function(x)
+    {rbind(callNextMethod(x), matrix(ncol(l),  dimnames=list("Components")))})
 
 setMethod("nComponents", "ReducedSet", function(object) {dim(object)[3]})
+setMethod("nSamples", "ReducedSet", function(object) {dim(object)[2]})
+setMethod("nFeatures", "ReducedSet", function(object) {dim(object)[1]})
