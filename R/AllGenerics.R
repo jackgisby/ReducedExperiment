@@ -8,6 +8,7 @@ setGeneric("reduced",       function(object) standardGeneric("reduced"))
 setGeneric("reduced<-",     function(object, value) standardGeneric("reduced<-"))
 setGeneric("loadings",       function(object) standardGeneric("loadings"))
 setGeneric("loadings<-",     function(object, value) standardGeneric("loadings<-"))
+setGeneric("nComponents",     function(object, value) standardGeneric("nComponents"))
 
 setGeneric("FactorSet",
            function(assayData,
