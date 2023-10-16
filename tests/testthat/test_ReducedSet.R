@@ -2,29 +2,42 @@ context("ReducedSet")
 
 dir.create("tempTestOutput")
 
-test_that("Build ReducedSet", {
-    r <- matrix(nrow = 2)
-    r[1] <- 5
-    rownames(r) <- c("1", "2")
-    colnames(r) <- "1"
+createRandomisedReducedSet <- function(i, j, k) {
+    # i (features), j (samples), k components)
 
-    l <- matrix()
-    rownames(l) <- "1"
-    colnames(l) <- "1"
+    makeRandomData <- function(r, c, rname, cname) {
+        m <- matrix(rnorm(n = r * c), nrow = r, ncol = c)
+        rownames(m) <- as.character(paste0(rname, "_", 1:r))
+        colnames(m) <- as.character(paste0(cname, "_", 1:c))
+        return(m)
+    }
 
-    e <- matrix(ncol = 2)
-    rownames(e) <- "1"
-    colnames(e) <- c("1", "2")
-
-    x <- new(
+    return(new(
         "ReducedSet",
-        exprs = e,
-        reducedData = r,
-        L = l
-    )
-    x
+        exprs = makeRandomData(i, j, "gene", "sample"),
+        reducedData = makeRandomData(j, k, "sample", "factor"),
+        L = makeRandomData(i, k, "gene", "factor")
+    ))
+}
 
-    expect_equal(dim(x), c("Features" = 1, "Samples" = 2))
+test_that("Build ReducedSet", {
+
+    i <- 300
+    j <- 100
+    k <- 10
+
+    rrs <- createRandomisedReducedSet(i=i, j=j, k=k)
+
+    expect_equal(dim(rrs), c("Features" = i, "Samples" = j, "Components" = k))
+    expect_equal(dim(rrs), c(nFeatures(rrs), nSamples(rrs), nComponents(rrs)))
+
+    expect_equal(colnames(exprs(rrs)), sampleNames(rrs))
+    expect_equal(rownames(reduced(rrs)), sampleNames(rrs))
+
+    rrs_subset <- rrs[5:10, 50:90, 1:2]
+    expect_equal(dim(rrs_subset), c("Features"=6, "Samples"=41, "Components"=2))
+    expect_equal(rownames(reduced(rrs_subset)), sampleNames(rrs_subset))
+    expect_equal(paste0("sample_", 50:90), sampleNames(rrs_subset))
 })
 
 unlink("tempTestOutput", recursive = TRUE)
