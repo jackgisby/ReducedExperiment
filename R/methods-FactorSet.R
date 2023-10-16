@@ -21,5 +21,3 @@ setMethod(FactorSet, signature = c(assayData = "matrix", reducedData = "matrix",
                         experimentData=experimentData, annotation=annotation,
                         protocolData=protocolData, ...)
           })
-
-exampleSet <- FactorSet(assayData=matrix(ncol=2), L=matrix(), reducedData=matrix(nrow = 2))

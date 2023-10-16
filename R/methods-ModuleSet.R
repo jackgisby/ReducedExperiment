@@ -22,5 +22,3 @@ setMethod(ModuleSet, signature = c(assayData = "matrix", reducedData = "matrix",
                        experimentData=experimentData, annotation=annotation,
                        protocolData=protocolData, ...)
           })
-
-exampleSet <- ModuleSet(assayData=matrix(), L=matrix(), reducedData=matrix())

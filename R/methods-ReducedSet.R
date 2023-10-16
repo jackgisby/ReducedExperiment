@@ -134,19 +134,3 @@ setMethod("[",
             # TODO: Slicing
             return(NULL)
           })
-
-r <- matrix(nrow = 2)
-r[1] <- 5
-rownames(r) <- c("1", "2")
-colnames(r) <- "1"
-
-l <- matrix()
-rownames(l) <- "1"
-colnames(l) <- "1"
-
-e <- matrix(ncol = 2)
-rownames(e) <- "1"
-colnames(e) <- c("1", "2")
-
-x <- new("ReducedSet", exprs=e, reducedData=r, L=l)
-x
