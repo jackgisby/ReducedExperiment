@@ -18,7 +18,8 @@ Depends:
     Biobase
 Imports: 
     WGCNA,
-    ica
+    ica,
+    moments
 Suggests:
     knitr,
     rmarkdown,
