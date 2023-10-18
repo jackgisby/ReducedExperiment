@@ -1,23 +1,23 @@
-context("ReducedSet")
+context("FactorSet")
 
 dir.create("tempTestOutput")
 
 #' i (features), j (samples), k components)
-.createRandomisedReducedSet <- function(i, j, k) {
-    return(new(
-        "ReducedSet",
+createRandomisedFactorSet <- function(i, j, k) {
+    return(FactorSet(
         exprs = .makeRandomData(i, j, "gene", "sample"),
-        reducedData = .makeRandomData(j, k, "sample", "factor")
+        reducedData = .makeRandomData(j, k, "sample", "factor"),
+        S = .makeRandomData(i, k, "gene", "factor")
     ))
 }
 
-test_that("Build ReducedSet", {
+test_that("Build FactorSet", {
 
     i <- 300
     j <- 100
     k <- 10
 
-    rrs <- .createRandomisedReducedSet(i=i, j=j, k=k)
+    rrs <- .createRandomisedFactorSet(i=i, j=j, k=k)
 
     expect_equal(dim(rrs), c("Features" = i, "Samples" = j, "Components" = k))
     expect_equal(dim(rrs), c(nFeatures(rrs), nSamples(rrs), nComponents(rrs)))
