@@ -1,8 +1,8 @@
 
-setGeneric("reduced", function(x, ...) standardGeneric("reduced"))
-setGeneric("reduced<-", function(x, ..., value) standardGeneric("reduced<-"))
-setGeneric("loadings", function(x, ...) standardGeneric("loadings"))
-setGeneric("loadings<-", function(x, ..., value) standardGeneric("loadings<-"))
+setGeneric("reduced", function(x) standardGeneric("reduced"))
+setGeneric("reduced<-", function(x, value) standardGeneric("reduced<-"))
+setGeneric("loadings", function(x) standardGeneric("loadings"))
+setGeneric("loadings<-", function(x, value) standardGeneric("loadings<-"))
 setGeneric("componentNames", function(x) standardGeneric("componentNames"))
 setGeneric("componentNames<-", function(x, value) standardGeneric("componentNames<-"))
 setGeneric("sampleNames", function(x) standardGeneric("sampleNames"))

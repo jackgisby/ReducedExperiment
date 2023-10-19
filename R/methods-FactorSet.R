@@ -34,14 +34,7 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("loadings", "ReducedExperiment", function(x, withDimnames=TRUE) {
-    out <- x@loadings
-    if (withDimnames) {
-        rownames(out) <- rownames(x)
-        colnames(out) <- componentNames(x)
-    }
-    return(out)
-})
+setMethod("loadings", "ReducedExperiment", function(x) {return(x@loadings)})
 
 setReplaceMethod("loadings", "ReducedExperiment", function(x, value) {
     x@loadings <- value
@@ -62,7 +55,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
     if (1L != length(drop) || (!missing(drop) && drop))
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
 
-    lod <- loadings(x, withDimnames=FALSE)
+    lod <- loadings(x)
     vafs <- x@varexp
 
     if (!missing(i)) {

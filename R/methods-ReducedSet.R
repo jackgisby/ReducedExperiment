@@ -17,19 +17,14 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
     if (obj_dims[2] != dim(reduced(object))[1])
         msg <- c(msg, "Reduced data have invalid row dimensions")
 
-    rnames <- if (is.null(rownames(reduced(object)))) character(0) else rownames(reduced(object))
-    if (!all.equal(sampleNames(object), rnames))
+    if (!all(sampleNames(object) == rownames(reduced(object))))
         msg <- c(msg, "Reduced data have invalid row names (sample labels)")
 
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("reduced", "ReducedExperiment", function(x, withDimnames=TRUE) {
+setMethod("reduced", "ReducedExperiment", function(x) {
     out <- x@reduced
-    if (withDimnames) {
-        rownames(out) <- colnames(x)
-        colnames(out) <- componentNames(x)
-    }
     return(out)
 })
 
@@ -39,8 +34,7 @@ setReplaceMethod("reduced", "ReducedExperiment", function(x, value) {
     return(x)
 })
 
-setMethod("componentNames", "ReducedExperiment",
-          function(x) {return(colnames(x@reduced))})
+setMethod("componentNames", "ReducedExperiment", function(x) {return(colnames(x@reduced))})
 
 setReplaceMethod("componentNames", "ReducedExperiment", function(x, value) {
     colnames(x@reduced) <- value
@@ -64,7 +58,7 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
     if (1L != length(drop) || (!missing(drop) && drop))
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
 
-    red <- reduced(x, withDimnames=FALSE)
+    red <- reduced(x)
 
     if (!missing(j)) {
         if (is.character(j)) {

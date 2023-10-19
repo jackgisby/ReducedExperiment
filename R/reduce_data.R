@@ -74,8 +74,6 @@ compute_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
 
 #' Run WGCNA
 #' @export
-#' Apply dimensionality reduction using ICA
-#' @export
 run_wgcna <- function(X, ...)
 {
     if (!inherits(X, "SummarizedExperiment")) {
