@@ -1,130 +1,104 @@
-setMethod(
-    "initialize",
-    signature="ReducedSet",
-    definition=function(
-        .Object,
-        assayData=Biobase::assayDataNew(exprs=exprs),
-        reduced=new("matrix"),
-        phenoData=Biobase::annotatedDataFrameFrom(assayData, byrow=FALSE),
-        featureData=Biobase::annotatedDataFrameFrom(assayData, byrow=TRUE),
-        exprs=new("matrix"),
+#' ReducedExperiment
+#' @importFrom SummarizedExperiment SummarizedExperiment
+ReducedExperiment <- function(
+        reduced = new("matrix"),
         ...)
 {
-    if (!missing(exprs) & !missing(assayData)) {
-        stop("Only specify one of `exprs` and `assayData`")
-    }
+    se <- SummarizedExperiment::SummarizedExperiment(...)
+    return(.ReducedExperiment(se, reduced=reduced))
+}
 
-    #TODO: store X scaling/centering attr (in assayData or own slot)
-
-    # Reduced data common to children
-    .Object@reduced <- reduced
-
-    callNextMethod(.Object, assayData=assayData, phenoData=phenoData,
-                   featureData=featureData, ...)
-})
-
-setValidity("ReducedSet", function(object) {
-    msg <- Biobase::validMsg(
-        NULL,
-        Biobase:::isValidVersion(object, "ReducedSet")
-    )
+S4Vectors::setValidity2("ReducedExperiment", function(object) {
+    msg <- NULL
 
     obj_dims <- dim(object)
 
     # Samples
     if (obj_dims[2] != dim(reduced(object))[1])
-        msg <- Biobase::validMsg(
-            msg,
-            "Reduced data have invalid row dimensions"
-        )
+        msg <- c(msg, "Reduced data have invalid row dimensions")
 
     rnames <- if (is.null(rownames(reduced(object)))) character(0) else rownames(reduced(object))
     if (!all.equal(sampleNames(object), rnames))
-        msg <- Biobase::validMsg(
-            msg,
-            "Reduced data have invalid row names (sample labels)"
-        )
+        msg <- c(msg, "Reduced data have invalid row names (sample labels)")
 
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setAs("ReducedSet", "data.frame",
-      function (from) {data.frame(reduced(from), pData(from))})
-
-as.data.frame.ReducedSet <- Biobase:::as.data.frame.ExpressionSet
-
-setMethod("reduced", signature(object="ReducedSet"),
-          function(object) {return(object@reduced)})
-
-setReplaceMethod("reduced",
-                 signature=signature(object="ReducedSet", value="matrix"),
-                 function(object, value) {
-                     object@reduced <- value
-                     return(object)
-                 })
-
-setMethod("exprs", signature(object="ReducedSet"),
-          function(object) Biobase::assayDataElement(object,"exprs"))
-
-setReplaceMethod("exprs", signature(object="ReducedSet",value="matrix"),
-                 function(object, value) Biobase::assayDataElementReplace(object, "exprs", value))
-
-setMethod("write.reduced",
-          signature(x="ReducedSet"),
-          function(x, file="tmp.txt", quote=FALSE, sep="\t", col.names=NA,
-                   ...) {
-              write.table(reduced(x), file=file, quote=quote, sep=sep,
-                          col.names=col.names, ...)
-          })
-
-setMethod("show", "ReducedSet" ,
-          function(object) {
-              cat(nComponents(object), " components\n")
-              return(callNextMethod())
-          })
-
-.whichToKeep <- function(idx, xnames) {
-    if (is.character(idx)) {
-        x_to_keep <- which(xnames %in% idx)
-    } else if (is.numeric(idx)) {
-        x_to_keep <- idx
-    } else if (is.logical(idx)) {
-        x_to_keep <- which(idx)
-    } else {
-        stop("Provide a character, numeric or logical vector to slice.")
+setMethod("reduced", "ReducedExperiment", function(x, withDimnames=TRUE) {
+    out <- x@reduced
+    if (withDimnames) {
+        rownames(out) <- colnames(x)
+        colnames(out) <- componentNames(x)
     }
+    return(out)
+})
 
-    return(x_to_keep)
-}
-
-setMethod("[", "ReducedSet",
-          function(x, i, j, k, ..., drop=FALSE)
-{
-    if (missing(i) & missing(j) & missing(k)) {
-        stop("Specify a dimension for slicing")
-    }
-
-    if (!missing(i) | !missing(j)) {
-        x <- callNextMethod(x, i, j, ..., drop=drop)
-
-        if (!missing(j)) {  # Samples
-            reduced(x) <- reduced(x)[.whichToKeep(j, rownames(reduced(x))), ]
-        }
-    }
-
-    if (!missing(k)) {  # Components
-        reduced(x) <- reduced(x)[, .whichToKeep(k, colnames(reduced(x)))]
-    }
-
+setReplaceMethod("reduced", "ReducedExperiment", function(x, value) {
+    x@reduced <- value
+    validObject(x)
     return(x)
 })
 
-setMethod("dim", "ReducedSet", function(x)
-    {c(callNextMethod(x), "Components"=ncol(reduced(x)))})
+setMethod("componentNames", "ReducedExperiment",
+          function(x) {return(colnames(x@reduced))})
 
-setMethod("dims", "ReducedSet", function(x)
-    {rbind(callNextMethod(x), matrix(ncol(reduced(x)),  dimnames=list("Components")))})
+setReplaceMethod("componentNames", "ReducedExperiment", function(x, value) {
+    colnames(x@reduced) <- value
+    validObject(x)
+    return(x)
+})
 
-setMethod("nComponents", "ReducedSet", function(object) {dim(object)[3]})
-setMethod("nSamples", "ReducedSet", function(object) {dim(object)[2]})
-setMethod("nFeatures", "ReducedSet", function(object) {dim(object)[1]})
+# TODO: setters
+setMethod("featureNames", "ReducedExperiment", function(x) {return(names(x))})
+setMethod("sampleNames", "ReducedExperiment", function(x) {return(rownames(colData(x)))})
+
+setMethod("show", "ReducedExperiment" ,
+          function(object) {
+              callNextMethod()
+              cat(nComponents(object), " components\n")
+          })
+
+setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
+          function(x, i, j, k, ..., drop=FALSE) {
+
+    if (1L != length(drop) || (!missing(drop) && drop))
+        warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
+
+    red <- reduced(x, withDimnames=FALSE)
+
+    if (!missing(j)) {
+        if (is.character(j)) {
+            fmt <- paste0("<", class(x), ">[,j] index out of bounds: %s")
+            j <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+                j, colnames(x), fmt
+            )
+        }
+        j <- as.vector(j)
+        red <- red[j,,drop=FALSE]
+    }
+
+
+    if (!missing(k)) {
+        if (is.character(k)) {
+            fmt <- paste0("<", class(x), ">[k,] index out of bounds: %s")
+            k <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+                k, componentnames(x), fmt
+            )
+        }
+        k <- as.vector(k)
+        red <- red[,k,drop=FALSE]
+    }
+
+    out <- callNextMethod(x, i, j, ...)
+    BiocGenerics:::replaceSlots(out, reduced=red, check=FALSE)
+})
+
+setMethod("dim", "ReducedExperiment", function(x) {
+    out <- c(callNextMethod(x), ncol(reduced(x)))
+    names(out) <- c("Features", "Samples", "Components")
+    return(out)
+})
+
+setMethod("nComponents", "ReducedExperiment", function(x) {dim(x)[3]})
+setMethod("nSamples", "ReducedExperiment", function(x) {dim(x)[2]})
+setMethod("nFeatures", "ReducedExperiment", function(x) {dim(x)[1]})

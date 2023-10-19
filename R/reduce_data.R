@@ -1,77 +1,55 @@
-#' Apply dimensionality reduction
+#' Apply dimensionality reduction using ICA
 #' @export
-reduce_data <- function(
-        X, method = c("ICA", "WGCNA"),
-        phenoData=Biobase::annotatedDataFrameFrom(X, byrow=FALSE),
-        featureData=Biobase::annotatedDataFrameFrom(X, byrow=TRUE),
-        center_X=(method == "ICA"), scale_X=FALSE,
-        experimentData=MIAME(), annotation=character(),
-        protocolData=annotatedDataFrameFrom(X, byrow=FALSE),
-        ...)
+run_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
+                    reorient_skewed=TRUE, seed=1, ...)
 {
-    if ("ExpressionSet" %in% class(X)) {
-        message("Using data from ExpressionSet and ignoring other arguments.")
-
-        phenoData <- phenoData(X)
-        featureData <- featureData(X)
-        experimentData <- experimentData(X)
-        annotation <- annotation(X)
-        protocolData <- protocolData(X)
-        X <- exprs(X)
+    if (!inherits(X, "SummarizedExperiment")) {
+        X <- SummarizedExperiment(assays = list(normal = X))
     }
 
-    X_tr <- scale(t(X), center=center_X, scale=scale_X)
+    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center_X, scale=scale_X))
 
-    if (method == "ICA") {
-        ica_res <- run_ica(X_tr, center_X=FALSE, ...)
-        reduced_set <- FactorSet(exprs=t(X_tr), reduced=ica_res$M, S=ica_res$S,
-                                 varexp=ica_res$vafs, phenoData=phenoData,
-                                 featureData=featureData, annotation=annotation,
-                                 experimentData=experimentData,
-                                 protocolData=protocolData)
+    ica_res <- compute_ica(assay(X, "transformed"), nc=nc, method=method,
+                           center_X=FALSE,  reorient_skewed=reorient_skewed,
+                           seed=seed, ...)
 
-    } else if (method == "WGCNA") {
-        wgcna_res <- run_wgcna(X, ...)
-        reduced_set <- ModuleSet(X, wgcna_res$E, wgcna_res$assignments,
-                                 phenoData=phenoData, featureData=featureData,
-                                 annotation=annotation,
-                                 experimentData=experimentData,
-                                 protocolData=protocolData)
-    } else {
-        stop(paste0("Method ", method, " not recognised."))
-    }
-
-    # TODO: Store these attributes somewhere so new data can be projected
-    # if (!is.null(attr(x, "scaled:scale")) | !is.null(attr(x, "scaled:center")))
-    #     reduced_set
+    # reduced_set <- FactorisedExperiment(X, reduced=ica_res$M, S=ica_res$S,
+    #                                     varexp=ica_res$vafs)
+    reduced_set <- FactorisedExperiment(
+        loadings=ica_res$S,
+        varexp=ica_res$vafs,
+        reduced=ica_res$M,
+        assays=assays(X),
+        rowData=rowData(X),
+        colData=colData(X),
+        metadata=metadata(X)
+    )
+    # wgcna_res <- run_wgcna(X, ...)
+    # reduced_set <- ModularExperiment(X, reduced=wgcna_res$E,
+    #                                  assignments=wgcna_res$assignments)
 
     return(reduced_set)
 }
 
-#' Project data
+#' Run ICA for a data matrix
 #' @export
-project_data <- function(reduced_set, newdata) {
-
-}
-
-#' Run ICA
-#' @export
-run_ica <- function(X, nc, method="imax", maxit=500, tol=1e-6, seed=1,
-                    center_X=TRUE, scale_X=FALSE, reorient_skewed=TRUE, ...) {
+compute_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
+                        reorient_skewed=TRUE, seed=1, ...) {
     set.seed(seed)
 
     if (center_X | scale_X)
         {X <- scale(X, center=center_X, scale=scale_X)}
 
-    ica_res <- ica::ica(t(X), nc = nc, maxit = maxit, tol = tol,
-                        method = method, ... )
+    ica_res <- ica::ica(X, nc=nc, method = method, ... )
+
+    # Reorient factors and recalculate M
+    if (reorient_skewed) {ica_res$S <- .reorient_skewed(ica_res$S)}
+    ica_res$M <- .project_ica(X, ica_res$S)
 
     # Add factors / sample names
-    rownames(ica_res$M) <- rownames(X)
-    colnames(ica_res$M) <- colnames(ica_res$S) <- paste0("factor_",
-                                                         1:ncol(ica_res$S))
-
-    if (reorient_skewed) {ica_res$S <- .reorient_skewed(ica_res$S)}
+    rownames(ica_res$M) <- colnames(X)
+    rownames(ica_res$S) <- rownames(X)
+    colnames(ica_res$M) <- colnames(ica_res$S) <- paste0("factor_", 1:ncol(ica_res$S))
 
     return(ica_res)
 }
@@ -88,7 +66,7 @@ run_ica <- function(X, nc, method="imax", maxit=500, tol=1e-6, seed=1,
 #' X / S = M
 #' X * inv(S) = M
 .project_ica <- function(newdata, S) {
-    M <- newdata %*% t(MASS::ginv(S))
+    M <- t(newdata) %*% t(MASS::ginv(S))
     colnames(M) <- colnames(S)
 
     return(M)
@@ -96,6 +74,17 @@ run_ica <- function(X, nc, method="imax", maxit=500, tol=1e-6, seed=1,
 
 #' Run WGCNA
 #' @export
-run_wgcna <- function() {
-    stop("Not implemented yet")
+#' Apply dimensionality reduction using ICA
+#' @export
+run_wgcna <- function(X, ...)
+{
+    if (!inherits(X, "SummarizedExperiment")) {
+        X <- SummarizedExperiment(assays = list(normal = X))
+    }
+
+    wgcna_res <- run_wgcna(X, ...)
+    reduced_set <- ModularExperiment(X, reduced=wgcna_res$E,
+                                     assignments=wgcna_res$assignments)
+
+    return(reduced_set)
 }

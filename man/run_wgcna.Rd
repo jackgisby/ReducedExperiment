@@ -4,7 +4,7 @@
 \alias{run_wgcna}
 \title{Run WGCNA}
 \usage{
-run_wgcna()
+run_wgcna(X, ...)
 }
 \description{
 Run WGCNA

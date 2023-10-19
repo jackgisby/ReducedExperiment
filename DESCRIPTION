@@ -15,11 +15,13 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends:
     R (>= 4.1.0),
-    Biobase
+    SummarizedExperiment,
+    methods
 Imports: 
     WGCNA,
     ica,
-    moments
+    moments,
+    MASS
 Suggests:
     knitr,
     rmarkdown,
