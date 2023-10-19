@@ -7,13 +7,13 @@
 reduce_data(
   X,
   method = c("ICA", "WGCNA"),
-  phenoData = Biobase::annotatedDataFrameFrom(assayData, byrow = FALSE),
-  featureData = Biobase::annotatedDataFrameFrom(assayData, byrow = TRUE),
+  phenoData = Biobase::annotatedDataFrameFrom(X, byrow = FALSE),
+  featureData = Biobase::annotatedDataFrameFrom(X, byrow = TRUE),
   center_X = (method == "ICA"),
   scale_X = FALSE,
   experimentData = MIAME(),
   annotation = character(),
-  protocolData = annotatedDataFrameFrom(assayData, byrow = FALSE),
+  protocolData = annotatedDataFrameFrom(X, byrow = FALSE),
   ...
 )
 }

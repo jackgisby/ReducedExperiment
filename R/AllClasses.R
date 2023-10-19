@@ -1,16 +1,16 @@
 #' ReducedSet
-setClass(
+ReducedSet <- setClass(
     "ReducedSet",
     contains="eSet",
-    representation=representation(reducedData="matrix", exprs="matrix"),
+    representation=representation(reduced="matrix", exprs="matrix"),
     prototype=prototype(
         new("VersionedBiobase", versions=c(classVersion("eSet"), ReducedSet="0.1.0")),
-        reducedData=matrix(), exprs=matrix())
+        reduced=matrix(), exprs=matrix())
 )
 
 #' A class to represent the results of factor analysis
 #' @export
-setClass(
+FactorSet <- setClass(
     "FactorSet",
     contains="ReducedSet",
     representation=representation(S="matrix", varexp="numeric"),
@@ -22,7 +22,7 @@ setClass(
 
 #' A class to represent modules
 #' @export
-setClass(
+ModuleSet <- setClass(
     "ModuleSet",
     contains="ReducedSet",
     representation=representation(assignments="numeric"),

@@ -2,14 +2,14 @@
 #' @export
 reduce_data <- function(
         X, method = c("ICA", "WGCNA"),
-        phenoData=Biobase::annotatedDataFrameFrom(assayData, byrow=FALSE),
-        featureData=Biobase::annotatedDataFrameFrom(assayData, byrow=TRUE),
+        phenoData=Biobase::annotatedDataFrameFrom(X, byrow=FALSE),
+        featureData=Biobase::annotatedDataFrameFrom(X, byrow=TRUE),
         center_X=(method == "ICA"), scale_X=FALSE,
         experimentData=MIAME(), annotation=character(),
-        protocolData=annotatedDataFrameFrom(assayData, byrow=FALSE),
+        protocolData=annotatedDataFrameFrom(X, byrow=FALSE),
         ...)
 {
-    if (class(X) == "ExpressionSet") {
+    if ("ExpressionSet" %in% class(X)) {
         message("Using data from ExpressionSet and ignoring other arguments.")
 
         phenoData <- phenoData(X)
@@ -20,13 +20,13 @@ reduce_data <- function(
         X <- exprs(X)
     }
 
-    X <- scale(X, center=center_X, scale=scale_X)
+    X_tr <- scale(t(X), center=center_X, scale=scale_X)
 
     if (method == "ICA") {
-        ica_res <- run_ica(X, center_X=FALSE, ...)
-        reduced_set <- FactorSet(X, ica_res$M, ica_res$S, ica_res$vafs,
-                                 phenoData=phenoData, featureData=featureData,
-                                 annotation=annotation,
+        ica_res <- run_ica(X_tr, center_X=FALSE, ...)
+        reduced_set <- FactorSet(exprs=t(X_tr), reduced=ica_res$M, S=ica_res$S,
+                                 varexp=ica_res$vafs, phenoData=phenoData,
+                                 featureData=featureData, annotation=annotation,
                                  experimentData=experimentData,
                                  protocolData=protocolData)
 
@@ -46,6 +46,12 @@ reduce_data <- function(
     #     reduced_set
 
     return(reduced_set)
+}
+
+#' Project data
+#' @export
+project_data <- function(reduced_set, newdata) {
+
 }
 
 #' Run ICA
@@ -71,9 +77,9 @@ run_ica <- function(X, nc, method="imax", maxit=500, tol=1e-6, seed=1,
 }
 
 .reorient_skewed <- function(S) {
-    skew <- ifelse(apply(ica_res$S, 2, moments::skewness) >= 0, 1, -1)
-    for (i in 1:ncol(ica_res$S)) {
-        ica_res$S[,i] <- ica_res$S[,i] * skew[i]
+    skew <- ifelse(apply(S, 2, moments::skewness) >= 0, 1, -1)
+    for (i in 1:ncol(S)) {
+        S[,i] <- S[,i] * skew[i]
     }
     return(S)
 }

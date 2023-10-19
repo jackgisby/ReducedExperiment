@@ -7,7 +7,7 @@ dir.create("tempTestOutput")
     return(new(
         "ReducedSet",
         exprs = .makeRandomData(i, j, "gene", "sample"),
-        reducedData = .makeRandomData(j, k, "sample", "factor")
+        reduced = .makeRandomData(j, k, "sample", "factor")
     ))
 }
 

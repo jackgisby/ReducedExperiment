@@ -3,6 +3,7 @@
 \docType{class}
 \name{FactorSet-class}
 \alias{FactorSet-class}
+\alias{FactorSet}
 \title{A class to represent the results of factor analysis}
 \description{
 A class to represent the results of factor analysis

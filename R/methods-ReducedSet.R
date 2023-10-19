@@ -4,7 +4,7 @@ setMethod(
     definition=function(
         .Object,
         assayData=Biobase::assayDataNew(exprs=exprs),
-        reducedData=new("matrix"),
+        reduced=new("matrix"),
         phenoData=Biobase::annotatedDataFrameFrom(assayData, byrow=FALSE),
         featureData=Biobase::annotatedDataFrameFrom(assayData, byrow=TRUE),
         exprs=new("matrix"),
@@ -17,7 +17,7 @@ setMethod(
     #TODO: store X scaling/centering attr (in assayData or own slot)
 
     # Reduced data common to children
-    .Object@reducedData <- reducedData
+    .Object@reduced <- reduced
 
     callNextMethod(.Object, assayData=assayData, phenoData=phenoData,
                    featureData=featureData, ...)
@@ -54,12 +54,12 @@ setAs("ReducedSet", "data.frame",
 as.data.frame.ReducedSet <- Biobase:::as.data.frame.ExpressionSet
 
 setMethod("reduced", signature(object="ReducedSet"),
-          function(object) {return(object@reducedData)})
+          function(object) {return(object@reduced)})
 
 setReplaceMethod("reduced",
                  signature=signature(object="ReducedSet", value="matrix"),
                  function(object, value) {
-                     object@reducedData <- value
+                     object@reduced <- value
                      return(object)
                  })
 

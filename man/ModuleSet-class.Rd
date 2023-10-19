@@ -3,6 +3,7 @@
 \docType{class}
 \name{ModuleSet-class}
 \alias{ModuleSet-class}
+\alias{ModuleSet}
 \title{A class to represent modules}
 \description{
 A class to represent modules

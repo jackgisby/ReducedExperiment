@@ -3,10 +3,10 @@ context("FactorSet")
 dir.create("tempTestOutput")
 
 #' i (features), j (samples), k components)
-createRandomisedFactorSet <- function(i, j, k) {
+.createRandomisedFactorSet <- function(i, j, k) {
     return(FactorSet(
         exprs = .makeRandomData(i, j, "gene", "sample"),
-        reducedData = .makeRandomData(j, k, "sample", "factor"),
+        reduced = .makeRandomData(j, k, "sample", "factor"),
         S = .makeRandomData(i, k, "gene", "factor")
     ))
 }

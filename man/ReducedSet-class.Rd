@@ -3,6 +3,7 @@
 \docType{class}
 \name{ReducedSet-class}
 \alias{ReducedSet-class}
+\alias{ReducedSet}
 \title{ReducedSet}
 \description{
 ReducedSet

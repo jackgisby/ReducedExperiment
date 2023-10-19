@@ -3,7 +3,7 @@ setMethod(
     signature="FactorSet",
     definition=function(.Object, S, varexp=new("numeric"),
                         assayData=Biobase::assayDataNew(exprs=exprs),
-                        reducedData=new("matrix"),
+                        reduced=new("matrix"),
                         phenoData=Biobase::annotatedDataFrameFrom(assayData, byrow=FALSE),
                         featureData=Biobase::annotatedDataFrameFrom(assayData, byrow=TRUE),
                         exprs=new("matrix"), ...) {
@@ -15,7 +15,7 @@ setMethod(
         .Object@S <- S
         .Object@varexp <- varexp
 
-        callNextMethod(.Object, assayData=assayData, reducedData=reducedData, phenoData=phenoData, featureData=featureData, ...)
+        callNextMethod(.Object, assayData=assayData, reduced=reduced, phenoData=phenoData, featureData=featureData, ...)
     }
 )    #TODO: store original S / M but provide options to scale/center
 
@@ -77,4 +77,10 @@ setMethod("[", "FactorSet",
     }
 
     return(x)
+})
+
+setMethod("predict", signature="FactorSet",  function(object, newdata) {
+    # TODO: Implement function
+    stop("Not implemented yet.")
+    return(newdata)
 })
