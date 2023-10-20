@@ -23,9 +23,8 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("reduced", "ReducedExperiment", function(x) {
-    out <- x@reduced
-    return(out)
+setMethod("reduced", "ReducedExperiment", function(x, scale=FALSE, center=FALSE) {
+    return(scale(x@reduced, scale=scale, center=center))
 })
 
 setReplaceMethod("reduced", "ReducedExperiment", function(x, value) {

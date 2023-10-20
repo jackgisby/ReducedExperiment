@@ -34,7 +34,9 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("loadings", "ReducedExperiment", function(x) {return(x@loadings)})
+setMethod("loadings", "ReducedExperiment", function(x, scale=FALSE, center=FALSE) {
+    return(scale(x@loadings, scale=scale, center=center))
+})
 
 setReplaceMethod("loadings", "ReducedExperiment", function(x, value) {
     x@loadings <- value
