@@ -52,8 +52,8 @@ setMethod("show", "ReducedExperiment" ,
           })
 
 setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
-          function(x, i, j, k, ..., drop=FALSE) {
-
+          function(x, i, j, k, ..., drop=FALSE)
+{
     if (1L != length(drop) || (!missing(drop) && drop))
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
 
@@ -78,6 +78,7 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
                 k, componentnames(x), fmt
             )
         }
+
         k <- as.vector(k)
         red <- red[,k,drop=FALSE]
     }

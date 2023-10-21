@@ -44,6 +44,14 @@ setReplaceMethod("loadings", "ReducedExperiment", function(x, value) {
     return(x)
 })
 
+setMethod("varexp", "ReducedExperiment", function(x) {return(x@varexp)})
+
+setReplaceMethod("varexp", "ReducedExperiment", function(x, value) {
+    x@varexp <- value
+    validObject(x)
+    return(x)
+})
+
 setReplaceMethod("componentNames", "ReducedExperiment", function(x, value) {
     colnames(x@reduced) <- value
     colnames(x@loadings) <- value
@@ -52,7 +60,8 @@ setReplaceMethod("componentNames", "ReducedExperiment", function(x, value) {
 })
 
 setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
-          function(x, i, j, k, ..., drop=FALSE) {
+          function(x, i, j, k, ..., drop=FALSE)
+{
 
     if (1L != length(drop) || (!missing(drop) && drop))
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
@@ -79,6 +88,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
                 k, componentnames(x), fmt
             )
         }
+
         k <- as.vector(k)
         lod <- lod[,k,drop=FALSE]
         vafs <- vafs[k, drop=FALSE]
@@ -88,16 +98,42 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
     BiocGenerics:::replaceSlots(out, loadings=lod, varexp=vafs, check=FALSE)
 })
 
-
 #' Project data
-setMethod("project_data", c("FactorisedExperiment", "matrix"), function(x, newdata) {
+setMethod("project_data", c("FactorisedExperiment", "matrix"), function(x, newdata, new_data_is_transformed=FALSE) {
+
+    if (!new_data_is_transformed) {
+        newdata <- .scale_center_based_on_attr(assay(x, "transformed"), newdata)
+    }
     return(.project_ica(newdata, loadings(x)))
 })
 
-setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata) {
-    return(.project_ica(assay(newdata, "normal"), loadings(x)))
+setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, new_data_is_transformed=FALSE) {
+
+    if (!new_data_is_transformed) {
+        assay(newdata, "transformed") <- .scale_center_based_on_attr(assay(x, "transformed"), assay(newdata, "normal"))
+    }
+
+    projected_data <- project_data(x, assay(newdata, "transformed"), new_data_is_transformed=TRUE)
+
+    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), varexp=varexp(x)))
 })
 
+.scale_center_based_on_attr <- function(x, newdata) {
+    if ("scaled:center" %in% names(attributes(x))) {
+        center <- attr(x, "scaled:center")
+    } else {
+        center <- FALSE
+    }
+    if ("scaled:scale" %in% names(attributes(x))) {
+        scale <- attr(x, "scaled:scale")
+    } else {
+        scale <- FALSE
+    }
+
+    return(t(scale(t(newdata), scale=scale, center=center)))
+}
+
+# TODO: Make predict method that calls project_data
 # setMethod("predict", signature="FactorisedExperiment",  function(object, newdata) {
 #     # TODO: Implement function
 #     stop("Not implemented yet.")
