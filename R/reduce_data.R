@@ -13,22 +13,19 @@ run_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
                            center_X=FALSE,  reorient_skewed=reorient_skewed,
                            seed=seed, ...)
 
-    # reduced_set <- FactorisedExperiment(X, reduced=ica_res$M, S=ica_res$S,
-    #                                     varexp=ica_res$vafs)
-    reduced_set <- FactorisedExperiment(
-        loadings=ica_res$S,
-        varexp=ica_res$vafs,
-        reduced=ica_res$M,
-        assays=assays(X),
-        rowData=rowData(X),
-        colData=colData(X),
-        metadata=metadata(X)
-    )
-    # wgcna_res <- run_wgcna(X, ...)
-    # reduced_set <- ModularExperiment(X, reduced=wgcna_res$E,
-    #                                  assignments=wgcna_res$assignments)
+    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, varexp=ica_res$vafs))
+}
 
-    return(reduced_set)
+.se_to_fe <- function(se, reduced, loadings, varexp) {
+    return(FactorisedExperiment(loadings=loadings, varexp=varexp, reduced=reduced,
+                                assays=assays(se), rowData=rowData(se),
+                                colData=colData(se), metadata=metadata(se)))
+}
+
+.se_to_me <- function(se, reduced, assignments) {
+    return(FactorisedExperiment(assignments=assignments, reduced=reduced,
+                                assays=assays(se), rowData=rowData(se),
+                                colData=colData(se), metadata=metadata(se)))
 }
 
 #' Run ICA for a data matrix
@@ -49,7 +46,7 @@ compute_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
     # Add factors / sample names
     rownames(ica_res$M) <- colnames(X)
     rownames(ica_res$S) <- rownames(X)
-    colnames(ica_res$M) <- colnames(ica_res$S) <- paste0("factor_", 1:ncol(ica_res$S))
+    names(ica_res$vafs) <- colnames(ica_res$M) <- colnames(ica_res$S) <- paste0("factor_", 1:ncol(ica_res$S))
 
     return(ica_res)
 }
