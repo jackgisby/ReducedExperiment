@@ -137,3 +137,14 @@ setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), fun
 setMethod("predict", c("FactorisedExperiment"), function(object, newdata, new_data_is_transformed=FALSE) {
     return(project_data(object, newdata, new_data_is_transformed))
 })
+
+setMethod("run_enrichment", c("FactorisedExperiment"),
+    function(object, ensembl_id_col="ensembl_id", entrezgene_id=NULL, scale_loadings=TRUE) {
+
+        factor_genes <- list()
+        for (f in componentNames(object)) {
+
+            factor_genes[[f]] <-
+            enrich_res <- rbind(enrich_res, comp_enrich)
+        }
+})
