@@ -22,7 +22,8 @@ Imports:
     ica,
     moments,
     MASS,
-    clusterProfiler
+    clusterProfiler,
+    msigdbr
 Suggests:
     knitr,
     rmarkdown,
