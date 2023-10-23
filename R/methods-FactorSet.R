@@ -104,6 +104,7 @@ setMethod("project_data", c("FactorisedExperiment", "matrix"), function(x, newda
     if (!new_data_is_transformed) {
         newdata <- .scale_center_based_on_attr(assay(x, "transformed"), newdata)
     }
+
     return(.project_ica(newdata, loadings(x)))
 })
 
@@ -133,9 +134,6 @@ setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), fun
     return(t(scale(t(newdata), scale=scale, center=center)))
 }
 
-# TODO: Make predict method that calls project_data
-# setMethod("predict", signature="FactorisedExperiment",  function(object, newdata) {
-#     # TODO: Implement function
-#     stop("Not implemented yet.")
-#     return(newdata)
-# })
+setMethod("predict", c("FactorisedExperiment"), function(object, newdata, new_data_is_transformed=FALSE) {
+    return(project_data(object, newdata, new_data_is_transformed))
+})
