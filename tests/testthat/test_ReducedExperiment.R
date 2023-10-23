@@ -1,7 +1,5 @@
 context("ReducedExperiment")
 
-dir.create("tempTestOutput")
-
 #' i (features), j (samples), k components)
 .createRandomisedReducedExperiment <- function(i, j, k) {
     return(ReducedExperiment(
@@ -30,4 +28,16 @@ test_that("Build ReducedExperiment", {
     expect_equal(paste0("sample_", 50:90), sampleNames(rrs_subset))
 })
 
-unlink("tempTestOutput", recursive = TRUE)
+test_that("getGeneIDs", {
+
+    data(airway, package="airway")
+
+    rrd <- .makeRandomData(ncol(airway), 10, "sample", "factor")
+    rownames(rrd) <- colnames(airway)
+
+    re <- ReducedExperiment(reduced=rrd, assays=assays(airway),
+                              rowData=rowData(airway), colData=colData(airway),
+                              metadata=metadata(airway))
+
+    re_genes <- getGeneIDs(re)
+})

@@ -12,3 +12,9 @@ run_wgcna <- function(X, ...)
 
     return(reduced_set)
 }
+
+.se_to_me <- function(se, reduced, assignments) {
+    return(FactorisedExperiment(assignments=assignments, reduced=reduced,
+                                assays=assays(se), rowData=rowData(se),
+                                colData=colData(se), metadata=metadata(se)))
+}

@@ -96,3 +96,35 @@ setMethod("dim", "ReducedExperiment", function(x) {
 setMethod("nComponents", "ReducedExperiment", function(x) {dim(x)[3]})
 setMethod("nSamples", "ReducedExperiment", function(x) {dim(x)[2]})
 setMethod("nFeatures", "ReducedExperiment", function(x) {dim(x)[1]})
+
+setMethod("getGeneIDs", "ReducedExperiment", function(
+    x,
+    gene_id_col="rownames",
+    gene_id_type="ensembl_gene_id",
+    ids_to_get=c("hgnc_symbol", "entrezgene_id"),
+    mart=NULL)
+{
+    if (gene_id_col == "rownames") {
+        rowData(x)[[gene_id_type]] <- rownames(x)
+    } else {
+        rowData(x)[[gene_id_type]] <- rowData(x)[[gene_id_col]]
+    }
+
+    gene_ids <- rowData(x)[[gene_id_type]]
+
+    if (is.null(mart)) {
+        mart <- biomaRt::useEnsembl(biomart="genes", dataset="hsapiens_gene_ensembl")
+    }
+
+    biomart_out <- biomaRt::getBM(filters = gene_id_type,
+                                  attributes = c(gene_id_type, ids_to_get),
+                                  values = gene_ids, mart = mart)
+
+    biomart_out <- biomart_out[which(!duplicated(biomart_out[[gene_id_type]])),]
+    rownames(biomart_out) <- biomart_out[[gene_id_type]]
+
+    rowData(x) <- merge(rowData(x), biomart_out, by=gene_id_type, all.x=TRUE)
+    stopifnot(all.equal(rownames(x), rownames(rowData(x))))
+
+    return(x)
+})

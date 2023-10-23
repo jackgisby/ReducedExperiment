@@ -21,13 +21,15 @@ Imports:
     WGCNA,
     ica,
     moments,
-    MASS
+    MASS,
+    clusterProfiler
 Suggests:
     knitr,
     rmarkdown,
     testthat,
     biocViews,
     BiocCheck,
-    BiocStyle
+    BiocStyle,
+    airway
 URL: https://github.com/jackgisby/omicsDimReduce
 BugReports: https://github.com/jackgisby/omicsDimReduce/issues

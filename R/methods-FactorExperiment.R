@@ -62,7 +62,6 @@ setReplaceMethod("componentNames", "ReducedExperiment", function(x, value) {
 setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=FALSE)
 {
-
     if (1L != length(drop) || (!missing(drop) && drop))
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
 
@@ -79,7 +78,6 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
         i <- as.vector(i)
         lod <- lod[i,,drop=FALSE]
     }
-
 
     if (!missing(k)) {
         if (is.character(k)) {
@@ -138,13 +136,44 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, new_da
     return(project_data(object, newdata, new_data_is_transformed))
 })
 
-setMethod("run_enrichment", c("FactorisedExperiment"),
-    function(object, ensembl_id_col="ensembl_id", entrezgene_id=NULL, scale_loadings=TRUE) {
+setMethod("runEnrich", c("FactorisedExperiment"),
+    function(x, method=c("overrepresentation", "gsea"), feature_id_col="rownames",
+             scale_loadings=TRUE, z_cutoff=3, min_features=20, ...)
+{
+    S <- loadings(x, scale=scale_loadings)
+    if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
 
-        factor_genes <- list()
-        for (f in componentNames(object)) {
+    if (method == "gsea") {
+        enrich_res <- reduced_gsea(S, ...)
+    }
 
-            factor_genes[[f]] <-
-            enrich_res <- rbind(enrich_res, comp_enrich)
+    factor_features <- list()
+    for (f in componentNames(x)) {
+
+        factor_features[[f]] <- rownames(S)[which(abs(S[,f]) > z_cutoff)]
+
+        if (length(factor_features[[f]]) < min_features) {
+
+            factor_features[[f]] <- rownames(S)[order(abs(S[,f]), decreasing = TRUE)][1:20]
         }
+    }
+
+    if (method == "overrepresentation") {
+        enrich_res <- reduced_oa(factor_features, ...)
+    } else {
+        stop(paste0("Enrichment method ", method, " is not a valid option"))
+    }
+
+    if (nrow(enrich_res) >= 1) {
+        enrich_res$z_cutoff <- z_cutoff
+        enrich_res$min_features <- min_features
+        enrich_res$loadings_scaled <- scale_loadings
+
+        enrich_res <- subset(enrich_res, select=c("ID", "description", "factor",
+            "z_cutoff", "min_features", "loadings_scaled", "gene_ratio",
+            "bg_ratio", "pvalue", "method", "adj_pvalue","adj_method", "count",
+            "gene_id"))
+    }
+
+    return(enrich_res)
 })

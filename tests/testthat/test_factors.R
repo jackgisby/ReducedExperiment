@@ -1,7 +1,5 @@
 context("reduce_data")
 
-dir.create("tempTestOutput")
-
 test_that("Reduce data", {
     scale_X <- TRUE
 
@@ -18,5 +16,3 @@ test_that("Reduce data", {
 
     # project_data(factor_exp, .makeRandomData(50, 20, "gene", "sample"))
 })
-
-unlink("tempTestOutput", recursive = TRUE)

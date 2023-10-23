@@ -22,12 +22,6 @@ run_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
                                 colData=colData(se), metadata=metadata(se)))
 }
 
-.se_to_me <- function(se, reduced, assignments) {
-    return(FactorisedExperiment(assignments=assignments, reduced=reduced,
-                                assays=assays(se), rowData=rowData(se),
-                                colData=colData(se), metadata=metadata(se)))
-}
-
 #' Run ICA for a data matrix
 #' @export
 compute_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,

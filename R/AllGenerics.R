@@ -17,3 +17,5 @@ setGeneric("project_data", function(x, newdata, ...) standardGeneric("project_da
 setGeneric("nComponents",     function(x) standardGeneric("nComponents"))
 setGeneric("nSamples",     function(x) standardGeneric("nSamples"))
 setGeneric("nFeatures",     function(x) standardGeneric("nFeatures"))
+setGeneric("getGeneIDs",     function(x, ...) standardGeneric("getGeneIDs"))
+setGeneric("runEnrich",     function(x, ...) standardGeneric("runEnrich"))

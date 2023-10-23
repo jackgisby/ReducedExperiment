@@ -1,7 +1,5 @@
 context("FactorisedExperiment")
 
-dir.create("tempTestOutput")
-
 #' i (features), j (samples), k components)
 .createRandomisedFactorisedExperiment <- function(i, j, k) {
     return(FactorisedExperiment(
@@ -33,4 +31,27 @@ test_that("Build FactorisedExperiment", {
     rrs_empy <- FactorisedExperiment()
 })
 
-unlink("tempTestOutput", recursive = TRUE)
+test_that("FactorisedExperiment enrichment", {
+
+    for (fp in file.path("R", list.files("R"))) source(fp)
+
+    # Example expression data formatted as a SummarizedExperiment
+    data(airway, package="airway")
+
+    # Make random reduced and loadings data matching airway dimensions
+    rrd <- .makeRandomData(ncol(airway), 10, "sample", "factor")
+    rownames(rrd) <- colnames(airway)
+    rld <- .makeRandomData(nrow(airway), 10, "gene", "factor")
+    rownames(rld) <- rownames(airway)
+
+    # Create the FactorExperiment and get entrez gene IDs
+    fe <- .se_to_fe(airway, reduced=rrd, loadings=rld, varexp=numeric())
+
+    fe <- getGeneIDs(fe)
+    fe <- fe[which(!is.na(rowData(fe)$entrezgene_id)) ,]
+
+    enrich_res <- runEnrich(fe, method="overrepresentation", feature_id_col="entrezgene_id")
+
+    # Run overrepresentation analysis
+    expect_equal(enrich_res, data.frame())
+})
