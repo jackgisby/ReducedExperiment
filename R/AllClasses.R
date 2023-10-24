@@ -12,8 +12,8 @@
 .FactorisedExperiment <- setClass(
     "FactorisedExperiment",
     contains="ReducedExperiment",
-    representation=representation(loadings="matrix", varexp="numeric"),
-    prototype=prototype(loadings=matrix(), varexp=numeric())
+    representation=representation(loadings="matrix", varexp="numeric", center="ANY"),
+    prototype=prototype(loadings=matrix(), varexp=numeric(), center=FALSE)
 )
 
 #' @import methods

@@ -1,23 +1,25 @@
 #' Apply dimensionality reduction using ICA
 #' @export
-run_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
+run_ica <- function(X, nc, method="imax", center_X=TRUE,
                     reorient_skewed=TRUE, seed=1, ...)
 {
     if (!inherits(X, "SummarizedExperiment")) {
         X <- SummarizedExperiment(assays = list(normal = X))
     }
 
-    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center_X, scale=scale_X))
+    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center_X, scale=FALSE))
+
+    if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
 
     ica_res <- compute_ica(assay(X, "transformed"), nc=nc, method=method,
                            center_X=FALSE,  reorient_skewed=reorient_skewed,
                            seed=seed, ...)
 
-    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, varexp=ica_res$vafs))
+    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, varexp=ica_res$vafs, center=center))
 }
 
-.se_to_fe <- function(se, reduced, loadings, varexp) {
-    return(FactorisedExperiment(loadings=loadings, varexp=varexp, reduced=reduced,
+.se_to_fe <- function(se, reduced, loadings, varexp, center) {
+    return(FactorisedExperiment(loadings=loadings, varexp=varexp, center=center, reduced=reduced,
                                 assays=assays(se), rowData=rowData(se),
                                 colData=colData(se), metadata=metadata(se)))
 }

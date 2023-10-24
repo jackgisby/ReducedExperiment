@@ -7,6 +7,7 @@
 FactorisedExperiment <- function(
         loadings = new("matrix"),
         varexp = new("numeric"),
+        center=FALSE,
         ...)
 {
     re <- ReducedExperiment(...)
@@ -67,6 +68,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 
     lod <- loadings(x)
     vafs <- x@varexp
+    center <- x@center
 
     if (!missing(i)) {
         if (is.character(i)) {
@@ -77,6 +79,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
         }
         i <- as.vector(i)
         lod <- lod[i,,drop=FALSE]
+        center <- center[i,drop=FALSE]
     }
 
     if (!missing(k)) {
@@ -93,44 +96,27 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
     }
 
     out <- callNextMethod(x, i, j, k, ...)
-    BiocGenerics:::replaceSlots(out, loadings=lod, varexp=vafs, check=FALSE)
+    BiocGenerics:::replaceSlots(out, loadings=lod, varexp=vafs, center=center, check=FALSE)
 })
 
 #' Project data
-setMethod("project_data", c("FactorisedExperiment", "matrix"), function(x, newdata, new_data_is_transformed=FALSE) {
+setMethod("project_data", c("FactorisedExperiment", "matrix"), function(x, newdata, new_data_is_centered=FALSE) {
 
-    if (!new_data_is_transformed) {
-        newdata <- .scale_center_based_on_attr(assay(x, "transformed"), newdata)
-    }
+    if (!new_data_is_centered) newdata <- t(scale(t(newdata), scale=FALSE, center=x@center))
 
     return(.project_ica(newdata, loadings(x)))
 })
 
-setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, new_data_is_transformed=FALSE) {
+setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, new_data_is_centered=FALSE) {
 
-    if (!new_data_is_transformed) {
-        assay(newdata, "transformed") <- .scale_center_based_on_attr(assay(x, "transformed"), assay(newdata, "normal"))
+    if (!new_data_is_centered) {
+        assay(newdata, "transformed") <- t(scale(t(assay(newdata, "normal")), scale=FALSE, center=x@center))
     }
 
-    projected_data <- project_data(x, assay(newdata, "transformed"), new_data_is_transformed=TRUE)
+    projected_data <- project_data(x, assay(newdata, "transformed"), new_data_is_centered=TRUE)
 
     return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), varexp=varexp(x)))
 })
-
-.scale_center_based_on_attr <- function(x, newdata) {
-    if ("scaled:center" %in% names(attributes(x))) {
-        center <- attr(x, "scaled:center")
-    } else {
-        center <- FALSE
-    }
-    if ("scaled:scale" %in% names(attributes(x))) {
-        scale <- attr(x, "scaled:scale")
-    } else {
-        scale <- FALSE
-    }
-
-    return(t(scale(t(newdata), scale=scale, center=center)))
-}
 
 setMethod("predict", c("FactorisedExperiment"), function(object, newdata, new_data_is_transformed=FALSE) {
     return(project_data(object, newdata, new_data_is_transformed))
