@@ -11,7 +11,7 @@ FactorisedExperiment <- function(
         ...)
 {
     re <- ReducedExperiment(...)
-    return(.FactorisedExperiment(re, loadings=loadings, varexp=varexp))
+    return(.FactorisedExperiment(re, loadings=loadings, varexp=varexp, center=center))
 }
 
 S4Vectors::setValidity2("FactorisedExperiment", function(object) {
@@ -115,7 +115,7 @@ setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), fun
 
     projected_data <- project_data(x, assay(newdata, "transformed"), new_data_is_centered=TRUE)
 
-    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), varexp=varexp(x)))
+    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), varexp=varexp(x), center=x@center))
 })
 
 setMethod("predict", c("FactorisedExperiment"), function(object, newdata, new_data_is_transformed=FALSE) {

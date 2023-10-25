@@ -1,15 +1,15 @@
 #' Apply dimensionality reduction using ICA
 #' @export
-run_ica <- function(X, nc, method="imax", center_X=TRUE,
+run_ica <- function(X, nc, method="imax", center=TRUE,
                     reorient_skewed=TRUE, seed=1, ...)
 {
     if (!inherits(X, "SummarizedExperiment")) {
         X <- SummarizedExperiment(assays = list(normal = X))
     }
 
-    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center_X, scale=FALSE))
+    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center, scale=FALSE))
 
-    if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
+    if (center) center <- attr(assay(X, "transformed"), "scaled:center")
 
     ica_res <- compute_ica(assay(X, "transformed"), nc=nc, method=method,
                            center_X=FALSE,  reorient_skewed=reorient_skewed,
