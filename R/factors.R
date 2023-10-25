@@ -33,7 +33,7 @@ compute_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
     if (center_X | scale_X)
         {X <- scale(X, center=center_X, scale=scale_X)}
 
-    ica_res <- ica::ica(X, nc=nc, method = method, ... )
+    ica_res <- ica::ica(X, nc=nc, method=method, center=FALSE, ...)
 
     # Reorient factors and recalculate M
     if (reorient_skewed) {ica_res$S <- .reorient_skewed(ica_res$S)}
