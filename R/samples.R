@@ -24,21 +24,22 @@
     }
 }
 
-.run_linear_model <- function(X, pheno, formula, method=c("lm", "lmer"), type="II", ...) {
+.run_linear_model <- function(X, pheno, formula, method="lm", type="II", ...) {
 
     pheno$component <- X
+
     formula <- as.formula(paste0("component", formula))
 
     if (method == "lmer") {
-
+        
         linear_model <- .single_lmer(pheno, formula, ...)
 
         anova_res <- data.frame(anova(linear_model, type=type))
         summary_res <- data.frame(summary(linear_model)$coefficients)
 
-    } else {
+    } else if (method == "lm") {
 
-        linear_model <- lm(paste0(colnames(sample_by_feature)[i], formula), combined_data)
+        linear_model <- lm(formula, pheno)
 
         anova_res <- data.frame(car::Anova(linear_model, type=type))
         summary_res <- data.frame(summary(linear_model)$coefficients)
@@ -47,20 +48,21 @@
     anova_res$term <- rownames(anova_res)
     summary_res$term <- rownames(summary_res)
 
-    return(list("model"=model, "anova"=anova_res, "summary"=summary_res))
+    return(list("model"=linear_model, "anova"=anova_res, "summary"=summary_res))
 }
 
-associate_factors <- function(re, formula, method=c("lm", "lmer"),
-                              scale=TRUE, center=TRUE, return_models=FALSE,
-                              type="II", ...) {
+associate_components <- function(re, formula, method="lm",
+                              scale=TRUE, center=TRUE,
+                              type="II", adj_method="BH", ...) {
 
     models <- list()
     summaries <- anovas <- data.frame()
-
+    red <- reduced(re, scale=scale, center=center)
+    
     for (comp in componentNames(re)) {
-
+        
         linear_model <- .run_linear_model(
-            X=reduced(re[[comp]], scale=scale, center=center),
+            X=red[, comp],
             pheno=data.frame(colData(re)),
             formula=formula,
             method=method,
@@ -74,6 +76,47 @@ associate_factors <- function(re, formula, method=c("lm", "lmer"),
         anovas <- rbind(anovas, linear_model$anova)
         summaries <- rbind(summaries, linear_model$summary)
     }
+    
+    colnames(anovas) <- .rename_results_table(colnames(anovas))
+    colnames(summaries) <- .rename_results_table(colnames(summaries))
+
+    rownames(anovas) <- paste(anovas$component, anovas$term, sep="_")
+    rownames(summaries) <- paste(summaries$component, summaries$term, sep="_")
+
+    anovas$adj_pvalue <- .adjust_by_term(anovas, method=adj_method)
+    summaries$adj_pvalue <- .adjust_by_term(summaries, method=adj_method)
 
     return(list("models"=models, "anovas"=anovas, "summaries"=summaries))
+}
+
+.adjust_by_term <- function(res, method="BH") {
+    
+    res$adj_pvalue <- NA
+    
+    for (term in unique(res$term)) {
+        res$adj_pvalue[which(res$term == term)] <- p.adjust(res$pvalue[which(res$term == term)], method=method)
+    }
+    
+    return(res$adj_pvalue)
+}
+
+.rename_results_table <- function(cnames) {
+    cname_conversions <- list(
+        "Sum.Sq" = "sum_sq", 
+        "Mean.Sq" = "mean_sq", 
+        "NumDF" = "num_df", 
+        "DenDF" = "den_df", 
+        "F.value" = "fvalue", 
+        "Pr..F." = "pvalue", 
+        "Estimate" = "estimate", 
+        "Std..Error" = "stderr", 
+        "t.value" = "tvalue", 
+        "Pr...t.." = "pvalue"
+    )
+    
+    for (i in seq_along(cnames))
+        if (cnames[i] %in% names(cname_conversions))
+            cnames[i] <- cname_conversions[[cnames[i]]]
+    
+    return(cnames)
 }
