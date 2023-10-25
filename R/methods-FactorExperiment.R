@@ -35,25 +35,25 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("loadings", "ReducedExperiment", function(x, scale=FALSE, center=FALSE) {
+setMethod("loadings", "FactorisedExperiment", function(x, scale=FALSE, center=FALSE) {
     return(scale(x@loadings, scale=scale, center=center))
 })
 
-setReplaceMethod("loadings", "ReducedExperiment", function(x, value) {
+setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
     x@loadings <- value
     validObject(x)
     return(x)
 })
 
-setMethod("varexp", "ReducedExperiment", function(x) {return(x@varexp)})
+setMethod("varexp", "FactorisedExperiment", function(x) {return(x@varexp)})
 
-setReplaceMethod("varexp", "ReducedExperiment", function(x, value) {
+setReplaceMethod("varexp", "FactorisedExperiment", function(x, value) {
     x@varexp <- value
     validObject(x)
     return(x)
 })
 
-setReplaceMethod("componentNames", "ReducedExperiment", function(x, value) {
+setReplaceMethod("componentNames", "FactorisedExperiment", function(x, value) {
     colnames(x@reduced) <- value
     colnames(x@loadings) <- value
     validObject(x)
@@ -118,8 +118,8 @@ setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), fun
     return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), varexp=varexp(x), center=x@center))
 })
 
-setMethod("predict", c("FactorisedExperiment"), function(object, newdata, new_data_is_transformed=FALSE) {
-    return(project_data(object, newdata, new_data_is_transformed))
+setMethod("predict", c("FactorisedExperiment"), function(object, newdata, new_data_is_centered=FALSE) {
+    return(project_data(object, newdata, new_data_is_centered))
 })
 
 setMethod("runEnrich", c("FactorisedExperiment"),
