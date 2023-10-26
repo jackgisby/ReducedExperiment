@@ -155,7 +155,7 @@ setMethod("runEnrich", c("FactorisedExperiment"),
         enrich_res$min_features <- min_features
         enrich_res$loadings_scaled <- scale_loadings
 
-        enrich_res <- subset(enrich_res, select=c("ID", "description", "factor",
+        enrich_res <- subset(enrich_res, select=c("ID", "description", "component",
             "z_cutoff", "min_features", "loadings_scaled", "gene_ratio",
             "bg_ratio", "pvalue", "method", "adj_pvalue","adj_method", "count",
             "gene_id"))
