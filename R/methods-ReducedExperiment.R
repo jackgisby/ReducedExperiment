@@ -102,6 +102,7 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
     gene_id_col="rownames",
     gene_id_type="ensembl_gene_id",
     ids_to_get=c("hgnc_symbol", "entrezgene_id"),
+    dataset="hsapiens_gene_ensembl",
     mart=NULL)
 {
     if (gene_id_col == "rownames") {
@@ -113,7 +114,7 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
     gene_ids <- rowData(x)[[gene_id_type]]
 
     if (is.null(mart)) {
-        mart <- biomaRt::useEnsembl(biomart="genes", dataset="hsapiens_gene_ensembl")
+        mart <- biomaRt::useEnsembl(biomart="genes", dataset=dataset)
     }
 
     biomart_out <- biomaRt::getBM(filters = gene_id_type,
