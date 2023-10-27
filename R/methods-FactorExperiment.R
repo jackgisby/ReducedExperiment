@@ -122,9 +122,56 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, new_da
     return(project_data(object, newdata, new_data_is_centered))
 })
 
+setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=NULL, n_features=NULL,
+                                                                    feature_id_col="rownames", format="list",
+                                                                    scale_loadings=TRUE) {
+    S <- loadings(x, scale=scale_loadings)
+    if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
+
+    if (is.null(z_cutoff) & is.null(n_features)) n_features <- nrow(S)
+    if (n_features > nrow(S)) n_features <- nrow(S)
+
+    factor_features <- data.frame()
+    for (f in componentNames(x)) {
+
+        which_features <- c()
+        if (!is.null(z_cutoff)) which_features <- which(abs(S[,f]) > z_cutoff)
+
+        if (length(which_features) < n_features) {
+
+            which_features <- order(abs(S[,f]), decreasing = TRUE)[1:n_features]
+        }
+
+        factor_features <- rbind(factor_features, data.frame(
+            component = f,
+            feature = rownames(S)[which_features],
+            value = S[,f][which_features],
+            loadings_scaled = scale_loadings,
+            loadings_centered = TRUE
+        ))
+    }
+
+    factor_features$z_cutoff = z_cutoff
+    factor_features$n_features = n_features
+
+    if (is.function(format)) {
+        return(format(factor_features))
+    } else if (format == "data.frame") {
+        return(factor_features)
+    } else if (format == "list") {
+
+        factor_list <- list()
+
+        for (f in unique(factor_features$component))
+            factor_list[[f]] <- factor_features$feature[which(factor_features$component == f)]
+
+        return(factor_list)
+    }
+})
+
 setMethod("runEnrich", c("FactorisedExperiment"),
-    function(x, method=c("overrepresentation", "gsea"), feature_id_col="rownames",
-             scale_loadings=TRUE, z_cutoff=3, min_features=20, ...)
+    function(x, method="overrepresentation", feature_id_col="rownames",
+             scale_loadings=TRUE, z_cutoff=3, n_features=20, ...)
 {
     S <- loadings(x, scale=scale_loadings)
     if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
@@ -133,32 +180,20 @@ setMethod("runEnrich", c("FactorisedExperiment"),
         enrich_res <- reduced_gsea(S, ...)
     }
 
-    factor_features <- list()
-    for (f in componentNames(x)) {
-
-        factor_features[[f]] <- rownames(S)[which(abs(S[,f]) > z_cutoff)]
-
-        if (length(factor_features[[f]]) < min_features) {
-
-            factor_features[[f]] <- rownames(S)[order(abs(S[,f]), decreasing = TRUE)][1:20]
-        }
-    }
+    factor_features <- getAlignedFeatures(x, feature_id_col=feature_id_col,
+                                          scale_loadings=scale_loadings,
+                                          z_cutoff=z_cutoff,
+                                          n_features=n_features)
 
     if (method == "overrepresentation") {
         enrich_res <- reduced_oa(factor_features, ...)
-    } else {
-        stop(paste0("Enrichment method ", method, " is not a valid option"))
     }
 
     if (nrow(enrich_res) >= 1) {
         enrich_res$z_cutoff <- z_cutoff
-        enrich_res$min_features <- min_features
+        enrich_res$n_features <- n_features
         enrich_res$loadings_scaled <- scale_loadings
-
-        enrich_res <- subset(enrich_res, select=c("ID", "description", "component",
-            "z_cutoff", "min_features", "loadings_scaled", "gene_ratio",
-            "bg_ratio", "pvalue", "method", "adj_pvalue","adj_method", "count",
-            "gene_id"))
+        enrich_res$loadings_centered <- TRUE
     }
 
     return(enrich_res)
