@@ -180,12 +180,13 @@ setMethod("runEnrich", c("FactorisedExperiment"),
         enrich_res <- reduced_gsea(S, ...)
     }
 
-    factor_features <- getAlignedFeatures(x, feature_id_col=feature_id_col,
-                                          scale_loadings=scale_loadings,
-                                          z_cutoff=z_cutoff,
-                                          n_features=n_features)
-
     if (method == "overrepresentation") {
+
+        factor_features <- getAlignedFeatures(x, feature_id_col=feature_id_col,
+                                              scale_loadings=scale_loadings,
+                                              z_cutoff=z_cutoff,
+                                              n_features=n_features)
+
         enrich_res <- reduced_oa(factor_features, ...)
     }
 

@@ -65,7 +65,7 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp", TERM2GENE=NU
 
 #' Gene set enrichment analysis
 reduced_gsea <- function(S, database="msigdb_c2_cp", TERM2GENE=NULL,
-                         p_cutoff=1, adj_method="BH", ...) {
+                         p_cutoff=1, adj_method="BH", nPermSimple=10000, eps=1e-50, ...) {
 
     TERM2GENE <- .get_t2g(database, TERM2GENE)
 
@@ -82,10 +82,10 @@ reduced_gsea <- function(S, database="msigdb_c2_cp", TERM2GENE=NULL,
             pvalueCutoff=1,
             pAdjustMethod=adj_method,
             TERM2GENE=TERM2GENE,
+            nPermSimple=nPermSimple,
+            eps=eps,
             ...
         )
-
-        print(head(enrich_res_single))
 
         if (is.null(enrich_res_single)) next
 
