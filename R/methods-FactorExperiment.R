@@ -173,11 +173,13 @@ setMethod("runEnrich", c("FactorisedExperiment"),
     function(x, method="overrepresentation", feature_id_col="rownames",
              scale_loadings=TRUE, z_cutoff=3, n_features=20, as_dataframe=FALSE, ...)
 {
-    S <- loadings(x, scale=scale_loadings)
-    if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
-
     if (method == "gsea") {
+
+        S <- loadings(x, scale=scale_loadings)
+        if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
+
         enrich_res <- reduced_gsea(S, ...)
+
     } else if (method == "overrepresentation") {
 
         factor_features <- getAlignedFeatures(x, feature_id_col=feature_id_col,
@@ -186,6 +188,7 @@ setMethod("runEnrich", c("FactorisedExperiment"),
                                               n_features=n_features)
 
         enrich_res <- reduced_oa(factor_features, ...)
+
     } else {
         stop("Enrichment method not recognised")
     }
