@@ -171,16 +171,14 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=
 
 setMethod("runEnrich", c("FactorisedExperiment"),
     function(x, method="overrepresentation", feature_id_col="rownames",
-             scale_loadings=TRUE, z_cutoff=3, n_features=20, ...)
+             scale_loadings=TRUE, z_cutoff=3, n_features=20, as_dataframe=FALSE, ...)
 {
     S <- loadings(x, scale=scale_loadings)
     if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
 
     if (method == "gsea") {
         enrich_res <- reduced_gsea(S, ...)
-    }
-
-    if (method == "overrepresentation") {
+    } else if (method == "overrepresentation") {
 
         factor_features <- getAlignedFeatures(x, feature_id_col=feature_id_col,
                                               scale_loadings=scale_loadings,
@@ -188,14 +186,22 @@ setMethod("runEnrich", c("FactorisedExperiment"),
                                               n_features=n_features)
 
         enrich_res <- reduced_oa(factor_features, ...)
+    } else {
+        stop("Enrichment method not recognised")
     }
 
-    if (nrow(enrich_res) >= 1) {
-        enrich_res$z_cutoff <- z_cutoff
-        enrich_res$n_features <- n_features
-        enrich_res$loadings_scaled <- scale_loadings
-        enrich_res$loadings_centered <- TRUE
+    for (comp in names(enrich_res)) {
+        if (!is.null(enrich_res[[comp]]@result)) {
+            if (nrow(enrich_res[[comp]]@result) >= 1) {
+                enrich_res[[comp]]@result$z_cutoff <- z_cutoff
+                enrich_res[[comp]]@result$n_features <- n_features
+                enrich_res[[comp]]@result$loadings_scaled <- scale_loadings
+                enrich_res[[comp]]@result$loadings_centered <- TRUE
+            }
+        }
     }
+
+    if (as_dataframe) enrich_res <- do.call("rbind", enrich_res)
 
     return(enrich_res)
 })

@@ -1,11 +1,10 @@
 #' Overrepresentation analysis
-reduced_oa <- function(component_features, database="msigdb_c2_cp", TERM2GENE=NULL,
-                                       p_cutoff=1, adj_method="BH",
-                                       min_genes=3, universe=NULL, ...) {
+reduced_oa <- function(component_features, database="msigdb_c2_cp",
+                       TERM2GENE=NULL, p_cutoff=1, adj_method="BH",
+                       min_genes=3, universe=NULL, ...) {
 
     TERM2GENE <- .get_t2g(database, TERM2GENE)
-
-    enrich_res <- data.frame()
+    enrich_res <- list()
 
     for (comp in names(component_features)) {
 
@@ -18,16 +17,14 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp", TERM2GENE=NU
             ...
         )
 
-        if (is.null(enrich_res_single)) next
-
         enrich_res_single <- .format_enrich_res(enrich_res_single, adj_method=adj_method, min_genes=min_genes, p_cutoff=p_cutoff)
 
-        if (nrow(enrich_res_single) >= 1) {
-            enrich_res_single$method <- "overrepresentation"
-            enrich_res_single$component <- comp
-
-            enrich_res <- rbind(enrich_res, enrich_res_single)
+        if (nrow(enrich_res_single@result) >= 1) {
+            enrich_res_single@result$method <- "overrepresentation"
+            enrich_res_single@result$component <- comp
         }
+
+        enrich_res[[comp]] <- enrich_res_single
     }
 
     return(enrich_res)
@@ -50,14 +47,16 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp", TERM2GENE=NU
 
 .format_enrich_res <- function(enrich_res_single, adj_method, p_cutoff, min_genes=NULL) {
 
-    enrich_res_single <- enrich_res_single@result
-    enrich_res_single$adj_pvalue <- p.adjust(enrich_res_single$pvalue, method=adj_method)
+    if (!is.null(min_genes)) {
+        enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$Count >= min_genes) ,]
+        enrich_res_single@result$qvalue <- NULL
+    }
 
-    if (!is.null(min_genes)) enrich_res_single <- enrich_res_single[which(enrich_res_single$Count >= min_genes) ,]
-    enrich_res_single <- enrich_res_single[which(enrich_res_single$adj_pvalue < p_cutoff) ,]
+    enrich_res_single@result$adj_pvalue <- p.adjust(enrich_res_single@result$pvalue, method=adj_method)
+    enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$adj_pvalue < p_cutoff) ,]
 
-    if (nrow(enrich_res_single) >= 1) {
-        enrich_res_single$adj_method <- adj_method
+    if (nrow(enrich_res_single@result) >= 1) {
+        enrich_res_single@result$adj_method <- adj_method
     }
 
     return(enrich_res_single)
@@ -68,8 +67,7 @@ reduced_gsea <- function(S, database="msigdb_c2_cp", TERM2GENE=NULL,
                          p_cutoff=1, adj_method="BH", nPermSimple=10000, eps=1e-50, ...) {
 
     TERM2GENE <- .get_t2g(database, TERM2GENE)
-
-    enrich_res <- data.frame()
+    enrich_res <- list()
 
     for (comp in colnames(S)) {
 
@@ -87,16 +85,14 @@ reduced_gsea <- function(S, database="msigdb_c2_cp", TERM2GENE=NULL,
             ...
         )
 
-        if (is.null(enrich_res_single)) next
-
         enrich_res_single <- .format_enrich_res(enrich_res_single, adj_method=adj_method, p_cutoff=p_cutoff)
 
-        if (nrow(enrich_res_single) >= 1) {
-            enrich_res_single$method <- "gsea"
-            enrich_res_single$component <- comp
-
-            enrich_res <- rbind(enrich_res, enrich_res_single)
+        if (nrow(enrich_res_single@result) >= 1) {
+            enrich_res_single@result$method <- "gsea"
+            enrich_res_single@result$component <- comp
         }
+
+        enrich_res[[comp]] <- enrich_res_single
     }
 
     return(enrich_res)
