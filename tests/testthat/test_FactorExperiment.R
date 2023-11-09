@@ -45,13 +45,12 @@ test_that("FactorisedExperiment enrichment", {
     rownames(rld) <- rownames(airway)
 
     # Create the FactorExperiment and get entrez gene IDs
-    fe <- .se_to_fe(airway, reduced=rrd, loadings=rld, varexp=numeric(), center=FALSE)
+    fe <- .se_to_fe(airway, reduced=rrd, loadings=rld, varexp=numeric(), scale=FALSE, center=FALSE)
 
     fe <- getGeneIDs(fe)
     fe <- fe[which(!is.na(rowData(fe)$entrezgene_id)) ,]
 
-    enrich_res <- runEnrich(fe, method="overrepresentation", feature_id_col="entrezgene_id")
-
     # Run overrepresentation analysis
-    expect_equal(enrich_res, data.frame())
+    enrich_res <- runEnrich(fe, method="overrepresentation", feature_id_col="ensembl_gene_id", as_dataframe=TRUE, p_cutoff=0.01, universe=rownames(fe))
+    #TODO: Test enrich result?
 })

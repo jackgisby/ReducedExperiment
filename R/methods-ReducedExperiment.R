@@ -18,13 +18,13 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
         msg <- c(msg, "Reduced data have invalid row dimensions")
 
     if (!all(sampleNames(object) == rownames(reduced(object))))
-        msg <- c(msg, "Reduced data have invalid row names (sample labels)")
+        msg <- c(msg, "Reduced data have invalid row names")
 
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("reduced", "ReducedExperiment", function(x, scale=FALSE, center=FALSE) {
-    return(scale(x@reduced, scale=scale, center=center))
+setMethod("reduced", "ReducedExperiment", function(x, scale_X=FALSE, center_X=FALSE) {
+    return(scale(x@reduced, scale=scale_X, center=center_X))
 })
 
 setReplaceMethod("reduced", "ReducedExperiment", function(x, value) {
@@ -69,7 +69,6 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
         j <- as.vector(j)
         red <- red[j,,drop=FALSE]
     }
-
 
     if (!missing(k)) {
         if (is.character(k)) {

@@ -1,42 +1,47 @@
 #' Apply dimensionality reduction using ICA
 #' @export
-run_ica <- function(X, nc, method="imax", center=TRUE,
-                    reorient_skewed=TRUE, seed=1, ...)
+estimate_factors <- function(X, nc, method="imax",
+                             center_X=TRUE, scale_X=FALSE,
+                             reorient_skewed=TRUE, seed=1, ...)
 {
     if (!inherits(X, "SummarizedExperiment")) {
-        X <- SummarizedExperiment(assays = list(normal = X))
+        X <- SummarizedExperiment(assays = list("normal" = X))
     }
 
-    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center, scale=FALSE))
+    if ("transformed" %in% assayNames(X)) warning("Overwriting 'transformed' assay slot in X")
+    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center_X, scale=scale_X))
 
-    if (center) center <- attr(assay(X, "transformed"), "scaled:center")
+    if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
+    if (scale_X) scale_X <- attr(assay(X, "transformed"), "scaled:scale")
 
-    ica_res <- compute_ica(assay(X, "transformed"), nc=nc, method=method,
-                           center_X=FALSE,  reorient_skewed=reorient_skewed,
-                           seed=seed, ...)
+    ica_res <- run_ica(assay(X, "transformed"), nc=nc, method=method,
+                       center_X=FALSE, scale_X=FALSE,
+                       reorient_skewed=reorient_skewed,
+                       seed=seed, ...)
 
-    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, varexp=ica_res$vafs, center=center))
+    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, varexp=ica_res$vafs, center=center_X, scale=scale_X))
 }
 
-.se_to_fe <- function(se, reduced, loadings, varexp, center) {
-    return(FactorisedExperiment(loadings=loadings, varexp=varexp, center=center, reduced=reduced,
+.se_to_fe <- function(se, reduced, loadings, varexp, center, scale) {
+    return(FactorisedExperiment(loadings=loadings, varexp=varexp, center=center,
+                                scale=scale, reduced=reduced,
                                 assays=assays(se), rowData=rowData(se),
                                 colData=colData(se), metadata=metadata(se)))
 }
 
 #' Run ICA for a data matrix
 #' @export
-compute_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
+run_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
                         reorient_skewed=TRUE, seed=1, ...) {
     set.seed(seed)
 
     if (center_X | scale_X)
-        {X <- scale(X, center=center_X, scale=scale_X)}
+        {X <- t(scale(t(X), center=center_X, scale=scale_X))}
 
     ica_res <- ica::ica(X, nc=nc, method=method, center=FALSE, ...)
 
     # Reorient factors and recalculate M
-    if (reorient_skewed) {ica_res$S <- .reorient_skewed(ica_res$S)}
+    if (reorient_skewed) {ica_res$S <- .reorient_factors(ica_res$S)}
     ica_res$M <- .project_ica(X, ica_res$S)
 
     # Add factors / sample names
@@ -47,7 +52,7 @@ compute_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
     return(ica_res)
 }
 
-.reorient_skewed <- function(S) {
+.reorient_factors <- function(S) {
     skew <- ifelse(apply(S, 2, moments::skewness) >= 0, 1, -1)
     for (i in 1:ncol(S)) {
         S[,i] <- S[,i] * skew[i]

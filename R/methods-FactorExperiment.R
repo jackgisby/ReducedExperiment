@@ -7,11 +7,12 @@
 FactorisedExperiment <- function(
         loadings = new("matrix"),
         varexp = new("numeric"),
-        center=FALSE,
+        scale = FALSE,
+        center = FALSE,
         ...)
 {
     re <- ReducedExperiment(...)
-    return(.FactorisedExperiment(re, loadings=loadings, varexp=varexp, center=center))
+    return(.FactorisedExperiment(re, loadings=loadings, varexp=varexp, scale=scale, center=center))
 }
 
 S4Vectors::setValidity2("FactorisedExperiment", function(object) {
@@ -32,11 +33,19 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     if (!all.equal(colnames(loadings(object)), colnames(reduced(object))))
         msg <- c(msg, "Reduced data and loadings have incompatible column names (factor names)")
 
+    # Center / Scale
+    if (!all(rownames(object) == names(object@scale)))
+        msg <- c(msg, "Scaling vector has invalid names")
+    if (!all(rownames(object) == names(object@center)))
+        msg <- c(msg, "Centering vector has invalid names")
+
+    # TODO: Varexp
+
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("loadings", "FactorisedExperiment", function(x, scale=FALSE, center=FALSE) {
-    return(scale(x@loadings, scale=scale, center=center))
+setMethod("loadings", "FactorisedExperiment", function(x, scale_X=FALSE, center_X=FALSE) {
+    return(scale(x@loadings, scale=scale_X, center=center_X))
 })
 
 setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
@@ -55,7 +64,7 @@ setReplaceMethod("varexp", "FactorisedExperiment", function(x, value) {
 
 setReplaceMethod("componentNames", "FactorisedExperiment", function(x, value) {
     colnames(x@reduced) <- value
-    colnames(x@loadings) <- value
+    x <- callNextMethod(x, value)
     validObject(x)
     return(x)
 })
@@ -69,6 +78,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
     lod <- loadings(x)
     vafs <- x@varexp
     center <- x@center
+    scale <- x@scale
 
     if (!missing(i)) {
         if (is.character(i)) {
@@ -80,6 +90,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
         i <- as.vector(i)
         lod <- lod[i,,drop=FALSE]
         center <- center[i,drop=FALSE]
+        scale <- scale[i,drop=FALSE]
     }
 
     if (!missing(k)) {
@@ -96,30 +107,26 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
     }
 
     out <- callNextMethod(x, i, j, k, ...)
-    BiocGenerics:::replaceSlots(out, loadings=lod, varexp=vafs, center=center, check=FALSE)
+    BiocGenerics:::replaceSlots(out, loadings=lod, varexp=vafs, center=center, scale=scale, check=FALSE)
 })
 
 #' Project data
-setMethod("project_data", c("FactorisedExperiment", "matrix"), function(x, newdata, new_data_is_centered=FALSE) {
+setMethod("project_data", c("FactorisedExperiment", "matrix"), function(x, newdata) {
 
-    if (!new_data_is_centered) newdata <- t(scale(t(newdata), scale=FALSE, center=x@center))
+    newdata <- t(scale(t(newdata), scale=x@scale, center=x@center))
 
     return(.project_ica(newdata, loadings(x)))
 })
 
-setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, new_data_is_centered=FALSE) {
+setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, assay_name="normal") {
 
-    if (!new_data_is_centered) {
-        assay(newdata, "transformed") <- t(scale(t(assay(newdata, "normal")), scale=FALSE, center=x@center))
-    }
+    projected_data <- project_data(x, assay(newdata, assay_name))
 
-    projected_data <- project_data(x, assay(newdata, "transformed"), new_data_is_centered=TRUE)
-
-    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), varexp=varexp(x), center=x@center))
+    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), varexp=varexp(x), center=x@center, scale=x@scale))
 })
 
-setMethod("predict", c("FactorisedExperiment"), function(object, newdata, new_data_is_centered=FALSE) {
-    return(project_data(object, newdata, new_data_is_centered))
+setMethod("predict", c("FactorisedExperiment"), function(object, newdata) {
+    return(project_data(object, newdata))
 })
 
 setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=NULL, n_features=NULL,
@@ -175,6 +182,9 @@ setMethod("runEnrich", c("FactorisedExperiment"),
 {
     if (method == "gsea") {
 
+        z_cutoff <- NULL
+        n_features <- NULL
+
         S <- loadings(x, scale=scale_loadings)
         if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
 
@@ -199,12 +209,15 @@ setMethod("runEnrich", c("FactorisedExperiment"),
                 enrich_res[[comp]]@result$z_cutoff <- z_cutoff
                 enrich_res[[comp]]@result$n_features <- n_features
                 enrich_res[[comp]]@result$loadings_scaled <- scale_loadings
-                enrich_res[[comp]]@result$loadings_centered <- TRUE
+                enrich_res[[comp]]@result$loadings_centered <- FALSE
             }
         }
     }
 
-    if (as_dataframe) enrich_res <- do.call("rbind", enrich_res)
+    if (as_dataframe)  {
+        enrich_res <- lapply(enrich_res, function(x) {x@result})
+        enrich_res <- do.call("rbind", enrich_res)
+    }
 
     return(enrich_res)
 })
