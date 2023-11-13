@@ -2,10 +2,22 @@
 % Please edit documentation in R/modules.R
 \name{run_wgcna}
 \alias{run_wgcna}
-\title{Run WGCNA}
+\title{Run WGCNA for a data matrix}
 \usage{
-run_wgcna(X, ...)
+run_wgcna(
+  X,
+  powers = 1:30,
+  min_r_squared = 0.85,
+  max_mean_connectivity = 100,
+  corType = "pearson",
+  networkType = "signed",
+  module_labels = "numbers",
+  maxBlockSize = 30000,
+  seed = 1,
+  verbose = 0,
+  ...
+)
 }
 \description{
-Run WGCNA
+Run WGCNA for a data matrix
 }

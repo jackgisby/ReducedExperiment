@@ -4,7 +4,13 @@
 \alias{FactorisedExperiment}
 \title{FactorisedExperiment}
 \usage{
-FactorisedExperiment(loadings = new("matrix"), varexp = new("numeric"), ...)
+FactorisedExperiment(
+  loadings = new("matrix"),
+  varexp = new("numeric"),
+  scale = FALSE,
+  center = FALSE,
+  ...
+)
 }
 \description{
 A class to represent the results of factor analysis

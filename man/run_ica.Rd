@@ -2,7 +2,7 @@
 % Please edit documentation in R/factors.R
 \name{run_ica}
 \alias{run_ica}
-\title{Apply dimensionality reduction using ICA}
+\title{Run ICA for a data matrix}
 \usage{
 run_ica(
   X,
@@ -16,5 +16,5 @@ run_ica(
 )
 }
 \description{
-Apply dimensionality reduction using ICA
+Run ICA for a data matrix
 }

@@ -4,7 +4,16 @@
 \alias{reduced_gsea}
 \title{Gene set enrichment analysis}
 \usage{
-reduced_gsea()
+reduced_gsea(
+  S,
+  database = "msigdb_c2_cp",
+  TERM2GENE = NULL,
+  p_cutoff = 1,
+  adj_method = "BH",
+  nPermSimple = 10000,
+  eps = 1e-50,
+  ...
+)
 }
 \description{
 Gene set enrichment analysis

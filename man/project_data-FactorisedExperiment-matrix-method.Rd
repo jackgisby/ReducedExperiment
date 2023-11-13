@@ -4,7 +4,7 @@
 \alias{project_data,FactorisedExperiment,matrix-method}
 \title{Project data}
 \usage{
-\S4method{project_data}{FactorisedExperiment,matrix}(x, newdata, new_data_is_transformed = FALSE)
+\S4method{project_data}{FactorisedExperiment,matrix}(x, newdata)
 }
 \description{
 Project data

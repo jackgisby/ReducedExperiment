@@ -4,8 +4,8 @@
 \alias{ModularExperiment}
 \title{ModularExperiment}
 \usage{
-ModularExperiment(assignments = character(), ...)
+ModularExperiment(assignments = character(), dendrogram = NULL, ...)
 }
 \description{
-A class to represent the results of factor analysis
+A class to represent the results of module analysis
 }

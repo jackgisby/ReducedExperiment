@@ -4,7 +4,7 @@
 \alias{.makeRandomData}
 \title{Turn rnorm into a matrix}
 \usage{
-.makeRandomData(r, c, rname, cname)
+.makeRandomData(r, c, rname, cname, seed = 1)
 }
 \description{
 Turn rnorm into a matrix

@@ -4,7 +4,13 @@
 \alias{get_msigdb_t2g}
 \title{Get TERM2GENE dataframe from MSigDB}
 \usage{
-get_msigdb_t2g(species = "human", category = "C2", subcat = "CP")
+get_msigdb_t2g(
+  species = "Homo sapiens",
+  category = "C2",
+  subcategory = NULL,
+  subcategory_to_remove = "CGP",
+  gene_id = "ensembl_gene"
+)
 }
 \description{
 Get TERM2GENE dataframe from MSigDB

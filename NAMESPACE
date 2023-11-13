@@ -2,7 +2,8 @@
 
 export(FactorisedExperiment)
 export(ModularExperiment)
-export(compute_ica)
+export(estimate_factors)
+export(identify_modules)
 export(run_ica)
 export(run_wgcna)
 import(methods)
