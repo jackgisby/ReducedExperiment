@@ -118,6 +118,10 @@ setMethod("project_data", c("FactorisedExperiment", "matrix"), function(x, newda
     return(.project_ica(newdata, loadings(x)))
 })
 
+setMethod("project_data", c("FactorisedExperiment", "data.frame"), function(x, newdata) {
+    return(project_data(x, as.matrix(newdata)))
+})
+
 setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, assay_name="normal") {
 
     projected_data <- project_data(x, assay(newdata, assay_name))
