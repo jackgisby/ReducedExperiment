@@ -16,10 +16,10 @@ S4Vectors::setValidity2("ModularExperiment", function(object) {
     obj_dims <- dim(object)
 
     # Features
-    if (obj_dims[3] != length(assignments(object)))
+    if (obj_dims[1] != length(assignments(object)))
         msg <- c(msg, "Assignments have invalid length")
 
-    if (!all.equal(assignments(object), rownames(object)))
+    if (!all(names(assignments(object)) == rownames(object)))
         msg <- c(msg, "Assignments have incompatible names (rownames)")
 
     return(if (is.null(msg)) TRUE else msg)
@@ -29,7 +29,7 @@ setMethod("assignments", "ModularExperiment", function(x, as_list=FALSE) {
     if (as_list)  {
         a <- list()
         for (comp in componentNames(x)) {
-            a[[comp]] <- assignments(x)[which(names(assignments(x)) == comp)]
+            a[[comp]] <- names(assignments(x))[which(assignments(x) == comp)]
         }
     } else {
         a <- x@assignments
@@ -45,7 +45,7 @@ setReplaceMethod("assignments", "ModularExperiment", function(x, value) {
 })
 
 setMethod("moduleNames", "ModularExperiment", function(x, as_list=FALSE) {
-    return(assignments(x, as_list))
+    return(assignments(x, as_list=as_list))
 })
 
 setReplaceMethod("moduleNames", "ModularExperiment", function(x, value) {
