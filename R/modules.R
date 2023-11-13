@@ -23,8 +23,11 @@ identify_modules <- function(X, ...)
 run_wgcna <- function(X, powers=1:30,
                       min_r_squared=0.85, max_mean_connectivity=100,
                       corType="pearson", networkType="signed",
-                      module_labels="numbers", seed=1, verbose = 0, ...) {
+                      module_labels="numbers", maxBlockSize = 30000,
+                      seed=1, verbose = 0, plot_dendro=FALSE, ...) {
     set.seed(seed)
+
+    if (maxBlockSize < nrow(X)) warning("maxBlockSize < total features, module detection will be performed in a block-wise manner")
 
     if (corType == "pearson") {
         cor <- corFnc <- WGCNA::cor
@@ -56,7 +59,17 @@ run_wgcna <- function(X, powers=1:30,
         stop("Powers must either be a single integer or a vector of integers to be tested")
     }
 
-    bwms <- WGCNA::blockwiseModules(t(X), power=power, corType=corType, networkType=networkType, verbose=verbose, ...)
+    bwms <- WGCNA::blockwiseModules(t(X), power=power, corType=corType, networkType=networkType,
+                                    maxBlockSize=maxBlockSize, verbose=verbose, ...)
+
+    if (plot_dendro) {
+        for (b in length(bwms$dendrograms)) {
+            WGCNA::plotDendroAndColors(bwms$dendrograms[[b]], bwms$colors[bwms$blockGenes[[b]]],
+                                "Module colors",
+                                dendroLabels = FALSE, hang = 0.03,
+                                addGuide = TRUE, guideHang = 0.05, main = paste0("Cluster Dendrogram (block ", b, ")"))
+        }
+    }
 
     wgcna_res <- list(
         assignments = bwms$colors,
