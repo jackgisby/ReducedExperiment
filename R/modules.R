@@ -7,13 +7,14 @@ identify_modules <- function(X, ...)
     }
 
     wgcna_res <- run_wgcna(assay(X, "normal"), ...)
-    reduced_set <- .se_to_me(X, reduced=as.matrix(wgcna_res$E), assignments=wgcna_res$assignments)
+    reduced_set <- .se_to_me(X, reduced=as.matrix(wgcna_res$E), assignments=wgcna_res$assignments, dendro=wgcna_res$dendro)
 
     return(reduced_set)
 }
 
-.se_to_me <- function(se, assignments, reduced) {
+.se_to_me <- function(se, assignments, reduced, dendro=NULL) {
     return(ModularExperiment(assignments=assignments, reduced=reduced,
+                             dendro=dendro,
                              assays=assays(se), rowData=rowData(se),
                              colData=colData(se), metadata=metadata(se)))
 }
@@ -24,7 +25,7 @@ run_wgcna <- function(X, powers=1:30,
                       min_r_squared=0.85, max_mean_connectivity=100,
                       corType="pearson", networkType="signed",
                       module_labels="numbers", maxBlockSize = 30000,
-                      seed=1, verbose = 0, plot_dendro=FALSE, ...) {
+                      seed=1, verbose = 0, ...) {
     set.seed(seed)
 
     if (maxBlockSize < nrow(X)) warning("maxBlockSize < total features, module detection will be performed in a block-wise manner")
@@ -62,23 +63,42 @@ run_wgcna <- function(X, powers=1:30,
     bwms <- WGCNA::blockwiseModules(t(X), power=power, corType=corType, networkType=networkType,
                                     maxBlockSize=maxBlockSize, verbose=verbose, ...)
 
-    if (plot_dendro) {
-        for (b in length(bwms$dendrograms)) {
-            WGCNA::plotDendroAndColors(bwms$dendrograms[[b]], bwms$colors[bwms$blockGenes[[b]]],
-                                "Module colors",
-                                dendroLabels = FALSE, hang = 0.03,
-                                addGuide = TRUE, guideHang = 0.05, main = paste0("Cluster Dendrogram (block ", b, ")"))
-        }
-    }
-
     wgcna_res <- list(
         assignments = bwms$colors,
-        E = bwms$MEs
+        E = bwms$MEs,
+        dendro = if (length(bwms$dendrograms) == 1) bwms$dendrograms[[1]] else NULL
     )
 
-    # TODO: give option for using colours instead `module_labels`
-    # names(wgcna_res$assignments) <- paste0("factor_", names(wgcna_res$assignments))
-    # names(wgcna_res$E) <- paste0("factor_", names(wgcna_res$E))
+    colnames(wgcna_res$E) <- gsub("ME", "", colnames(wgcna_res$E))
+
+    if (module_labels == "numbers") {
+
+        .colors2numbers <- function(colors) {
+
+            color_table <- table(colors)
+            color_table <- color_table[order(color_table, decreasing = TRUE)]
+            color_table <- color_table[which(names(color_table) != "grey")]
+
+            color_table <- setNames(1:length(color_table), names(color_table))
+            color_table <- c(color_table, "grey" = 0)
+
+            return(color_table)
+        }
+
+        converter <- .colors2numbers(wgcna_res$assignments)
+        for (i in 1:length(wgcna_res$assignments)) {
+            wgcna_res$assignments[i] <- converter[which(names(converter) == wgcna_res$assignments[i])]
+        }
+        for (i in 1:length(colnames(wgcna_res$E))) {
+            colnames(wgcna_res$E)[i] <- converter[which(names(converter) == colnames(wgcna_res$E)[i])]
+        }
+
+    } else if (module_labels != "colors" & module_labels != "colours") {
+        stop("Value of `module_labels` does not correspond to a valid option")
+    }
+
+    wgcna_res$assignments <- setNames(names(wgcna_res$assignments), paste0("module_", wgcna_res$assignments))
+    colnames(wgcna_res$E) <- paste0("module_", colnames(wgcna_res$E))
 
     return(wgcna_res)
 }

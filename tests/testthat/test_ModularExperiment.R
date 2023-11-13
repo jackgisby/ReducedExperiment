@@ -3,8 +3,8 @@ context("ModularExperiment")
 #' i (features), j (samples), k components)
 .createRandomisedModularExperiment <- function(i, j, k) {
 
-    assignments <- paste0("module_", round(runif(i, 1, 4), 0))
-    names(assignments) <- paste0("gene_", 1:i)
+    assignments <- paste0("gene_", 1:i)
+    names(assignments) <- paste0("module_", round(runif(i, 1, 4), 0))
 
     return(ModularExperiment(
         assays = list("normal"=.makeRandomData(i, j, "gene", "sample")),

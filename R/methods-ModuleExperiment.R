@@ -4,10 +4,10 @@
 #'
 #' @export
 #' @importFrom SummarizedExperiment SummarizedExperiment
-ModularExperiment <- function(assignments=character(), ...)
+ModularExperiment <- function(assignments=character(), dendrogram=NULL, ...)
 {
     re <- ReducedExperiment(...)
-    return(.ModularExperiment(re, assignments=assignments))
+    return(.ModularExperiment(re, assignments=assignments, dendrogram=dendrogram))
 }
 
 S4Vectors::setValidity2("ModularExperiment", function(object) {
@@ -19,7 +19,7 @@ S4Vectors::setValidity2("ModularExperiment", function(object) {
     if (obj_dims[1] != length(assignments(object)))
         msg <- c(msg, "Assignments have invalid length")
 
-    if (!all(names(assignments(object)) == rownames(object)))
+    if (!all(assignments(object) == rownames(object)))
         msg <- c(msg, "Assignments have incompatible names (rownames)")
 
     return(if (is.null(msg)) TRUE else msg)
@@ -29,7 +29,7 @@ setMethod("assignments", "ModularExperiment", function(x, as_list=FALSE) {
     if (as_list)  {
         a <- list()
         for (comp in componentNames(x)) {
-            a[[comp]] <- names(assignments(x))[which(assignments(x) == comp)]
+            a[[comp]] <- assignments(x)[which(names(assignments(x)) == comp)]
         }
     } else {
         a <- x@assignments
@@ -44,19 +44,35 @@ setReplaceMethod("assignments", "ModularExperiment", function(x, value) {
     return(x)
 })
 
-setMethod("moduleNames", "ModularExperiment", function(x, as_list=FALSE) {
-    return(assignments(x, as_list=as_list))
-})
+setReplaceMethod("componentNames", "ModularExperiment", function(x, value) {
 
-setReplaceMethod("moduleNames", "ModularExperiment", function(x, value) {
-    assignments(x) <- value
+    curr_names <- colnames(x@reduced)
+    x <- callNextMethod(x, value)
+    new_names <- colnames(x@reduced)
+
+    for (i in 1:length(curr_names)) {
+        names(x@assignments)[which(names(x@assignments) == curr_names[i])] <- new_names[i]
+    }
+
+    validObject(x)
     return(x)
 })
 
-setReplaceMethod("componentNames", "ModularExperiment", function(x, value) {
-    names(x@assignments) <- value
-    x <- callNextMethod(x, value)
-    validObject(x)
+setMethod("moduleNames", "ModularExperiment", function(x) {
+    return(componentNames(x))
+})
+
+setReplaceMethod("moduleNames", "ModularExperiment", function(x, value) {
+    componentNames(x) <- value
+    return(x)
+})
+
+setMethod("dendrogram", "ModularExperiment", function(x) {
+    return(x@dendrogram)
+})
+
+setReplaceMethod("dendrogram", "ModularExperiment", function(x, value) {
+    dendrogram(x) <- value
     return(x)
 })
 
@@ -68,16 +84,16 @@ setMethod("[", c("ModularExperiment", "ANY", "ANY", "ANY"),
 
     assignments <- x@assignments
 
-    if (!missing(k)) {
-        if (is.character(k)) {
-            fmt <- paste0("<", class(x), ">[k,] index out of bounds: %s")
-            k <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-              k, componentnames(x), fmt
+    if (!missing(i)) {
+        if (is.character(i)) {
+            fmt <- paste0("<", class(x), ">[i,] index out of bounds: %s")
+            i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+              i, componentnames(x), fmt
             )
       }
 
-        k <- as.vector(k)
-        assignments <- assignments[k, drop=FALSE]
+        i <- as.vector(i)
+        assignments <- assignments[i, drop=FALSE]
     }
 
     out <- callNextMethod(x, i, j, k, ...)
@@ -112,3 +128,26 @@ setMethod("runEnrich", c("ModularExperiment"),
 
     return(enrich_res)
 })
+
+plotDendro <- function(me, groupLabels = "Module colors", dendroLabels = FALSE,
+                       hang = 0.03, addGuide = TRUE, guideHang = 0.05,
+                       color_func = WGCNA::labels2colors) {
+
+    colors <- gsub("module_", "", names(assignments(me)))
+
+    is_color <- function(x) {
+        sapply(x, function(X) {
+            tryCatch(is.matrix(col2rgb(X)),
+                     error = function(e) FALSE)
+        })
+    }
+
+    if (!is.null(color_func) & !all(is_color(colors))) {
+        colors <- color_func(colors)
+    }
+
+    WGCNA::plotDendroAndColors(dendrogram(me), colors,
+                           groupLabels = groupLabels,
+                           dendroLabels = dendroLabels, hang = hang,
+                           addGuide = addGuide, guideHang = guideHang)
+}

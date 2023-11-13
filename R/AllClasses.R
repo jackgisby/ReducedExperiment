@@ -21,6 +21,6 @@
 .ModularExperiment <- setClass(
     "ModularExperiment",
     contains="ReducedExperiment",
-    representation=representation(assignments="character"),
-    prototype=prototype(assignments=character())
+    representation=representation(assignments="character", dendrogram="ANY"),
+    prototype=prototype(assignments=character(), dendrogram=NULL)
 )
