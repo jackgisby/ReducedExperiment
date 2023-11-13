@@ -1,8 +1,6 @@
 #' Apply dimensionality reduction using ICA
 #' @export
-estimate_factors <- function(X, nc, method="imax",
-                             center_X=TRUE, scale_X=FALSE,
-                             reorient_skewed=TRUE, seed=1, ...)
+estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, ...)
 {
     if (!inherits(X, "SummarizedExperiment")) {
         X <- SummarizedExperiment(assays = list("normal" = X))
@@ -14,10 +12,8 @@ estimate_factors <- function(X, nc, method="imax",
     if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
     if (scale_X) scale_X <- attr(assay(X, "transformed"), "scaled:scale")
 
-    ica_res <- run_ica(assay(X, "transformed"), nc=nc, method=method,
-                       center_X=FALSE, scale_X=FALSE,
-                       reorient_skewed=reorient_skewed,
-                       seed=seed, ...)
+    ica_res <- run_ica(assay(X, "transformed"), nc=nc,
+                       center_X=FALSE, scale_X=FALSE, ...)
 
     return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, varexp=ica_res$vafs, center=center_X, scale=scale_X))
 }
