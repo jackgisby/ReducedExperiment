@@ -100,12 +100,15 @@ setMethod("runEnrich", c("ModularExperiment"),
     # for (comp in names(enrich_res)) {
     #     if (!is.null(enrich_res[[comp]]@result)) {
     #         if (nrow(enrich_res[[comp]]@result) >= 1) {
-    #           enrich_res[[comp]]@result$setting <- TRUE
+    #             enrich_res[[comp]]@result$setting <- TRUE
     #         }
     #     }
     # }
 
-    if (as_dataframe) enrich_res <- do.call("rbind", enrich_res)
+    if (as_dataframe)  {
+        enrich_res <- lapply(enrich_res, function(x) {x@result})
+        enrich_res <- do.call("rbind", enrich_res)
+    }
 
     return(enrich_res)
 })
