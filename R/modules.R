@@ -1,52 +1,53 @@
 #' Run WGCNA
 #' @export
-identify_modules <- function(X, powers, min_r_squared = 0.85, max_mean_connectivity = 100,
-                             corType = "pearson", networkType = "signed", module_labels = "numbers",
-                             ...)
+identify_modules <- function(X, ...)
 {
     if (!inherits(X, "SummarizedExperiment")) {
         X <- SummarizedExperiment(assays = list("normal" = X))
     }
 
-    wgcna_res <- run_wgcna(assay(X, "normal"), powers=powers, min_r_squared = min_r_squared,
-                           corType = corType, networkType=networkType, module_labels = module_labels,
-                           seed=seed, ...)
-    reduced_set <- ModularExperiment(X, reduced=wgcna_res$E, assignments=wgcna_res$assignments)
+    wgcna_res <- run_wgcna(assay(X, "normal"), ...)
+    reduced_set <- .se_to_me(X, reduced=as.matrix(wgcna_res$E), assignments=wgcna_res$assignments)
 
     return(reduced_set)
 }
 
-.se_to_me <- function(se, assignments, loadings, reduced, center, scale) {
-    return(ModularExperiment(assignments=assignments, loadings=loadings,
-                             reduced=reduced,
+.se_to_me <- function(se, assignments, reduced) {
+    return(ModularExperiment(assignments=assignments, reduced=reduced,
                              assays=assays(se), rowData=rowData(se),
                              colData=colData(se), metadata=metadata(se)))
 }
 
 #' Run WGCNA for a data matrix
 #' @export
-run_wgcna <- function(X, seed=1, powers = 1:40,
-                      min_r_squared = 0.85, max_mean_connectivity = 100,
-                      corType = "pearson", networkType="signed",
-                      module_labels = "numbers", ...) {
+run_wgcna <- function(X, powers=1:30,
+                      min_r_squared=0.85, max_mean_connectivity=100,
+                      corType="pearson", networkType="signed",
+                      module_labels="numbers", seed=1, verbose = 0, ...) {
     set.seed(seed)
+
+    if (corType == "pearson") {
+        cor <- corFnc <- WGCNA::cor
+    } else if (corType == "bicor") {
+        cor <- corFnc <- WGCNA::bicor
+    } else {
+        stop("`corType` must be one of 'pearson', 'bicor'")
+    }
 
     if (length(powers) > 1) {
 
-        if (corType == "pearson") {
-            corFnc <- WGCNA::cor
-        } else if (corType == "bicor") {
-            corFnc <- WGCNA::bicor
-        } else {
-            stop("`corType` must be one of 'pearson', 'bicor'")
-        }
-
-        threshold <- WGCNA::pickSoftThreshold(t(X), RsquaredCut = min_r_squared, powerVector = powers, corFnc = corFnc, networkType = networkType)
+        threshold <- WGCNA::pickSoftThreshold(t(X), RsquaredCut=min_r_squared, powerVector=powers,
+                                              corFnc=corFnc, networkType=networkType, verbose=verbose)
 
         if (is.null(max_mean_connectivity)) {
-            power <- threshold$powerEstimate
+            power <- threshold$fitIndices$powerEstimate
         } else {
-            power <- min(threshold$Power[threshold$SFT.R.sq > min_r_squared & threshold$mean.k. < max_mean_connectivity])
+            which_power <- threshold$fitIndices$SFT.R.sq > min_r_squared & threshold$fitIndices$mean.k. < max_mean_connectivity
+
+            if (length(which_power) == 0)
+                stop("No power with r_squared > ", min_r_squared, " and mean connectivity < ", max_mean_connectivity)
+
+            power <- min(threshold$fitIndices$Power[which_power])
         }
 
     } else if (length(powers) == 1) {
@@ -55,7 +56,7 @@ run_wgcna <- function(X, seed=1, powers = 1:40,
         stop("Powers must either be a single integer or a vector of integers to be tested")
     }
 
-    bwms <- WGCNA::blockwiseModules(t(X), power=power, corType=corType, networkType=networkType, ...)
+    bwms <- WGCNA::blockwiseModules(t(X), power=power, corType=corType, networkType=networkType, verbose=verbose, ...)
 
     wgcna_res <- list(
         assignments = bwms$colors,
@@ -63,8 +64,8 @@ run_wgcna <- function(X, seed=1, powers = 1:40,
     )
 
     # TODO: give option for using colours instead `module_labels`
-    names(wgcna_res$assignments) <- paste0("factor_", names(wgcna_res$assignments))
-    names(wgcna_res$E) <- paste0("factor_", names(wgcna_res$E))
+    # names(wgcna_res$assignments) <- paste0("factor_", names(wgcna_res$assignments))
+    # names(wgcna_res$E) <- paste0("factor_", names(wgcna_res$E))
 
     return(wgcna_res)
 }
