@@ -129,7 +129,8 @@ setMethod("runEnrich", c("ModularExperiment"),
     return(enrich_res)
 })
 
-plotDendro <- function(me, groupLabels = "Module colors", dendroLabels = FALSE,
+setMethod("plotDendro", c("ModularExperiment"),
+          function(me, groupLabels = "Module colors", dendroLabels = FALSE,
                        hang = 0.03, addGuide = TRUE, guideHang = 0.05,
                        color_func = WGCNA::labels2colors) {
 
@@ -150,4 +151,6 @@ plotDendro <- function(me, groupLabels = "Module colors", dendroLabels = FALSE,
                            groupLabels = groupLabels,
                            dendroLabels = dendroLabels, hang = hang,
                            addGuide = addGuide, guideHang = guideHang)
-}
+})
+
+calcEigengenes
