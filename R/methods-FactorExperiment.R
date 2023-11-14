@@ -63,7 +63,7 @@ setReplaceMethod("varexp", "FactorisedExperiment", function(x, value) {
 })
 
 setReplaceMethod("componentNames", "FactorisedExperiment", function(x, value) {
-    colnames(x@reduced) <- value
+    colnames(x@loadings) <- value
     x <- callNextMethod(x, value)
     validObject(x)
     return(x)
@@ -97,7 +97,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
         if (is.character(k)) {
             fmt <- paste0("<", class(x), ">[k,] index out of bounds: %s")
             k <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-                k, componentnames(x), fmt
+                k, componentNames(x), fmt
             )
         }
 
@@ -111,26 +111,26 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 })
 
 #' Project data
-setMethod("project_data", c("FactorisedExperiment", "matrix"), function(x, newdata) {
+setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata) {
 
     newdata <- t(scale(t(newdata), scale=x@scale, center=x@center))
 
     return(.project_ica(newdata, loadings(x)))
 })
 
-setMethod("project_data", c("FactorisedExperiment", "data.frame"), function(x, newdata) {
-    return(project_data(x, as.matrix(newdata)))
+setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(x, newdata) {
+    return(projectData(x, as.matrix(newdata)))
 })
 
-setMethod("project_data", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, assay_name="normal") {
+setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, assay_name="normal") {
 
-    projected_data <- project_data(x, assay(newdata, assay_name))
+    projected_data <- projectData(x, assay(newdata, assay_name))
 
     return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), varexp=varexp(x), center=x@center, scale=x@scale))
 })
 
-setMethod("predict", c("FactorisedExperiment"), function(object, newdata) {
-    return(project_data(object, newdata))
+setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
+    return(projectData(object, newdata, ...))
 })
 
 setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=NULL, n_features=NULL,

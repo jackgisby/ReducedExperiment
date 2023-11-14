@@ -74,7 +74,7 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
         if (is.character(k)) {
             fmt <- paste0("<", class(x), ">[k,] index out of bounds: %s")
             k <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-                k, componentnames(x), fmt
+                k, componentNames(x), fmt
             )
         }
 
@@ -96,6 +96,7 @@ setMethod("nComponents", "ReducedExperiment", function(x) {dim(x)[3]})
 setMethod("nSamples", "ReducedExperiment", function(x) {dim(x)[2]})
 setMethod("nFeatures", "ReducedExperiment", function(x) {dim(x)[1]})
 
+#' @import biomaRt
 setMethod("getGeneIDs", "ReducedExperiment", function(
     x,
     gene_id_col="rownames",
