@@ -58,7 +58,7 @@ run_wgcna <- function(X, powers=1:30,
         power <- powers
     }
 
-    threshold$selected_power <- power
+    threshold$fitIndices$selected_power <- power
 
     bwms <- WGCNA::blockwiseModules(t(X), power=power, corType=corType, networkType=networkType,
                                     maxBlockSize=maxBlockSize, verbose=verbose, ...)
@@ -67,7 +67,7 @@ run_wgcna <- function(X, powers=1:30,
         assignments = bwms$colors,
         E = bwms$MEs,
         dendrogram = if (length(bwms$dendrograms) == 1) bwms$dendrograms[[1]] else NULL,
-        threshold = threshold
+        threshold = threshold$fitIndices
     )
 
     colnames(wgcna_res$E) <- gsub("ME", "", colnames(wgcna_res$E))
