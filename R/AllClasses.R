@@ -1,3 +1,7 @@
+
+setClassUnion("numeric_OR_NULL", c("numeric", "NULL"))
+setClassUnion("data.frame_OR_NULL", c("data.frame", "NULL"))
+
 #' @import methods
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
 .ReducedExperiment <- setClass(
@@ -12,7 +16,7 @@
 .FactorisedExperiment <- setClass(
     "FactorisedExperiment",
     contains="ReducedExperiment",
-    representation=representation(loadings="matrix", varexp="numeric", scale="ANY", center="ANY"),
+    representation=representation(loadings="matrix", varexp="numeric_OR_NULL", scale="ANY", center="ANY"),
     prototype=prototype(loadings=matrix(), varexp=numeric(), scale=TRUE, center=TRUE)
 )
 
@@ -21,6 +25,6 @@
 .ModularExperiment <- setClass(
     "ModularExperiment",
     contains="ReducedExperiment",
-    representation=representation(assignments="character", dendrogram="ANY"),
-    prototype=prototype(assignments=character(), dendrogram=NULL)
+    representation=representation(assignments="character", dendrogram="ANY", threshold="data.frame_OR_NULL"),
+    prototype=prototype(assignments=character())
 )

@@ -4,10 +4,10 @@
 #'
 #' @export
 #' @importFrom SummarizedExperiment SummarizedExperiment
-ModularExperiment <- function(assignments=character(), dendrogram=NULL, ...)
+ModularExperiment <- function(assignments=character(), dendrogram=NULL, threshold=NULL, ...)
 {
     re <- ReducedExperiment(...)
-    return(.ModularExperiment(re, assignments=assignments, dendrogram=dendrogram))
+    return(.ModularExperiment(re, assignments=assignments, dendrogram=dendrogram, threshold=threshold))
 }
 
 S4Vectors::setValidity2("ModularExperiment", function(object) {
@@ -88,7 +88,7 @@ setMethod("[", c("ModularExperiment", "ANY", "ANY", "ANY"),
         if (is.character(i)) {
             fmt <- paste0("<", class(x), ">[i,] index out of bounds: %s")
             i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-              i, componentnames(x), fmt
+              i, rownames(x), fmt
             )
       }
 
@@ -130,11 +130,11 @@ setMethod("runEnrich", c("ModularExperiment"),
 })
 
 setMethod("plotDendro", c("ModularExperiment"),
-          function(me, groupLabels = "Module colors", dendroLabels = FALSE,
+          function(x, groupLabels = "Module colors", dendroLabels = FALSE,
                        hang = 0.03, addGuide = TRUE, guideHang = 0.05,
                        color_func = WGCNA::labels2colors) {
 
-    colors <- gsub("module_", "", names(assignments(me)))
+    colors <- gsub("module_", "", names(assignments(x)))
 
     is_color <- function(x) {
         sapply(x, function(X) {
@@ -147,10 +147,31 @@ setMethod("plotDendro", c("ModularExperiment"),
         colors <- color_func(colors)
     }
 
-    WGCNA::plotDendroAndColors(dendrogram(me), colors,
+    WGCNA::plotDendroAndColors(dendrogram(x), colors,
                            groupLabels = groupLabels,
                            dendroLabels = dendroLabels, hang = hang,
                            addGuide = addGuide, guideHang = guideHang)
 })
 
-calcEigengenes
+setMethod("calcEigengenes", c("ModularExperiment", "matrix"),
+          function(x, newdata, ...) {
+
+    eig <- WGCNA::moduleEigengenes(t(newdata), setNames(names(assignments(x)), assignments(x)), ...)
+    colnames(eig$eigengenes) <- gsub("ME", "", colnames(eig$eigengenes))
+    return(eig$eigengenes)
+})
+
+setMethod("calcEigengenes", c("ModularExperiment", "data.frame"), function(x, newdata, ...) {
+    return(calcEigengenes(x, as.matrix(newdata), ...))
+})
+
+setMethod("calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
+          function(x, newdata, assay_name="normal", ...) {
+
+    eig <- calcEigengenes(x, assay(newdata, assay_name), ...)
+    return(.se_to_me(newdata, reduced=as.matrix(eig), assignments=assignments(x)))
+})
+
+setMethod("predict", c("ModularExperiment"), function(object, newdata, ...) {
+    return(calcEigengenes(object, newdata, ...))
+})

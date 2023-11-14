@@ -7,14 +7,14 @@ identify_modules <- function(X, ...)
     }
 
     wgcna_res <- run_wgcna(assay(X, "normal"), ...)
-    reduced_set <- .se_to_me(X, reduced=as.matrix(wgcna_res$E), assignments=wgcna_res$assignments, dendro=wgcna_res$dendro)
+    reduced_set <- .se_to_me(X, reduced=as.matrix(wgcna_res$E), assignments=wgcna_res$assignments, dendrogram=wgcna_res$dendrogram, threshold=wgcna_res$threshold)
 
     return(reduced_set)
 }
 
-.se_to_me <- function(se, assignments, reduced, dendro=NULL) {
+.se_to_me <- function(se, assignments, reduced, dendrogram=NULL, threshold=NULL) {
     return(ModularExperiment(assignments=assignments, reduced=reduced,
-                             dendro=dendro,
+                             dendrogram=dendrogram, threshold=threshold,
                              assays=assays(se), rowData=rowData(se),
                              colData=colData(se), metadata=metadata(se)))
 }
@@ -25,7 +25,7 @@ run_wgcna <- function(X, powers=1:30,
                       min_r_squared=0.85, max_mean_connectivity=100,
                       corType="pearson", networkType="signed",
                       module_labels="numbers", maxBlockSize = 30000,
-                      seed=1, verbose = 0, ...) {
+                      seed=1, verbose = 0, return_full_output = FALSE, ...) {
     set.seed(seed)
 
     if (maxBlockSize < nrow(X)) warning("maxBlockSize < total features, module detection will be performed in a block-wise manner")
@@ -38,10 +38,10 @@ run_wgcna <- function(X, powers=1:30,
         stop("`corType` must be one of 'pearson', 'bicor'")
     }
 
-    if (length(powers) > 1) {
+    threshold <- WGCNA::pickSoftThreshold(t(X), RsquaredCut=min_r_squared, powerVector=powers,
+                                          corFnc=corFnc, networkType=networkType, verbose=verbose)
 
-        threshold <- WGCNA::pickSoftThreshold(t(X), RsquaredCut=min_r_squared, powerVector=powers,
-                                              corFnc=corFnc, networkType=networkType, verbose=verbose)
+    if (length(powers) > 1) {
 
         if (is.null(max_mean_connectivity)) {
             power <- threshold$fitIndices$powerEstimate
@@ -56,9 +56,9 @@ run_wgcna <- function(X, powers=1:30,
 
     } else if (length(powers) == 1) {
         power <- powers
-    } else {
-        stop("Powers must either be a single integer or a vector of integers to be tested")
     }
+
+    threshold$selected_power <- power
 
     bwms <- WGCNA::blockwiseModules(t(X), power=power, corType=corType, networkType=networkType,
                                     maxBlockSize=maxBlockSize, verbose=verbose, ...)
@@ -66,7 +66,8 @@ run_wgcna <- function(X, powers=1:30,
     wgcna_res <- list(
         assignments = bwms$colors,
         E = bwms$MEs,
-        dendro = if (length(bwms$dendrograms) == 1) bwms$dendrograms[[1]] else NULL
+        dendrogram = if (length(bwms$dendrograms) == 1) bwms$dendrograms[[1]] else NULL,
+        threshold = threshold
     )
 
     colnames(wgcna_res$E) <- gsub("ME", "", colnames(wgcna_res$E))
@@ -99,6 +100,11 @@ run_wgcna <- function(X, powers=1:30,
 
     wgcna_res$assignments <- setNames(names(wgcna_res$assignments), paste0("module_", wgcna_res$assignments))
     colnames(wgcna_res$E) <- paste0("module_", colnames(wgcna_res$E))
+    wgcna_res$E <- wgcna_res$E[, order(colnames(wgcna_res$E))]
 
-    return(wgcna_res)
+    if (return_full_output) {
+        return(list("run_wgcna_output" = wgcna_res, "blockwise_modules_output" = bwms, "pick_soft_threshold_output" = threshold))
+    } else {
+        return(wgcna_res)
+    }
 }
