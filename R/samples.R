@@ -17,7 +17,7 @@
     )
 
 
-    if (class(out_model) == "lmerModLmerTest") {
+    if (is(out_model, "lmerModLmerTest")) {
         return(out_model)
     } else {
         stop("Convergence issue not caught by single_lmer")
@@ -31,7 +31,7 @@
     formula <- as.formula(paste0("component", formula))
 
     if (method == "lmer") {
-        
+
         linear_model <- .single_lmer(pheno, formula, ...)
 
         anova_res <- data.frame(anova(linear_model, type=type))
@@ -58,9 +58,9 @@ associate_components <- function(re, formula, method="lm",
     models <- list()
     summaries <- anovas <- data.frame()
     red <- reduced(re, scale=scale, center=center)
-    
+
     for (comp in componentNames(re)) {
-        
+
         linear_model <- .run_linear_model(
             X=red[, comp],
             pheno=data.frame(colData(re)),
@@ -76,7 +76,7 @@ associate_components <- function(re, formula, method="lm",
         anovas <- rbind(anovas, linear_model$anova)
         summaries <- rbind(summaries, linear_model$summary)
     }
-    
+
     colnames(anovas) <- .rename_results_table(colnames(anovas))
     colnames(summaries) <- .rename_results_table(colnames(summaries))
 
@@ -90,33 +90,33 @@ associate_components <- function(re, formula, method="lm",
 }
 
 .adjust_by_term <- function(res, method="BH") {
-    
+
     res$adj_pvalue <- NA
-    
+
     for (term in unique(res$term)) {
         res$adj_pvalue[which(res$term == term)] <- p.adjust(res$pvalue[which(res$term == term)], method=method)
     }
-    
+
     return(res$adj_pvalue)
 }
 
 .rename_results_table <- function(cnames) {
     cname_conversions <- list(
-        "Sum.Sq" = "sum_sq", 
-        "Mean.Sq" = "mean_sq", 
-        "NumDF" = "num_df", 
-        "DenDF" = "den_df", 
-        "F.value" = "fvalue", 
-        "Pr..F." = "pvalue", 
-        "Estimate" = "estimate", 
-        "Std..Error" = "stderr", 
-        "t.value" = "tvalue", 
+        "Sum.Sq" = "sum_sq",
+        "Mean.Sq" = "mean_sq",
+        "NumDF" = "num_df",
+        "DenDF" = "den_df",
+        "F.value" = "fvalue",
+        "Pr..F." = "pvalue",
+        "Estimate" = "estimate",
+        "Std..Error" = "stderr",
+        "t.value" = "tvalue",
         "Pr...t.." = "pvalue"
     )
-    
+
     for (i in seq_along(cnames))
         if (cnames[i] %in% names(cname_conversions))
             cnames[i] <- cname_conversions[[cnames[i]]]
-    
+
     return(cnames)
 }
