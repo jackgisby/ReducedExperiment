@@ -15,6 +15,7 @@ run_wgcna(
   maxBlockSize = 30000,
   seed = 1,
   verbose = 0,
+  return_full_output = FALSE,
   ...
 )
 }

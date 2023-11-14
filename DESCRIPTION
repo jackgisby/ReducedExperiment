@@ -1,6 +1,6 @@
 Package: omicsDimReduce
 Type: Package
-Title: Tools for investigating dimensionally reduced expression data.
+Title: Tools for investigating dimensionally reduced expression data
 Version: 0.0.0.9000
 Authors@R: 
     person("Jack", "Gisby", , "jackgisby@gmail.com", role = c("aut", "cre"),
@@ -23,7 +23,15 @@ Imports:
     moments,
     MASS,
     clusterProfiler,
-    msigdbr
+    msigdbr,
+    RColorBrewer, 
+    car, 
+    lme4, 
+    lmerTest, 
+    pheatmap,
+    biomaRt,
+    stats,
+    grDevices
 Suggests:
     knitr,
     rmarkdown,

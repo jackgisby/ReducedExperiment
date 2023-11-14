@@ -4,7 +4,12 @@
 \alias{ModularExperiment}
 \title{ModularExperiment}
 \usage{
-ModularExperiment(assignments = character(), dendrogram = NULL, ...)
+ModularExperiment(
+  assignments = character(),
+  dendrogram = NULL,
+  threshold = NULL,
+  ...
+)
 }
 \description{
 A class to represent the results of module analysis
