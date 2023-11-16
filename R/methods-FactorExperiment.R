@@ -34,10 +34,12 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
         msg <- c(msg, "Reduced data and loadings have incompatible column names (factor names)")
 
     # Center / Scale
-    if (!all(rownames(object) == names(object@scale)))
-        msg <- c(msg, "Scaling vector has invalid names")
-    if (!all(rownames(object) == names(object@center)))
-        msg <- c(msg, "Centering vector has invalid names")
+    if (!is.logical(object@scale))
+        if (!all.equal(rownames(object), names(object@scale)))
+            msg <- c(msg, "Scaling vector has invalid names")
+    if (!is.logical(object@scale))
+        if (!all.equal(rownames(object), names(object@center)))
+            msg <- c(msg, "Centering vector has invalid names")
 
     # TODO: Varexp
 
@@ -89,8 +91,8 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
         }
         i <- as.vector(i)
         lod <- lod[i,,drop=FALSE]
-        center <- center[i,drop=FALSE]
-        scale <- scale[i,drop=FALSE]
+        if (!is.logical(center)) center <- center[i,drop=FALSE]
+        if (!is.logical(scale)) scale <- scale[i,drop=FALSE]
     }
 
     if (!missing(k)) {
@@ -112,7 +114,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 
 #' Project data
 setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata) {
-
+    print(scale(t(newdata))[1:5,1:5])
     newdata <- t(scale(t(newdata), scale=x@scale, center=x@center))
 
     return(.project_ica(newdata, loadings(x)))
