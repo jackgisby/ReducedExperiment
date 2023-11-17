@@ -114,7 +114,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 
 #' Project data
 setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata) {
-    print(scale(t(newdata))[1:5,1:5])
+
     newdata <- t(scale(t(newdata), scale=x@scale, center=x@center))
 
     return(.project_ica(newdata, loadings(x)))

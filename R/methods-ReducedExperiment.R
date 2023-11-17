@@ -114,7 +114,7 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
     gene_ids <- rowData(x)[[gene_id_type]]
 
     if (is.null(mart)) {
-        mart <- biomaRt::useEnsembl(biomart="genes", dataset=dataset)
+        mart <- biomaRt::useEnsembl("ensembl", dataset=dataset)
     }
 
     biomart_out <- biomaRt::getBM(filters = gene_id_type,
@@ -123,9 +123,12 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
 
     biomart_out <- biomart_out[which(!duplicated(biomart_out[[gene_id_type]])),]
     rownames(biomart_out) <- biomart_out[[gene_id_type]]
-
-    rowData(x) <- merge(rowData(x), biomart_out, by=gene_id_type, all.x=TRUE)
-    stopifnot(all.equal(rownames(x), rownames(rowData(x))))
+    
+    # TODO: improve this messy approach
+    row_data_merged <- merge(rowData(x), biomart_out, by=gene_id_type, all.x=TRUE)
+    rownames(row_data_merged) <- row_data_merged[[gene_id_type]]
+    row_data_merged <- row_data_merged[match(rowData(x)[[gene_id_type]], row_data_merged[[gene_id_type]]) ,]
+    stopifnot(all.equal(rownames(x), rownames(row_data_merged)))
 
     return(x)
 })
