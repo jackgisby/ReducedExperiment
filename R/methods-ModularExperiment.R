@@ -106,7 +106,7 @@ setMethod("runEnrich", c("ModularExperiment"),
     if (method == "overrepresentation") {
 
         modules <- assignments(x, as_list=TRUE)
-
+        
         enrich_res <- reduced_oa(modules, ...)
 
     } else {

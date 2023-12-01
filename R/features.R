@@ -19,9 +19,11 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp",
 
         enrich_res_single <- .format_enrich_res(enrich_res_single, adj_method=adj_method, min_genes=min_genes, p_cutoff=p_cutoff)
 
-        if (nrow(enrich_res_single@result) >= 1) {
-            enrich_res_single@result$method <- "overrepresentation"
-            enrich_res_single@result$component <- comp
+        if (!is.null(enrich_res_single)) {
+            if (nrow(enrich_res_single@result) >= 1) {
+                enrich_res_single@result$method <- "overrepresentation"
+                enrich_res_single@result$component <- comp
+            }
         }
 
         enrich_res[[comp]] <- enrich_res_single
@@ -46,6 +48,8 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp",
 }
 
 .format_enrich_res <- function(enrich_res_single, adj_method, p_cutoff, min_genes=NULL) {
+
+    if (is.null(enrich_res_single)) return(NULL)
 
     if (!is.null(min_genes)) {
         enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$Count >= min_genes) ,]
@@ -87,9 +91,11 @@ reduced_gsea <- function(S, database="msigdb_c2_cp", TERM2GENE=NULL,
 
         enrich_res_single <- .format_enrich_res(enrich_res_single, adj_method=adj_method, p_cutoff=p_cutoff)
 
-        if (nrow(enrich_res_single@result) >= 1) {
-            enrich_res_single@result$method <- "gsea"
-            enrich_res_single@result$component <- comp
+        if (!is.null(enrich_res_single)) {
+            if (nrow(enrich_res_single@result) >= 1) {
+                enrich_res_single@result$method <- "gsea"
+                enrich_res_single@result$component <- comp
+            }
         }
 
         enrich_res[[comp]] <- enrich_res_single
