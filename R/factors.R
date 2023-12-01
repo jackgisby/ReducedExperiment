@@ -28,7 +28,7 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, ...)
 #' Run ICA for a data matrix
 #' @export
 run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
-                    method=ifelse(stability_approach == "none", "imax", "fast"),
+                    method=ifelse(use_stability, "fast", "imax"),
                     center_X=TRUE, scale_X=FALSE,
                     reorient_skewed=TRUE, seed=1,
                     scale_components=TRUE, ...) {
@@ -142,4 +142,32 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
     colnames(M) <- colnames(S)
 
     return(M)
+}
+
+estimate_components <- function(X, min_components=10, max_components=60, by=2,
+                                min_mean_stability = 0.85,
+                                center_X=TRUE, scale_X=FALSE, ...) {
+    if (inherits(X, "SummarizedExperiment")) {
+        X <- assays(X, "normal")
+    }
+
+    X <- t(scale(t(X), center=center_X, scale=scale_X))
+
+    stabilities <- data.frame()
+
+    for (nc in seq(from = min_components, to = max_components, by = by)) {
+
+        ica_res <- run_ica(X, nc=nc, center_X=FALSE, scale_X=FALSE, ...)
+
+        stabilities <- rbind(stabilities, data.frame(
+            nc = nc,
+            comp = names(ica_res$stab),
+            stability = ica_res$stab
+        ))
+    }
+
+    mean_stabilities <- aggregate(stabilities, list(stabilities$nc), mean)
+    select_nc <- min(mean_stabilities$nc[mean_stabilities$stability >= min_mean_stability])
+
+    return(list(stabilities = stabilities, select_nc = select_nc))
 }
