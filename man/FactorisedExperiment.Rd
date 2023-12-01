@@ -6,7 +6,7 @@
 \usage{
 FactorisedExperiment(
   loadings = new("matrix"),
-  varexp = new("numeric"),
+  stability = new("numeric"),
   scale = FALSE,
   center = FALSE,
   ...

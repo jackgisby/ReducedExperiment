@@ -6,13 +6,13 @@
 #' @importFrom SummarizedExperiment SummarizedExperiment
 FactorisedExperiment <- function(
         loadings = new("matrix"),
-        varexp = new("numeric"),
+        stability = new("numeric"),
         scale = FALSE,
         center = FALSE,
         ...)
 {
     re <- ReducedExperiment(...)
-    return(.FactorisedExperiment(re, loadings=loadings, varexp=varexp, scale=scale, center=center))
+    return(.FactorisedExperiment(re, loadings=loadings, stability=stability, scale=scale, center=center))
 }
 
 S4Vectors::setValidity2("FactorisedExperiment", function(object) {
@@ -41,7 +41,7 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
         if (!all.equal(rownames(object), names(object@center)))
             msg <- c(msg, "Centering vector has invalid names")
 
-    # TODO: Varexp
+    # TODO: stability
 
     return(if (is.null(msg)) TRUE else msg)
 })
@@ -56,10 +56,10 @@ setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
     return(x)
 })
 
-setMethod("varexp", "FactorisedExperiment", function(x) {return(x@varexp)})
+setMethod("stability", "FactorisedExperiment", function(x) {return(x@stability)})
 
-setReplaceMethod("varexp", "FactorisedExperiment", function(x, value) {
-    x@varexp <- value
+setReplaceMethod("stability", "FactorisedExperiment", function(x, value) {
+    x@stability <- value
     validObject(x)
     return(x)
 })
@@ -78,7 +78,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
 
     lod <- loadings(x)
-    vafs <- x@varexp
+    stab <- x@stability
     center <- x@center
     scale <- x@scale
 
@@ -105,11 +105,11 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 
         k <- as.vector(k)
         lod <- lod[,k,drop=FALSE]
-        vafs <- vafs[k, drop=FALSE]
+        stab <- stab[k, drop=FALSE]
     }
 
     out <- callNextMethod(x, i, j, k, ...)
-    BiocGenerics:::replaceSlots(out, loadings=lod, varexp=vafs, center=center, scale=scale, check=FALSE)
+    BiocGenerics:::replaceSlots(out, loadings=lod, stability=stab, center=center, scale=scale, check=FALSE)
 })
 
 #' Project data
@@ -128,7 +128,7 @@ setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), func
 
     projected_data <- projectData(x, assay(newdata, assay_name))
 
-    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), varexp=varexp(x), center=x@center, scale=x@scale))
+    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), stability=stability(x), center=x@center, scale=x@scale))
 })
 
 setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {

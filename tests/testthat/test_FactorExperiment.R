@@ -45,7 +45,7 @@ test_that("FactorisedExperiment enrichment", {
     rownames(rld) <- rownames(airway)
 
     # Create the FactorExperiment and get entrez gene IDs
-    fe <- .se_to_fe(airway, reduced=rrd, loadings=rld, varexp=numeric(), scale=FALSE, center=FALSE)
+    fe <- .se_to_fe(airway, reduced=rrd, loadings=rld, stability=numeric(), scale=FALSE, center=FALSE)
 
     fe <- getGeneIDs(fe)
     fe <- fe[which(!is.na(rowData(fe)$entrezgene_id)) ,]

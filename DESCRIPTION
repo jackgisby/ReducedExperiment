@@ -31,7 +31,8 @@ Imports:
     pheatmap,
     biomaRt,
     stats,
-    grDevices
+    grDevices,
+    foreach
 Suggests:
     knitr,
     rmarkdown,

@@ -15,39 +15,116 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, ...)
     ica_res <- run_ica(assay(X, "transformed"), nc=nc,
                        center_X=FALSE, scale_X=FALSE, ...)
 
-    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, varexp=ica_res$vafs, center=center_X, scale=scale_X))
+    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, stability=ica_res$stab, center=center_X, scale=scale_X))
 }
 
-.se_to_fe <- function(se, reduced, loadings, varexp, center, scale) {
-    return(FactorisedExperiment(loadings=loadings, varexp=varexp, center=center,
-                                scale=scale, reduced=reduced,
+.se_to_fe <- function(se, reduced, loadings, stability, center, scale) {
+    return(FactorisedExperiment(loadings=loadings, stability=stability,
+                                center=center, scale=scale, reduced=reduced,
                                 assays=assays(se), rowData=rowData(se),
                                 colData=colData(se), metadata=metadata(se)))
 }
 
 #' Run ICA for a data matrix
 #' @export
-run_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
-                        reorient_skewed=TRUE, seed=1, ...) {
+run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
+                    method=ifelse(stability_approach == "none", "imax", "fast"),
+                    center_X=TRUE, scale_X=FALSE,
+                    reorient_skewed=TRUE, seed=1,
+                    scale_components=TRUE, ...) {
     set.seed(seed)
 
     if (center_X | scale_X)
         {X <- t(scale(t(X), center=center_X, scale=scale_X))}
 
-    ica_res <- ica::ica(X, nc=nc, method=method, center=FALSE, ...)
+    if (use_stability) {
+        ica_res <- .stability_ica(X, nc=nc, resample=resample, method=method, ...)
+    } else {
+        if (resample) stop("Cannot use resampling approach when `use_stability` is FALSE")
+        ica_res <- list(S = ica::ica(X, nc=nc, method=method, center=FALSE, ...)$S)
+    }
 
-    # Reorient factors and recalculate M
+    # Reorient and scale factors before recalculating M
     if (reorient_skewed) {ica_res$S <- .reorient_factors(ica_res$S)}
+    if (scale_components) ica_res$S <- scale(ica_res$S, center = FALSE)
     ica_res$M <- .project_ica(X, ica_res$S)
 
     # Add factors / sample names
     rownames(ica_res$M) <- colnames(X)
     rownames(ica_res$S) <- rownames(X)
-    names(ica_res$vafs) <- colnames(ica_res$M) <- colnames(ica_res$S) <- paste0("factor_", 1:ncol(ica_res$S))
+    names(ica_res$stab) <- colnames(ica_res$M) <- colnames(ica_res$S) <- paste0("factor_", 1:ncol(ica_res$S))
 
     return(ica_res)
 }
 
+#' Stability ICA method
+#' @importFrom foreach %dopar%
+.stability_ica <- function(X, nc=nc, resample=resample, method=method, n_runs=30, ...) {
+
+    #TODO: do parallelism properly
+    cl <- parallel::makeCluster(5)
+    doParallel::registerDoParallel(cl)
+
+    S_all <- foreach::foreach(i = 1:n_runs, .combine = cbind) %dopar% {
+
+        # Randomly initialises ICA
+        set.seed(i)
+        Rmat = matrix(rnorm(nc ** 2), nrow = nc, ncol = nc)
+
+        if (resample) {
+            X_bs <- X[, sample(ncol(X), replace = TRUE)]
+        } else {
+            X_bs <- X
+        }
+
+        # Get ICA loadings for given initialisation (and possibly bootstrap resample)
+        S <- ica::ica(X_bs, nc=nc, method=method, center=FALSE, Rmat = Rmat, ...)$S
+        colnames(S) <- paste0("seed_", i, "_", 1:nc)
+
+        S
+    }
+
+    parallel::stopCluster(cl)
+
+    # Get correlations between factors and resulting clusters
+    S_cor <- abs(cor(S_all))
+    S_clust <- factor(cutree(hclust(as.dist(1 - S_cor)), k = nc))
+    names(S_clust) <- colnames(S_all)
+
+    stabilities <- c()
+    centrotypes <- data.frame(matrix(nrow = nrow(S_all), ncol = nc, dimnames = list(rownames(S_all), 1:nc)))
+
+    for (comp in 1:nc) {
+
+        cluster_labels <- names(S_clust)[S_clust == comp]
+        non_cluster_labels <- names(S_clust)[!names(S_clust) %in% cluster_labels]
+
+        # TODO: delete temporary approach
+
+        # Average intra-cluster similarity
+        aics_temp = (1 / length(cluster_labels) ** 2) * sum(S_cor[cluster_labels, cluster_labels])
+        aics = mean(S_cor[cluster_labels, cluster_labels])
+        stopifnot(all.equal(aics_temp, aics))
+
+        # Average extra-cluster similarity
+        aecs_temp = (1 / (length(non_cluster_labels) * length(cluster_labels))) * sum(S_cor[cluster_labels, non_cluster_labels])
+        aecs = mean(S_cor[cluster_labels, non_cluster_labels])
+        stopifnot(all.equal(aecs_temp, aecs))
+
+        stabilities <- c(stabilities, aics - aecs)
+
+        which_is_centrotype <- which.max(apply(S_cor[cluster_labels, cluster_labels], 2, sum))
+        centrotypes[[comp]] <- S_all[, cluster_labels[which_is_centrotype]]
+    }
+
+    idx <- order(stabilities, decreasing = TRUE)
+    centrotypes <- centrotypes[, idx]
+    stabilities <- stabilities[idx]
+
+    return(list(stab = stabilities, S = centrotypes))
+}
+
+#' @import moments
 .reorient_factors <- function(S) {
     skew <- ifelse(apply(S, 2, moments::skewness) >= 0, 1, -1)
     for (i in 1:ncol(S)) {
@@ -59,6 +136,7 @@ run_ica <- function(X, nc, method="imax", center_X=TRUE, scale_X=FALSE,
 #' X = M * S
 #' X / S = M
 #' X * inv(S) = M
+#' @import MASS
 .project_ica <- function(newdata, S) {
     M <- t(newdata) %*% t(MASS::ginv(S))
     colnames(M) <- colnames(S)

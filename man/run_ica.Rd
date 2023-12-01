@@ -7,11 +7,14 @@
 run_ica(
   X,
   nc,
-  method = "imax",
+  use_stability = TRUE,
+  resample = FALSE,
+  method = ifelse(stability_approach == "none", "imax", "fast"),
   center_X = TRUE,
   scale_X = FALSE,
   reorient_skewed = TRUE,
   seed = 1,
+  scale_components = TRUE,
   ...
 )
 }

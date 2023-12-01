@@ -16,8 +16,8 @@ setClassUnion("data.frame_OR_NULL", c("data.frame", "NULL"))
 .FactorisedExperiment <- setClass(
     "FactorisedExperiment",
     contains="ReducedExperiment",
-    representation=representation(loadings="matrix", varexp="numeric_OR_NULL", scale="ANY", center="ANY"),
-    prototype=prototype(loadings=matrix(), varexp=numeric(), scale=TRUE, center=TRUE)
+    representation=representation(loadings="matrix", stability="numeric_OR_NULL", scale="ANY", center="ANY"),
+    prototype=prototype(loadings=matrix(), stability=numeric(), scale=TRUE, center=TRUE)
 )
 
 #' @import methods
