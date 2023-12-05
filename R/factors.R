@@ -59,32 +59,29 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
 
 #' Stability ICA method
 #' @importFrom foreach %dopar%
-.stability_ica <- function(X, nc=nc, resample=resample, method=method, n_runs=30, ...) {
-
-    #TODO: do parallelism properly
-    cl <- parallel::makeCluster(5)
-    doParallel::registerDoParallel(cl)
-
-    S_all <- foreach::foreach(i = 1:n_runs, .combine = cbind) %dopar% {
-
+.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, ...) {
+    
+    .ica_random <- function(i) {
+        
         # Randomly initialises ICA
         set.seed(i)
         Rmat = matrix(rnorm(nc ** 2), nrow = nc, ncol = nc)
-
+        
         if (resample) {
             X_bs <- X[, sample(ncol(X), replace = TRUE)]
         } else {
             X_bs <- X
         }
-
+        
         # Get ICA loadings for given initialisation (and possibly bootstrap resample)
         S <- ica::ica(X_bs, nc=nc, method=method, center=FALSE, Rmat = Rmat, ...)$S
         colnames(S) <- paste0("seed_", i, "_", 1:nc)
-
-        S
+        
+        return(S)
     }
-
-    parallel::stopCluster(cl)
+    
+    S_all <- bplapply(1:n_runs, .ica_random, BPPARAM = BPPARAM)
+    S_all <- do.call(cbind, S_all)
 
     # Get correlations between factors and resulting clusters
     S_cor <- abs(cor(S_all))
@@ -145,26 +142,32 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
 }
 
 estimate_components <- function(X, min_components=10, max_components=60, by=2,
-                                min_mean_stability = 0.85,
-                                center_X=TRUE, scale_X=FALSE, ...) {
+                                min_mean_stability = 0.85, n_runs = 30,
+                                resample = FALSE,
+                                center_X=TRUE, scale_X=FALSE, verbose = TRUE, 
+                                BPPARAM = SerialParam(), ...) {
     if (inherits(X, "SummarizedExperiment")) {
         X <- assays(X, "normal")
     }
 
-    X <- t(scale(t(X), center=center_X, scale=scale_X))
-
     stabilities <- data.frame()
+    
+    if (verbose) tpb <- txtProgressBar(min = min_components, max = max_components, initial = min_components, style = 3)
 
     for (nc in seq(from = min_components, to = max_components, by = by)) {
 
-        ica_res <- run_ica(X, nc=nc, center_X=FALSE, scale_X=FALSE, ...)
+        ica_res <- run_ica(X, nc=nc, center_X=center_X, scale_X=scale_X, resample=resample, BPPARAM=BPPARAM, method="fastica", n_runs=n_runs, ...)
 
         stabilities <- rbind(stabilities, data.frame(
             nc = nc,
             comp = names(ica_res$stab),
             stability = ica_res$stab
         ))
+        
+        if (verbose) setTxtProgressBar(tpb, nc)
     }
+    
+    if (verbose) close(tpb)
 
     mean_stabilities <- aggregate(stabilities, list(stabilities$nc), mean)
     select_nc <- min(mean_stabilities$nc[mean_stabilities$stability >= min_mean_stability])
