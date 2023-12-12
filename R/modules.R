@@ -39,14 +39,15 @@ run_wgcna <- function(X, powers=1:30,
     }
 
     threshold <- WGCNA::pickSoftThreshold(t(X), RsquaredCut=min_r_squared, powerVector=powers,
-                                          corFnc=corFnc, networkType=networkType, verbose=verbose)
+                                          corFnc=corFnc, networkType=networkType,
+                                          blockSize = maxBlockSize, verbose=verbose)
 
     if (length(powers) > 1) {
 
         if (is.null(max_mean_connectivity)) {
             power <- threshold$fitIndices$powerEstimate
         } else {
-            which_power <- threshold$fitIndices$SFT.R.sq > min_r_squared & threshold$fitIndices$mean.k. < max_mean_connectivity
+            which_power <- which(threshold$fitIndices$SFT.R.sq > min_r_squared & threshold$fitIndices$mean.k. < max_mean_connectivity)
 
             if (length(which_power) == 0)
                 stop("No power with r_squared > ", min_r_squared, " and mean connectivity < ", max_mean_connectivity)
