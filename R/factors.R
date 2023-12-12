@@ -63,7 +63,7 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
 .stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, ...) {
 
     .ica_random <- function(i, nc, method, resample) {
-        
+
         # Randomly initialises ICA
         set.seed(i)
         Rmat = matrix(rnorm(nc ** 2), nrow = nc, ncol = nc)
@@ -73,11 +73,11 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
         } else {
             X_bs <- X
         }
-        
+
         # Get ICA loadings for given initialisation (and possibly bootstrap resample)
         S <- ica::ica(X_bs, nc=nc, method=method, center=FALSE, Rmat = Rmat, ...)$S
         colnames(S) <- paste0("seed_", i, "_", 1:nc)
-        
+
         return(S)
     }
 
@@ -136,17 +136,19 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
     return(M)
 }
 
-estimate_components <- function(X, min_components=10, max_components=60, by=2,
-                                min_mean_stability = 0.85, n_runs = 30,
-                                resample = FALSE,
-                                center_X=TRUE, scale_X=FALSE, verbose = TRUE, 
-                                BPPARAM = SerialParam(), ...) {
+estimate_dimensionality <- function(X, min_components=10, max_components=60,
+                                    by=2, n_runs = 30, resample = FALSE,
+                                    min_mean_stability = ifelse(resample, NULL, 0.85),
+                                    min_stability = ifelse(resample, 0.3, 0.15),
+                                    center_X=TRUE, scale_X=FALSE,
+                                    BPPARAM = SerialParam(),
+                                    verbose = TRUE, ...) {
     if (inherits(X, "SummarizedExperiment")) {
         X <- assay(X, "normal")
     }
 
     stabilities <- data.frame()
-    
+
     if (verbose) tpb <- txtProgressBar(min = min_components, max = max_components, initial = min_components, style = 3)
 
     for (nc in seq(from = min_components, to = max_components, by = by)) {
@@ -158,14 +160,49 @@ estimate_components <- function(X, min_components=10, max_components=60, by=2,
             comp = names(ica_res$stab),
             stability = ica_res$stab
         ))
-        
+
         if (verbose) setTxtProgressBar(tpb, nc)
     }
-    
+
     if (verbose) close(tpb)
 
-    mean_stabilities <- aggregate(stabilities, list(stabilities$nc), mean)
-    select_nc <- min(mean_stabilities$nc[mean_stabilities$stability >= min_mean_stability])
+    if (!is.null(min_mean_stability)) {
+        # mean_stabilities <- aggregate(stabilities, list(stabilities$nc), mean)
+        # select_nc <- min(mean_stabilities$nc[mean_stabilities$stability >= min_mean_stability])
+    } else {
+        select_nc <- NULL
+    }
 
-    return(list(stabilities = stabilities, select_nc = select_nc))
+    return(list("stability" = stabilities, "select_nc" = select_nc))
+}
+
+#' Plot component stability as a function of the number of components
+#'
+#' @references MSTD
+#' @import patchwork
+make_stability_plot <- function(stability, plot_path, height = 4, width = 6, ...) {
+
+    if (is.list(stability)) stability <- stability[["stability"]]
+
+    stab_plot <- ggplot(stability, aes(comp, stability, group = nc)) +
+        geom_line() +
+        ylim(c(0,1)) +
+        ylab("Component stability") +
+        xlab("Component number")
+
+    mean_stab_plot <- ggplot(aggregate(stability, list(stability$nc), mean), aes(nc, stability, group = 1)) +
+        geom_line() +
+        ylim(c(0,1)) +
+        ylab("Mean component stability") +
+        xlab("Number of components")
+
+    combined_plot <- stab_plot + mean_stab_plot
+
+    if (!is.null(plot_path)) ggsave(plot_path, combined_plot, ...)
+
+    return(list(
+        "combined_plot" = combined_plot,
+        "stability_plot" = stab_plot,
+        "mean_plot" = mean_stab_plot
+    ))
 }
