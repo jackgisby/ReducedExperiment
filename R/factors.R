@@ -31,14 +31,15 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
                     method=ifelse(use_stability, "fast", "imax"),
                     center_X=TRUE, scale_X=FALSE,
                     reorient_skewed=TRUE, seed=1,
-                    scale_components=TRUE, ...) {
+                    scale_components=TRUE, BPPARAM = SerialParam(),
+                    ...) {
     set.seed(seed)
 
     if (center_X | scale_X)
         {X <- t(scale(t(X), center=center_X, scale=scale_X))}
 
     if (use_stability) {
-        ica_res <- .stability_ica(X, nc=nc, resample=resample, method=method, ...)
+        ica_res <- .stability_ica(X, nc=nc, resample=resample, method=method, BPPARAM=BPPARAM, ...)
     } else {
         if (resample) stop("Cannot use resampling approach when `use_stability` is FALSE")
         ica_res <- list(S = ica::ica(X, nc=nc, method=method, center=FALSE, ...)$S)
@@ -58,15 +59,15 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
 }
 
 #' Stability ICA method
-#' @importFrom foreach %dopar%
+#' @import ica, BiocParallel
 .stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, ...) {
-    
-    .ica_random <- function(i) {
+
+    .ica_random <- function(i, nc, method, resample) {
         
         # Randomly initialises ICA
         set.seed(i)
         Rmat = matrix(rnorm(nc ** 2), nrow = nc, ncol = nc)
-        
+
         if (resample) {
             X_bs <- X[, sample(ncol(X), replace = TRUE)]
         } else {
@@ -79,8 +80,8 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
         
         return(S)
     }
-    
-    S_all <- bplapply(1:n_runs, .ica_random, BPPARAM = BPPARAM)
+
+    S_all <- BiocParallel::bplapply(1:n_runs, .ica_random, BPPARAM = BPPARAM, nc=nc, method=method, resample=resample)
     S_all <- do.call(cbind, S_all)
 
     # Get correlations between factors and resulting clusters
@@ -96,17 +97,11 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
         cluster_labels <- names(S_clust)[S_clust == comp]
         non_cluster_labels <- names(S_clust)[!names(S_clust) %in% cluster_labels]
 
-        # TODO: delete temporary approach
-
         # Average intra-cluster similarity
-        aics_temp = (1 / length(cluster_labels) ** 2) * sum(S_cor[cluster_labels, cluster_labels])
         aics = mean(S_cor[cluster_labels, cluster_labels])
-        stopifnot(all.equal(aics_temp, aics))
 
         # Average extra-cluster similarity
-        aecs_temp = (1 / (length(non_cluster_labels) * length(cluster_labels))) * sum(S_cor[cluster_labels, non_cluster_labels])
         aecs = mean(S_cor[cluster_labels, non_cluster_labels])
-        stopifnot(all.equal(aecs_temp, aecs))
 
         stabilities <- c(stabilities, aics - aecs)
 
@@ -147,7 +142,7 @@ estimate_components <- function(X, min_components=10, max_components=60, by=2,
                                 center_X=TRUE, scale_X=FALSE, verbose = TRUE, 
                                 BPPARAM = SerialParam(), ...) {
     if (inherits(X, "SummarizedExperiment")) {
-        X <- assays(X, "normal")
+        X <- assay(X, "normal")
     }
 
     stabilities <- data.frame()
@@ -156,7 +151,7 @@ estimate_components <- function(X, min_components=10, max_components=60, by=2,
 
     for (nc in seq(from = min_components, to = max_components, by = by)) {
 
-        ica_res <- run_ica(X, nc=nc, center_X=center_X, scale_X=scale_X, resample=resample, BPPARAM=BPPARAM, method="fastica", n_runs=n_runs, ...)
+        ica_res <- run_ica(X, nc=nc, center_X=center_X, scale_X=scale_X, use_stability=TRUE, resample=resample, BPPARAM=BPPARAM, method="fast", n_runs=n_runs, ...)
 
         stabilities <- rbind(stabilities, data.frame(
             nc = nc,
