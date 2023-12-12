@@ -28,8 +28,7 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, ...)
 #' Run ICA for a data matrix
 #' @export
 run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
-                    min_stability=NULL,
-                    method=ifelse(use_stability, "fast", "imax"),
+                    method="fast", min_stability=NULL,
                     center_X=TRUE, scale_X=FALSE,
                     reorient_skewed=TRUE, seed=1,
                     scale_components=TRUE, BPPARAM = SerialParam(),
@@ -148,8 +147,7 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
 
 estimate_stability <- function(X, min_components=10, max_components=60,
                                     by=2, n_runs = 30, resample = FALSE,
-                                    min_mean_stability = ifelse(resample, NULL, 0.85),
-                                    min_stability = ifelse(resample, 0.3, 0.15),
+                                    min_mean_stability = NULL,
                                     center_X=TRUE, scale_X=FALSE,
                                     BPPARAM = SerialParam(),
                                     verbose = TRUE, ...) {
