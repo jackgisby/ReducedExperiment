@@ -28,6 +28,7 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, ...)
 #' Run ICA for a data matrix
 #' @export
 run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
+                    min_stability=NULL,
                     method=ifelse(use_stability, "fast", "imax"),
                     center_X=TRUE, scale_X=FALSE,
                     reorient_skewed=TRUE, seed=1,
@@ -39,9 +40,12 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
         {X <- t(scale(t(X), center=center_X, scale=scale_X))}
 
     if (use_stability) {
-        ica_res <- .stability_ica(X, nc=nc, resample=resample, method=method, BPPARAM=BPPARAM, ...)
+        ica_res <- .stability_ica(X, nc=nc, resample=resample, method=method, BPPARAM=BPPARAM, min_stability=min_stability, ...)
+
     } else {
         if (resample) stop("Cannot use resampling approach when `use_stability` is FALSE")
+        if (!is.null(min_stability)) stop("Cannot apply `min_stability` when `use_stability` is FALSE")
+
         ica_res <- list(S = ica::ica(X, nc=nc, method=method, center=FALSE, ...)$S)
     }
 
@@ -60,7 +64,7 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
 
 #' Stability ICA method
 #' @import ica, BiocParallel
-.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, ...) {
+.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, min_stability, ...) {
 
     .ica_random <- function(i, nc, method, resample) {
 
@@ -109,9 +113,15 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
         centrotypes[[comp]] <- S_all[, cluster_labels[which_is_centrotype]]
     }
 
-    idx <- order(stabilities, decreasing = TRUE)
-    centrotypes <- centrotypes[, idx]
-    stabilities <- stabilities[idx]
+    stability_order <- order(stabilities, decreasing = TRUE)
+    centrotypes <- centrotypes[, stability_order]
+    stabilities <- stabilities[stability_order]
+
+    if (!is.null(min_stability)) {
+        above_min_stability <- which(stabilities > min_stability)
+        centrotypes <- centrotypes[, above_min_stability]
+        stabilities <- stabilities[above_min_stability]
+    }
 
     return(list(stab = stabilities, S = centrotypes))
 }
@@ -136,7 +146,7 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
     return(M)
 }
 
-estimate_dimensionality <- function(X, min_components=10, max_components=60,
+estimate_stability <- function(X, min_components=10, max_components=60,
                                     by=2, n_runs = 30, resample = FALSE,
                                     min_mean_stability = ifelse(resample, NULL, 0.85),
                                     min_stability = ifelse(resample, 0.3, 0.15),
@@ -167,13 +177,13 @@ estimate_dimensionality <- function(X, min_components=10, max_components=60,
     if (verbose) close(tpb)
 
     if (!is.null(min_mean_stability)) {
-        # mean_stabilities <- aggregate(stabilities, list(stabilities$nc), mean)
-        # select_nc <- min(mean_stabilities$nc[mean_stabilities$stability >= min_mean_stability])
+        mean_stabilities <- aggregate(stabilities, list(stabilities$nc), mean)
+        select_nc <- min(mean_stabilities$nc[mean_stabilities$stability >= min_mean_stability])
     } else {
         select_nc <- NULL
     }
 
-    return(list("stability" = stabilities, "select_nc" = select_nc))
+    return(list("stability" = stabilities, "selected_nc" = select_nc))
 }
 
 #' Plot component stability as a function of the number of components
