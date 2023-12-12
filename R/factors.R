@@ -28,7 +28,8 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, ...)
 #' Run ICA for a data matrix
 #' @export
 run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
-                    method="fast", min_stability=NULL,
+                    method="fast", stability_threshold=NULL,
+                    n_runs=30,
                     center_X=TRUE, scale_X=FALSE,
                     reorient_skewed=TRUE, seed=1,
                     scale_components=TRUE, BPPARAM = SerialParam(),
@@ -39,11 +40,11 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
         {X <- t(scale(t(X), center=center_X, scale=scale_X))}
 
     if (use_stability) {
-        ica_res <- .stability_ica(X, nc=nc, resample=resample, method=method, BPPARAM=BPPARAM, min_stability=min_stability, ...)
+        ica_res <- .stability_ica(X, nc=nc, resample=resample, method=method, stability_threshold=stability_threshold, n_runs=n_runs, BPPARAM=BPPARAM, ...)
 
     } else {
         if (resample) stop("Cannot use resampling approach when `use_stability` is FALSE")
-        if (!is.null(min_stability)) stop("Cannot apply `min_stability` when `use_stability` is FALSE")
+        if (!is.null(stability_threshold)) stop("Cannot apply `stability_threshold` when `use_stability` is FALSE")
 
         ica_res <- list(S = ica::ica(X, nc=nc, method=method, center=FALSE, ...)$S)
     }
@@ -63,7 +64,7 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
 
 #' Stability ICA method
 #' @import ica, BiocParallel
-.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, min_stability, ...) {
+.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, stability_threshold, ...) {
 
     .ica_random <- function(i, nc, method, resample) {
 
@@ -116,10 +117,10 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
     centrotypes <- centrotypes[, stability_order]
     stabilities <- stabilities[stability_order]
 
-    if (!is.null(min_stability)) {
-        above_min_stability <- which(stabilities > min_stability)
-        centrotypes <- centrotypes[, above_min_stability]
-        stabilities <- stabilities[above_min_stability]
+    if (!is.null(stability_threshold)) {
+        above_stability_threshold <- which(stabilities > stability_threshold)
+        centrotypes <- centrotypes[, above_stability_threshold]
+        stabilities <- stabilities[above_stability_threshold]
     }
 
     return(list(stab = stabilities, S = centrotypes))
@@ -147,7 +148,7 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
 
 estimate_stability <- function(X, min_components=10, max_components=60,
                                     by=2, n_runs = 30, resample = FALSE,
-                                    min_mean_stability = NULL,
+                                    mean_stability_threshold = NULL,
                                     center_X=TRUE, scale_X=FALSE,
                                     BPPARAM = SerialParam(),
                                     verbose = TRUE, ...) {
@@ -165,7 +166,8 @@ estimate_stability <- function(X, min_components=10, max_components=60,
 
         stabilities <- rbind(stabilities, data.frame(
             nc = nc,
-            comp = names(ica_res$stab),
+            component_name = names(ica_res$stab),
+            component_number = as.numeric(gsub("factor_", "", names(ica_res$stab))),
             stability = ica_res$stab
         ))
 
@@ -174,9 +176,9 @@ estimate_stability <- function(X, min_components=10, max_components=60,
 
     if (verbose) close(tpb)
 
-    if (!is.null(min_mean_stability)) {
+    if (!is.null(mean_stability_threshold)) {
         mean_stabilities <- aggregate(stabilities, list(stabilities$nc), mean)
-        select_nc <- min(mean_stabilities$nc[mean_stabilities$stability >= min_mean_stability])
+        select_nc <- min(mean_stabilities$nc[mean_stabilities$stability >= mean_stability_threshold])
     } else {
         select_nc <- NULL
     }
@@ -187,22 +189,34 @@ estimate_stability <- function(X, min_components=10, max_components=60,
 #' Plot component stability as a function of the number of components
 #'
 #' @references MSTD
-#' @import patchwork
-make_stability_plot <- function(stability, plot_path, height = 4, width = 6, ...) {
+#' @import patchwork, ggplot2
+plot_stability <- function(stability, plot_path,
+                           stability_threshold=NULL, mean_stability_threshold=NULL,
+                           height = 4, width = 10, ...) {
 
     if (is.list(stability)) stability <- stability[["stability"]]
 
-    stab_plot <- ggplot(stability, aes(comp, stability, group = nc)) +
+    stab_plot <- ggplot(stability, aes(component_number, stability, group = nc)) +
         geom_line() +
         ylim(c(0,1)) +
         ylab("Component stability") +
         xlab("Component number")
+
+    if (!is.null(stability_threshold)) {
+        stab_plot <- stab_plot +
+            geom_hline(yintercept = stability_threshold)
+    }
 
     mean_stab_plot <- ggplot(aggregate(stability, list(stability$nc), mean), aes(nc, stability, group = 1)) +
         geom_line() +
         ylim(c(0,1)) +
         ylab("Mean component stability") +
         xlab("Number of components")
+
+    if (!is.null(mean_stability_threshold)) {
+        mean_stab_plot <- mean_stab_plot +
+            geom_hline(yintercept = mean_stability_threshold)
+    }
 
     combined_plot <- stab_plot + mean_stab_plot
 
