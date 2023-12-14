@@ -53,14 +53,20 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp",
 
     if (!is.null(min_genes)) {
         enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$Count >= min_genes) ,]
-        enrich_res_single@result$qvalue <- NULL
     }
 
     enrich_res_single@result$p.adjust <- p.adjust(enrich_res_single@result$pvalue, method=adj_method)
+
+
     enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$p.adjust < p_cutoff) ,]
 
     if (nrow(enrich_res_single@result) >= 1) {
         enrich_res_single@result$adj_method <- adj_method
+        enrich_res_single@result$qvalue <- NA
+
+        if ("pvalueCutoff" %in% slotNames(enrich_res_single)) {
+            enrich_res_single@pvalueCutoff <- p_cutoff
+        }
     }
 
     return(enrich_res_single)
