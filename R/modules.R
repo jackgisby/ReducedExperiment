@@ -6,7 +6,7 @@ identify_modules <- function(X, ...)
         X <- SummarizedExperiment(assays = list("normal" = X))
     }
 
-    wgcna_res <- run_wgcna(assay(X, "normal"), ...)
+    wgcna_res <- run_wgcna(assay(X, "normal"), return_full_output=FALSE, ...)
     reduced_set <- .se_to_me(X, reduced=as.matrix(wgcna_res$E), assignments=wgcna_res$assignments, dendrogram=wgcna_res$dendrogram, threshold=wgcna_res$threshold)
 
     return(reduced_set)
