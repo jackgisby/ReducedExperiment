@@ -57,14 +57,15 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
     # Add factors / sample names
     rownames(ica_res$M) <- colnames(X)
     rownames(ica_res$S) <- rownames(X)
-    names(ica_res$stab) <- colnames(ica_res$M) <- colnames(ica_res$S) <- paste0("factor_", 1:ncol(ica_res$S))
-
+    colnames(ica_res$M) <- colnames(ica_res$S) <- paste0("factor_", 1:ncol(ica_res$S))
+    if (use_stability) names(ica_res$stab) <- colnames(ica_res$S)
+    
     return(ica_res)
 }
 
 #' Stability ICA method
 #' @import ica, BiocParallel
-.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, stability_threshold, ...) {
+.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, stability_threshold, BPOPTIONS = bpoptions(), ...) {
 
     .ica_random <- function(i, nc, method, resample) {
 
@@ -80,7 +81,9 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
 
         # Get ICA loadings for given initialisation (and possibly bootstrap resample)
         S <- ica::ica(X_bs, nc=nc, method=method, center=FALSE, Rmat = Rmat, ...)$S
-        colnames(S) <- paste0("seed_", i, "_", 1:nc)
+        colnames(S) <- paste0("seed_", i, "_", 1:ncol(S))
+        
+        if (ncol(S) != nc) warning("ICA did not return expected number of factors, potentially indicating a rank deficiency in the input")
 
         return(S)
     }
@@ -178,7 +181,7 @@ estimate_stability <- function(X, min_components=10, max_components=60,
 
     if (!is.null(mean_stability_threshold)) {
         mean_stabilities <- aggregate(stabilities, list(stabilities$nc), mean)
-        select_nc <- min(mean_stabilities$nc[mean_stabilities$stability >= mean_stability_threshold])
+        select_nc <- max(mean_stabilities$nc[mean_stabilities$stability >= mean_stability_threshold])
     } else {
         select_nc <- NULL
     }
@@ -220,7 +223,7 @@ plot_stability <- function(stability, plot_path,
 
     combined_plot <- stab_plot + mean_stab_plot
 
-    if (!is.null(plot_path)) ggsave(plot_path, combined_plot, ...)
+    if (!is.null(plot_path)) ggsave(plot_path, combined_plot, height=height, width=width, ...)
 
     return(list(
         "combined_plot" = combined_plot,
