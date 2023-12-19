@@ -20,7 +20,7 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
 
     obj_dims <- dim(object)
 
-    # Features
+    # Check feature names
     if (obj_dims[1] != dim(loadings(object))[1])
         msg <- c(msg, "Loadings have invalid row dimensions")
     if (!all.equal(featureNames(object), rownames(loadings(object))))
@@ -34,14 +34,23 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
         msg <- c(msg, "Reduced data and loadings have incompatible column names (factor names)")
 
     # Center / Scale
-    if (!is.logical(object@scale))
+    if (!is.logical(object@scale)) {
         if (!all.equal(rownames(object), names(object@scale)))
             msg <- c(msg, "Scaling vector has invalid names")
-    if (!is.logical(object@scale))
+    }
+    if (!is.logical(object@scale)) {
         if (!all.equal(rownames(object), names(object@center)))
             msg <- c(msg, "Centering vector has invalid names")
+    }
 
-    # TODO: stability
+    # Stability
+    if (!is.null(stability(object))) {
+        if (length(stability(object)) != nComponents(object))
+            msg <- c(msg, "Number of components do not match with component stability")
+
+        if (!all.equal(names(stability(object)), componentNames(object)))
+            msg <- c(msg, "Component names do not match with component stability")
+    }
 
     return(if (is.null(msg)) TRUE else msg)
 })

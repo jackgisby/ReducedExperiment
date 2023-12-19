@@ -15,7 +15,7 @@ S4Vectors::setValidity2("ModularExperiment", function(object) {
 
     obj_dims <- dim(object)
 
-    # Features
+    # Assignments
     if (obj_dims[1] != length(assignments(object)))
         msg <- c(msg, "Assignments have invalid length")
 
@@ -106,20 +106,12 @@ setMethod("runEnrich", c("ModularExperiment"),
     if (method == "overrepresentation") {
 
         modules <- assignments(x, as_list=TRUE)
-        
+
         enrich_res <- reduced_oa(modules, ...)
 
     } else {
         stop("Enrichment method not recognised")
     }
-
-    # for (comp in names(enrich_res)) {
-    #     if (!is.null(enrich_res[[comp]]@result)) {
-    #         if (nrow(enrich_res[[comp]]@result) >= 1) {
-    #             enrich_res[[comp]]@result$setting <- TRUE
-    #         }
-    #     }
-    # }
 
     if (as_dataframe)  {
         enrich_res <- lapply(enrich_res, function(x) {x@result})

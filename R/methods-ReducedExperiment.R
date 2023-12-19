@@ -13,7 +13,7 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
 
     obj_dims <- dim(object)
 
-    # Samples
+    # Check reduced matrix
     if (obj_dims[2] != dim(reduced(object))[1])
         msg <- c(msg, "Reduced data have invalid row dimensions")
 
@@ -48,7 +48,7 @@ setMethod("sampleNames", "ReducedExperiment", function(x) {return(rownames(colDa
 setMethod("show", "ReducedExperiment" ,
           function(object) {
               callNextMethod()
-              cat(nComponents(object), " components\n")
+              cat(nComponents(object), "components\n")
           })
 
 setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
@@ -123,15 +123,15 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
 
     biomart_out <- biomart_out[which(!duplicated(biomart_out[[gene_id_type]])),]
     rownames(biomart_out) <- biomart_out[[gene_id_type]]
-    
+
     # TODO: improve this messy approach
     row_data_merged <- merge(rowData(x), biomart_out, by=gene_id_type, all.x=TRUE)
     rownames(row_data_merged) <- row_data_merged[[gene_id_type]]
     row_data_merged <- row_data_merged[match(rowData(x)[[gene_id_type]], row_data_merged[[gene_id_type]]) ,]
-    
+
     stopifnot(all.equal(row_data_merged[[gene_id_type]], rownames(row_data_merged)))
     stopifnot(all.equal(rownames(x), rownames(row_data_merged)))
-    
+
     rowData(x) <- row_data_merged
 
     return(x)
