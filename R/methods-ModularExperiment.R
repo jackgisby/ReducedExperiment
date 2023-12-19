@@ -67,6 +67,8 @@ setReplaceMethod("moduleNames", "ModularExperiment", function(x, value) {
     return(x)
 })
 
+setMethod("nModules", "ModularExperiment", function(x) {dim(x)[3]})
+
 setMethod("dendrogram", "ModularExperiment", function(x) {
     return(x@dendrogram)
 })
