@@ -1,6 +1,7 @@
 
 setClassUnion("numeric_OR_NULL", c("numeric", "NULL"))
 setClassUnion("data.frame_OR_NULL", c("data.frame", "NULL"))
+setClassUnion("logical_OR_numeric", c("logical", "numeric"))
 
 #' @import methods
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
@@ -16,7 +17,7 @@ setClassUnion("data.frame_OR_NULL", c("data.frame", "NULL"))
 .FactorisedExperiment <- setClass(
     "FactorisedExperiment",
     contains="ReducedExperiment",
-    representation=representation(loadings="matrix", stability="numeric_OR_NULL", scale="ANY", center="ANY"),
+    representation=representation(loadings="matrix", stability="numeric_OR_NULL", scale="logical_OR_numeric", center="logical_OR_numeric"),
     prototype=prototype(loadings=matrix(), stability=numeric(), scale=TRUE, center=TRUE)
 )
 
