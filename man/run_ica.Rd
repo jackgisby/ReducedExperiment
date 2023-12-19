@@ -9,12 +9,15 @@ run_ica(
   nc,
   use_stability = TRUE,
   resample = FALSE,
-  method = ifelse(stability_approach == "none", "imax", "fast"),
+  method = "fast",
+  stability_threshold = NULL,
+  n_runs = 30,
   center_X = TRUE,
   scale_X = FALSE,
   reorient_skewed = TRUE,
   seed = 1,
   scale_components = TRUE,
+  BPPARAM = SerialParam(),
   ...
 )
 }

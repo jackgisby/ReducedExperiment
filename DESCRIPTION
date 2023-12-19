@@ -1,4 +1,4 @@
-Package: omicsDimReduce
+Package: ReducedExperiment
 Type: Package
 Title: Tools for investigating dimensionally reduced expression data
 Version: 0.0.0.9000
@@ -41,5 +41,5 @@ Suggests:
     BiocCheck,
     BiocStyle,
     airway
-URL: https://github.com/jackgisby/omicsDimReduce
-BugReports: https://github.com/jackgisby/omicsDimReduce/issues
+URL: https://github.com/jackgisby/ReducedExperiment
+BugReports: https://github.com/jackgisby/ReducedExperiment/issues

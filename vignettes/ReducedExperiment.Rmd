@@ -1,5 +1,5 @@
 ---
-title: "omicsDimReduce"
+title: "ReducedExperiment"
 author: "Jack Gisby"
 date: "`r Sys.Date()`" 
 output:
@@ -7,7 +7,7 @@ output:
         number_sections: yes
         toc: true
 vignette: >
-    %\VignetteIndexEntry{omicsDimReduce}
+    %\VignetteIndexEntry{ReducedExperiment}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8} 
 ---
@@ -15,14 +15,14 @@ vignette: >
 ```{r setup, include = FALSE}
 BiocStyle::markdown()
 
-library(omicsDimReduce)
+library(ReducedExperiment)
 
 dir.create("tempOutput")
 ```
 
 # Introduction
 
-```{r omicsDimReduceInstall, eval=FALSE}
+```{r ReducedExperimentInstall, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))  {
     install.packages("BiocManager")
 }
@@ -30,5 +30,5 @@ if (!requireNamespace("BiocManager", quietly = TRUE))  {
 # The following initializes usage of Bioc devel
 BiocManager::install(version='devel')
 
-BiocManager::install("omicsDimReduce")
+BiocManager::install("ReducedExperiment")
 ```

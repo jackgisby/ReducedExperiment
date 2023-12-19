@@ -6,10 +6,13 @@
 \usage{
 .stability_ica(
   X,
-  nc = nc,
-  resample = resample,
-  method = method,
-  n_runs = 30,
+  nc,
+  resample,
+  method,
+  n_runs,
+  BPPARAM,
+  stability_threshold,
+  BPOPTIONS = bpoptions(),
   ...
 )
 }

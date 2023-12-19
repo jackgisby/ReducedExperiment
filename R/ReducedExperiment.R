@@ -1,5 +1,5 @@
 #' @title
-#' omicsDimReduce
+#' ReducedExperiment
 #'
 #' @description
 #' A toolbox for reducing the dimensionality of expression data and
@@ -7,10 +7,7 @@
 #' analysis (ICA) and weighted gene correlation network analysis (WGCNA).
 #'
 #' @name
-#' omicsDimReduce
-#'
-#' @seealso
-#' \code{\link{reduce_data}}
+#' ReducedExperiment
 #'
 #' @author
 #' Jack Gisby
