@@ -26,6 +26,7 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, ...)
 }
 
 #' Run ICA for a data matrix
+#' @import ica
 #' @export
 run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
                     method="fast", stability_threshold=NULL,
@@ -59,12 +60,13 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
     rownames(ica_res$S) <- rownames(X)
     colnames(ica_res$M) <- colnames(ica_res$S) <- paste0("factor_", 1:ncol(ica_res$S))
     if (use_stability) names(ica_res$stab) <- colnames(ica_res$S)
-    
+
     return(ica_res)
 }
 
 #' Stability ICA method
-#' @import ica, BiocParallel
+#' @import ica
+#' @import BiocParallel
 .stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, stability_threshold, BPOPTIONS = bpoptions(), ...) {
 
     .ica_random <- function(i, nc, method, resample) {
@@ -82,7 +84,7 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
         # Get ICA loadings for given initialisation (and possibly bootstrap resample)
         S <- ica::ica(X_bs, nc=nc, method=method, center=FALSE, Rmat = Rmat, ...)$S
         colnames(S) <- paste0("seed_", i, "_", 1:ncol(S))
-        
+
         if (ncol(S) != nc) warning("ICA did not return expected number of factors, potentially indicating a rank deficiency in the input")
 
         return(S)
@@ -192,7 +194,11 @@ estimate_stability <- function(X, min_components=10, max_components=60,
 #' Plot component stability as a function of the number of components
 #'
 #' @references MSTD
-#' @import patchwork, ggplot2
+#'
+#' @import ggplot2
+#' @import patchwork
+#'
+#' @export
 plot_stability <- function(stability, plot_path,
                            stability_threshold=NULL, mean_stability_threshold=NULL,
                            height = 4, width = 10, ...) {

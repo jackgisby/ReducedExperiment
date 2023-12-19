@@ -32,7 +32,9 @@ Imports:
     biomaRt,
     stats,
     grDevices,
-    foreach
+    BiocParallel,
+    ggplot2,
+    patchwork
 Suggests:
     knitr,
     rmarkdown,
