@@ -41,9 +41,21 @@ setReplaceMethod("componentNames", "ReducedExperiment", function(x, value) {
     return(x)
 })
 
-# TODO: setters
 setMethod("featureNames", "ReducedExperiment", function(x) {return(names(x))})
-setMethod("sampleNames", "ReducedExperiment", function(x) {return(rownames(colData(x)))})
+
+setReplaceMethod("featureNames", "ReducedExperiment", function(x, value) {
+    names(x) <- value
+    validObject(x)
+    return(x)
+})
+
+setMethod("sampleNames", "ReducedExperiment", function(x) {return(colnames(x))})
+
+setReplaceMethod("sampleNames", "ReducedExperiment", function(x, value) {
+    rownames(reduced(x)) <- colnames(x) <- value
+    validObject(x)
+    return(x)
+})
 
 setMethod("show", "ReducedExperiment" ,
           function(object) {

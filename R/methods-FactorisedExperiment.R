@@ -44,7 +44,8 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     }
 
     # Stability
-    if (!is.null(stability(object))) {
+    if (!is.null(stability(object)) & length(stability(object)) > 0) {
+
         if (length(stability(object)) != nComponents(object))
             msg <- c(msg, "Number of components do not match with component stability")
 
@@ -65,6 +66,13 @@ setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
     return(x)
 })
 
+setReplaceMethod("featureNames", "FactorisedExperiment", function(x, value) {
+    callNextMethod(x, value)
+    rownames(x@loadings) <- names(x)
+    validObject(x)
+    return(x)
+})
+
 setMethod("stability", "FactorisedExperiment", function(x) {return(x@stability)})
 
 setReplaceMethod("stability", "FactorisedExperiment", function(x, value) {
@@ -79,6 +87,8 @@ setReplaceMethod("componentNames", "FactorisedExperiment", function(x, value) {
     validObject(x)
     return(x)
 })
+
+
 
 setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=FALSE)

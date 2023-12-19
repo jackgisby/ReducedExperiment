@@ -16,14 +16,35 @@ test_that("Build and subset", {
 
     rrs_subset <- rrs[5:10, 50:90, 1:2]
     expect_equal(dim(rrs_subset), c("Features" = 6, "Samples" = 41, "Components" = 2))
+    expect_equal(nComponents(rrs_subset), c("Components" = 2))
     expect_equal(rownames(reduced(rrs_subset)), sampleNames(rrs_subset))
     expect_equal(paste0("sample_", 50:90), sampleNames(rrs_subset))
 
     rrs_empy <- FactorisedExperiment()
     expect_equal(dim(rrs_empy), c("Features" = 0, "Samples" = 0, "Components" = 0))
-    expect_equal(loadings(rrs_empy), matrix(NA, 0, 0))
-    expect_equal(reduced(rrs_empy), matrix(NA, 0, 0))
+    expect_equal(loadings(rrs_empy), matrix(0, 0, 0))
+    expect_equal(reduced(rrs_empy), matrix(0, 0, 0))
     expect_equal(stability(rrs_empy), numeric(0))
-    expect_equal(scale(rrs_empy), FALSE)
-    expect_equal(center(rrs_empy), FALSE)
+    expect_equal(rrs_empy@scale, FALSE)
+    expect_equal(rrs_empy@center, FALSE)
+})
+
+test_that("Access and replace loadings", {
+
+})
+
+test_that("Access and replace stability", {
+
+})
+
+test_that("Access and replace component names", {
+
+})
+
+test_that("Predict and project", {
+
+})
+
+test_that("Get aligned features", {
+
 })
