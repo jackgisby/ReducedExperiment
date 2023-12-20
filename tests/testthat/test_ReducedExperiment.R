@@ -21,8 +21,8 @@ test_that("Build and subset", {
     expect_equal(nComponents(rrs_subset), c("Components" = 2))
     expect_equal(nSamples(rrs_subset), c("Samples" = 41))
     expect_equal(nFeatures(rrs_subset), c("Features" = 6))
-    expect_equal(ncol(rrs_subset), nSamples(rrs_subset))
-    expect_equal(nrow(rrs_subset), nFeatures(rrs_subset))
+    expect_true(ncol(rrs_subset) == nSamples(rrs_subset))
+    expect_true(nrow(rrs_subset) == nFeatures(rrs_subset))
     expect_equal(rownames(reduced(rrs_subset)), sampleNames(rrs_subset))
     expect_equal(paste0("sample_", 50:90), sampleNames(rrs_subset))
 
@@ -68,6 +68,7 @@ test_that("Access and replace component names", {
     rrs <- .createRandomisedReducedExperiment(i=300, j=100, k=10)
 
     expect_equal(componentNames(rrs), paste0("factor_", 1:10))
+    expect_equal(colnames(reduced(rrs)), paste0("factor_", 1:10))
 
     componentNames(rrs)[5] <- "new_name"
     expect_equal(componentNames(rrs)[5], "new_name")
@@ -79,13 +80,25 @@ test_that("Access and replace sample names", {
     rrs <- .createRandomisedReducedExperiment(i=300, j=100, k=10)
 
     expect_equal(sampleNames(rrs), paste0("sample_", 1:100))
+    expect_equal(rownames(colData(rrs)), paste0("sample_", 1:100))
+    expect_equal(colnames(assay(rrs, 1)), paste0("sample_", 1:100))
+    expect_equal(rownames(reduced(rrs)), paste0("sample_", 1:100))
 
     sampleNames(rrs)[5] <- "new_name"
     expect_equal(sampleNames(rrs)[5], "new_name")
+    expect_equal(rownames(colData(rrs))[5], "new_name")
+    expect_equal(colnames(assay(rrs, 1))[5], "new_name")
     expect_equal(rownames(reduced(rrs))[5], "new_name")
 })
 
 test_that("Access and replace feature names", {
+    rrs <- .createRandomisedReducedExperiment(i=300, j=100, k=10)
 
+    expect_equal(featureNames(rrs), paste0("gene_", 1:300))
+    expect_equal(rownames(assay(rrs, 1)), paste0("gene_", 1:300))
+
+    featureNames(rrs)[5] <- "new_name"
+    expect_equal(featureNames(rrs)[5], "new_name")
+    expect_equal(rownames(assay(rrs, 1))[5], "new_name")
 })
 

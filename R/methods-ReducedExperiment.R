@@ -13,11 +13,21 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
 
     obj_dims <- dim(object)
 
+    # Check sampleNames method matches with other methods
+    if (!all.equal(sampleNames(object), colnames(object)))
+        msg <- c(msg, "Reduced data have invalid row names")
+
+    # Check featureNames matches with other methods
+    if (!all.equal(featureNames(object), names(object)))
+        msg <- c(msg, "Feature names do not match with names")
+    if (!all.equal(featureNames(object), rownames(object)))
+        msg <- c(msg, "Feature names do not match with rownames")
+
     # Check reduced matrix
     if (obj_dims[2] != dim(reduced(object))[1])
         msg <- c(msg, "Reduced data have invalid row dimensions")
 
-    if (!all(sampleNames(object) == rownames(reduced(object))))
+    if (!all.equal(sampleNames(object), rownames(reduced(object))))
         msg <- c(msg, "Reduced data have invalid row names")
 
     return(if (is.null(msg)) TRUE else msg)

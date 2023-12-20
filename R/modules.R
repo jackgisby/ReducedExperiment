@@ -1,9 +1,13 @@
 #' Run WGCNA
 #' @export
-identify_modules <- function(X, ...)
+identify_modules <- function(X, assay_name="normal", ...)
 {
     if (!inherits(X, "SummarizedExperiment")) {
         X <- SummarizedExperiment(assays = list("normal" = X))
+    }
+
+    if (assay_name != "normal") {
+        assay(X, "normal") <- assay(X, assay_name)
     }
 
     wgcna_res <- run_wgcna(assay(X, "normal"), return_full_output=FALSE, ...)

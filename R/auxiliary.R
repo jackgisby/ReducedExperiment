@@ -31,11 +31,11 @@
 .createRandomisedModularExperiment <- function(i, j, k) {
 
     assignments <- paste0("gene_", 1:i)
-    names(assignments) <- paste0("module_", round(runif(i, 1, 4), 0))
+    names(assignments) <- paste0("module_", round(runif(i, 1, k), 0))
 
     return(ModularExperiment(
         assays = list("normal"=.makeRandomData(i, j, "gene", "sample")),
-        reduced = .makeRandomData(j, k, "sample", "factor"),
+        reduced = .makeRandomData(j, k, "sample", "module"),
         assignments = assignments
     ))
 }

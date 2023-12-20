@@ -1,9 +1,13 @@
 #' Apply dimensionality reduction using ICA
 #' @export
-estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, ...)
+estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, assay_name="normal", ...)
 {
     if (!inherits(X, "SummarizedExperiment")) {
         X <- SummarizedExperiment(assays = list("normal" = X))
+    }
+
+    if (assay_name != "normal") {
+        assay(X, "normal") <- assay(X, assay_name)
     }
 
     if ("transformed" %in% assayNames(X)) warning("Overwriting 'transformed' assay slot in X")
@@ -28,12 +32,13 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, ...)
 #' Run ICA for a data matrix
 #' @import ica
 #' @export
-run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
+run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
                     method="fast", stability_threshold=NULL,
-                    n_runs=30,
                     center_X=TRUE, scale_X=FALSE,
                     reorient_skewed=TRUE, seed=1,
-                    scale_components=TRUE, BPPARAM = SerialParam(),
+                    scale_components=TRUE,
+                    n_runs=30,
+                    BPPARAM = BiocParallel::SerialParam(),
                     ...) {
     set.seed(seed)
 
@@ -51,7 +56,7 @@ run_ica <- function(X, nc, use_stability=TRUE, resample=FALSE,
     }
 
     # Reorient and scale factors before recalculating M
-    if (reorient_skewed) {ica_res$S <- .reorient_factors(ica_res$S)}
+    if (reorient_skewed) ica_res$S <- .reorient_factors(ica_res$S)
     if (scale_components) ica_res$S <- scale(ica_res$S, center = FALSE)
     ica_res$M <- .project_ica(X, ica_res$S)
 

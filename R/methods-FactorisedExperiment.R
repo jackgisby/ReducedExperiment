@@ -6,7 +6,7 @@
 #' @importFrom SummarizedExperiment SummarizedExperiment
 FactorisedExperiment <- function(
         loadings = new("matrix"),
-        stability = new("numeric"),
+        stability = NULL,
         scale = FALSE,
         center = FALSE,
         ...)
@@ -20,7 +20,7 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
 
     obj_dims <- dim(object)
 
-    # Check feature names
+    # Check feature names/numbers
     if (obj_dims[1] != dim(loadings(object))[1])
         msg <- c(msg, "Loadings have invalid row dimensions")
     if (!all.equal(featureNames(object), rownames(loadings(object))))
@@ -33,7 +33,7 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     if (!all.equal(colnames(loadings(object)), colnames(reduced(object))))
         msg <- c(msg, "Reduced data and loadings have incompatible column names (factor names)")
 
-    # Center / Scale
+    # Center / Scale - check names matches feature names
     if (!is.logical(object@scale)) {
         if (!all.equal(rownames(object), names(object@scale)))
             msg <- c(msg, "Scaling vector has invalid names")
@@ -43,14 +43,17 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
             msg <- c(msg, "Centering vector has invalid names")
     }
 
-    # Stability
+    # Stability - check names/length matches
     if (!is.null(stability(object)) & length(stability(object)) > 0) {
 
         if (length(stability(object)) != nComponents(object))
             msg <- c(msg, "Number of components do not match with component stability")
 
-        if (!all.equal(names(stability(object)), componentNames(object)))
-            msg <- c(msg, "Component names do not match with component stability")
+        # If stability vector has names, check they are correct
+        if (!is.null(names(stability(object)))) {
+            if (!all.equal(names(stability(object)), componentNames(object)))
+                msg <- c(msg, "Component names do not match with component stability")
+        }
     }
 
     return(if (is.null(msg)) TRUE else msg)
@@ -67,8 +70,10 @@ setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
 })
 
 setReplaceMethod("featureNames", "FactorisedExperiment", function(x, value) {
-    callNextMethod(x, value)
-    rownames(x@loadings) <- names(x)
+    rownames(x@loadings) <- value
+    if (!is.logical(x@scale)) names(x@scale) <- value
+    if (!is.logical(x@center)) names(x@center) <- value
+    x <- callNextMethod(x, value)
     validObject(x)
     return(x)
 })
@@ -83,6 +88,7 @@ setReplaceMethod("stability", "FactorisedExperiment", function(x, value) {
 
 setReplaceMethod("componentNames", "FactorisedExperiment", function(x, value) {
     colnames(x@loadings) <- value
+    if (!is.null(x@stability)) names(x@stability) <- value
     x <- callNextMethod(x, value)
     validObject(x)
     return(x)
@@ -161,6 +167,7 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=
     if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
 
     if (is.null(z_cutoff) & is.null(n_features)) n_features <- nrow(S)
+    if (is.null(n_features)) n_features <- 0
     if (n_features > nrow(S)) n_features <- nrow(S)
 
     factor_features <- data.frame()
@@ -174,13 +181,15 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=
             which_features <- order(abs(S[,f]), decreasing = TRUE)[1:n_features]
         }
 
-        factor_features <- rbind(factor_features, data.frame(
-            component = f,
-            feature = rownames(S)[which_features],
-            value = S[,f][which_features],
-            loadings_scaled = scale_loadings,
-            loadings_centered = TRUE
-        ))
+        if (length(which_features) > 0) {
+            factor_features <- rbind(factor_features, data.frame(
+                component = f,
+                feature = rownames(S)[which_features],
+                value = S[,f][which_features],
+                loadings_scaled = scale_loadings,
+                loadings_centered = TRUE
+            ))
+        }
     }
 
     factor_features$z_cutoff = z_cutoff

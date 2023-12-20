@@ -45,8 +45,8 @@ setReplaceMethod("assignments", "ModularExperiment", function(x, value) {
 })
 
 setReplaceMethod("featureNames", "ModularExperiment", function(x, value) {
-    callNextMethod(x, value)
     x@assignments <- setNames(x@assignments, names(x))
+    callNextMethod(x, value)
     validObject(x)
     return(x)
 })
@@ -159,7 +159,7 @@ setMethod("calcEigengenes", c("ModularExperiment", "matrix"),
 
     eig <- WGCNA::moduleEigengenes(t(newdata), setNames(names(assignments(x)), assignments(x)), ...)
     colnames(eig$eigengenes) <- gsub("ME", "", colnames(eig$eigengenes))
-    return(eig$eigengenes)
+    return(as.matrix(eig$eigengenes))
 })
 
 setMethod("calcEigengenes", c("ModularExperiment", "data.frame"), function(x, newdata, ...) {
