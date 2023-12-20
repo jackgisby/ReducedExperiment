@@ -42,9 +42,10 @@ run_wgcna <- function(X, powers=1:30,
         stop("`corType` must be one of 'pearson', 'bicor'")
     }
 
-    threshold <- WGCNA::pickSoftThreshold(t(X), RsquaredCut=min_r_squared, powerVector=powers,
-                                          corFnc=corFnc, networkType=networkType,
-                                          blockSize = maxBlockSize, verbose=verbose)
+    threshold <- suppressWarnings(WGCNA::pickSoftThreshold(
+        t(X), RsquaredCut=min_r_squared, powerVector=powers, corFnc=corFnc,
+        networkType=networkType, blockSize = maxBlockSize, verbose=verbose)
+    )
 
     if (length(powers) > 1) {
 
