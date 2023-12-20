@@ -35,3 +35,15 @@ test_that("FactorisedExperiment enrichment", {
     enrich_res <- runEnrich(fe, method="overrepresentation", feature_id_col="ensembl_gene_id", as_dataframe=TRUE, p_cutoff=0.01, universe=rownames(fe))
     #TODO: Test enrich result?
 })
+
+test_that("ModularExperiment enrichment", {
+
+})
+
+test_that("Get MSGIDB data", {
+
+})
+
+test_that("Get common features", {
+
+})

@@ -1,6 +1,6 @@
 context("reduce_data")
 
-test_that("Reduce data", {
+test_that("Estimate factors", {
 
     random_expr <- .makeRandomData(50, 30, "gene", "sample")
     factor_exp <- estimate_factors(random_expr, method="ICA", nc=5, scale_X=FALSE)
@@ -17,3 +17,15 @@ test_that("Reduce data", {
 
     # projectData(factor_exp, .makeRandomData(50, 20, "gene", "sample"))
 })
+
+test_that("run_ica matches estimate_factors", {
+})
+
+test_that("Stability ICA", {
+
+})
+
+test_that("Estimate stability", {
+
+})
+
