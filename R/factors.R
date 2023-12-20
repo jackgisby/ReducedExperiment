@@ -160,7 +160,7 @@ estimate_stability <- function(X, min_components=10, max_components=60,
                                     by=2, n_runs = 30, resample = FALSE,
                                     mean_stability_threshold = NULL,
                                     center_X=TRUE, scale_X=FALSE,
-                                    BPPARAM = SerialParam(),
+                                    BPPARAM = BiocParallel::SerialParam(),
                                     verbose = TRUE, ...) {
     if (inherits(X, "SummarizedExperiment")) {
         X <- assay(X, "normal")
@@ -186,11 +186,15 @@ estimate_stability <- function(X, min_components=10, max_components=60,
 
     if (verbose) close(tpb)
 
+    select_nc <- NULL
+
     if (!is.null(mean_stability_threshold)) {
-        mean_stabilities <- aggregate(stabilities, list(stabilities$nc), mean)
-        select_nc <- max(mean_stabilities$nc[mean_stabilities$stability >= mean_stability_threshold])
-    } else {
-        select_nc <- NULL
+        mean_stabilities <- aggregate(stabilities$stability, list(stabilities$nc), mean)
+        colnames(mean_stabilities) <- c("nc", "stability")
+
+        if (any(mean_stabilities$stability >= mean_stability_threshold)) {
+            select_nc <- max(mean_stabilities$nc[mean_stabilities$stability >= mean_stability_threshold])
+        }
     }
 
     return(list("stability" = stabilities, "selected_nc" = select_nc))
