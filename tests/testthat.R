@@ -1,4 +1,4 @@
 library(testthat)
-library(omicsDimReduce)
+library(ReducedExperiment)
 
-test_check("omicsDimReduce")
+test_check("ReducedExperiment")
