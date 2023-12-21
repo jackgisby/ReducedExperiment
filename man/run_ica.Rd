@@ -7,17 +7,17 @@
 run_ica(
   X,
   nc,
-  use_stability = TRUE,
+  use_stability = FALSE,
   resample = FALSE,
   method = "fast",
   stability_threshold = NULL,
-  n_runs = 30,
   center_X = TRUE,
   scale_X = FALSE,
   reorient_skewed = TRUE,
   seed = 1,
   scale_components = TRUE,
-  BPPARAM = SerialParam(),
+  n_runs = 30,
+  BPPARAM = BiocParallel::SerialParam(),
   ...
 )
 }

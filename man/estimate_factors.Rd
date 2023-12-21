@@ -4,7 +4,14 @@
 \alias{estimate_factors}
 \title{Apply dimensionality reduction using ICA}
 \usage{
-estimate_factors(X, nc, center_X = TRUE, scale_X = FALSE, ...)
+estimate_factors(
+  X,
+  nc,
+  center_X = TRUE,
+  scale_X = FALSE,
+  assay_name = "normal",
+  ...
+)
 }
 \description{
 Apply dimensionality reduction using ICA
