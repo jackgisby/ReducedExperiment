@@ -63,12 +63,7 @@ test_that("Access and replace component/module names", {
 test_that("Eigengene calculation / projection / prediction", {
 
     # Use real data from airway package
-    data(airway, package="airway")
-    airway <- airway[apply(assay(airway, "counts"), 1, function(x) {all(x != 0)}) ,]
-    set.seed(2)
-    airway <- airway[sample(nrow(airway), 500) ,]
-    assay(airway, "normal") <- log(assay(airway, "counts") + 0.1)
-
+    airway <- .get_airway_data(n_features=500)
     airway_me <- identify_modules(airway, verbose=0, powers=21)
 
     # Check that projecting the data reproduces the original results

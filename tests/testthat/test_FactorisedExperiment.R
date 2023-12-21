@@ -163,9 +163,7 @@ test_that("Access and replace stability", {
 test_that("Predict and project", {
 
     # Use real data from airway package
-    data(airway, package="airway")
-    airway <- airway[apply(assay(airway, "counts"), 1, function(x) {all(x != 0)}) ,]
-    assay(airway, "normal") <- log(assay(airway, "counts") + 0.1)
+    airway <- .get_airway_data()
     airway_fe <- estimate_factors(airway, nc=2, seed=1, scale_components=FALSE, reorient_skewed=FALSE)
 
     # Check that projecting the data reproduces the original results
@@ -236,4 +234,17 @@ test_that("Get aligned features", {
     # Sanity check of factor 1 z cutoff approach
     aligned_features <- getAlignedFeatures(rrs, z_cutoff=1.5, n_features=NULL)
     expect_equal(aligned_features[[1]], names(loadings(rrs, scale_X=TRUE)[,1][abs(loadings(rrs, scale_X=TRUE)[,1]) > 1.5]))
+})
+
+test_that("Get gene IDs", {
+
+    airway <- .get_airway_data(n_features=500)
+    airway_fe <- estimate_factors(airway, nc=2, seed=1, use_stability=FALSE, method="imax")
+
+    airway_fe <- getGeneIDs(airway_fe)
+
+    expect_true("hgnc_symbol" %in% colnames(rowData(airway_fe)))
+    expect_true("entrezgene_id" %in% colnames(rowData(airway_fe)))
+    expect_true(mean(is.na(rowData(airway_fe)$hgnc_symbol)) < 0.05)
+    expect_true(mean(is.na(rowData(airway_fe)$entrezgene_id)) < 0.3)
 })

@@ -39,3 +39,23 @@
         assignments = assignments
     ))
 }
+
+.get_airway_data <- function(n_features=NULL) {
+
+    # Get data
+    data(airway, package="airway")
+
+    # Remove genes that aren't expressed
+    airway <- airway[apply(assay(airway, "counts"), 1, function(x) {all(x != 0)}) ,]
+
+    # Remove genes at random for faster tests
+    if (!is.null(n_features)) {
+        set.seed(2)
+        airway <- airway[sample(nrow(airway), n_features) ,]
+    }
+
+    # Do basic log transformation
+    assay(airway, "normal") <- log(assay(airway, "counts") + 0.1)
+
+    return(airway)
+}

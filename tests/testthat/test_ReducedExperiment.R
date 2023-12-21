@@ -101,4 +101,3 @@ test_that("Access and replace feature names", {
     expect_equal(featureNames(rrs)[5], "new_name")
     expect_equal(rownames(assay(rrs, 1))[5], "new_name")
 })
-

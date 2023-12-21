@@ -3,9 +3,7 @@ context("reduce_data")
 test_that("Estimate factors", {
 
     # Use real data from airway package
-    data(airway, package="airway")
-    airway <- airway[apply(assay(airway, "counts"), 1, function(x) {all(x != 0)}) ,]
-    assay(airway, "normal") <- log(assay(airway, "counts") + 0.1)
+    airway <- .get_airway_data()
 
     airway_fe <- estimate_factors(airway, nc=2, seed=1)
 
@@ -18,9 +16,7 @@ test_that("Estimate factors", {
 test_that("run_ica matches estimate_factors", {
 
     # Use real data from airway package
-    data(airway, package="airway")
-    airway <- airway[apply(assay(airway, "counts"), 1, function(x) {all(x != 0)}) ,]
-    assay(airway, "normal") <- log(assay(airway, "counts") + 0.1)
+    airway <- .get_airway_data()
 
     airway_fe <- estimate_factors(airway, nc=2, seed=1)
     airway_ica <- run_ica(assay(airway, "normal"), nc=2, seed=1)
@@ -32,11 +28,7 @@ test_that("run_ica matches estimate_factors", {
 test_that("Stability ICA", {
 
     # Use real data from airway package
-    data(airway, package="airway")
-    airway <- airway[apply(assay(airway, "counts"), 1, function(x) {all(x != 0)}) ,]
-    set.seed(2)
-    airway <- airway[sample(nrow(airway), 500) ,]
-    assay(airway, "normal") <- log(assay(airway, "counts") + 0.1)
+    airway <- .get_airway_data(n_features=500)
 
     airway_fe <- estimate_factors(airway, nc=2, seed=1, use_stability=TRUE, n_runs=5)
 
@@ -56,11 +48,7 @@ test_that("Stability ICA", {
 test_that("Estimate stability", {
 
     # Use real data from airway package
-    data(airway, package="airway")
-    airway <- airway[apply(assay(airway, "counts"), 1, function(x) {all(x != 0)}) ,]
-    set.seed(2)
-    airway <- airway[sample(nrow(airway), 500) ,]
-    assay(airway, "normal") <- log(assay(airway, "counts") + 0.1)
+    airway <- .get_airway_data(n_features=500)
 
     stability_res <- estimate_stability(airway, seed=1, n_runs=5, min_components=2, max_components=4, by=1, mean_stability_threshold=0.9)
     stability_res_bootstrap <- estimate_stability(airway, seed=1, n_runs=5, min_components=2, max_components=4, by=1, mean_stability_threshold=0.9, resample=TRUE)
