@@ -3,7 +3,7 @@
 #' A class to represent the results of module analysis
 #'
 #' @export
-#' @importFrom SummarizedExperiment SummarizedExperiment
+#' @import SummarizedExperiment
 ModularExperiment <- function(assignments=character(), dendrogram=NULL, threshold=NULL, ...)
 {
     re <- ReducedExperiment(...)

@@ -1,5 +1,5 @@
 #' ReducedExperiment
-#' @importFrom SummarizedExperiment SummarizedExperiment
+#' @import SummarizedExperiment
 ReducedExperiment <- function(
         reduced = new("matrix"),
         ...)

@@ -3,7 +3,7 @@
 #' A class to represent the results of factor analysis
 #'
 #' @export
-#' @importFrom SummarizedExperiment SummarizedExperiment
+#' @import SummarizedExperiment
 FactorisedExperiment <- function(
         loadings = new("matrix"),
         stability = NULL,
@@ -164,6 +164,7 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=
                                                                     feature_id_col="rownames", format="list",
                                                                     scale_loadings=TRUE) {
     S <- loadings(x, scale=scale_loadings)
+
     if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
 
     if (is.null(z_cutoff) & is.null(n_features)) n_features <- nrow(S)
