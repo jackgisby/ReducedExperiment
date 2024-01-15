@@ -47,7 +47,6 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 
     if (use_stability) {
         ica_res <- .stability_ica(X, nc=nc, resample=resample, method=method, stability_threshold=stability_threshold, n_runs=n_runs, BPPARAM=BPPARAM, ...)
-
     } else {
         if (resample) stop("Cannot use resampling approach when `use_stability` is FALSE")
         if (!is.null(stability_threshold)) stop("Cannot apply `stability_threshold` when `use_stability` is FALSE")
@@ -72,7 +71,8 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #' Stability ICA method
 #' @import ica
 #' @import BiocParallel
-.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, stability_threshold, BPOPTIONS = bpoptions(), ...) {
+.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, stability_threshold, 
+                           BPOPTIONS = bpoptions(), return_centrotypes = TRUE, ...) {
 
     .ica_random <- function(i, nc, method, resample) {
 
@@ -122,6 +122,10 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
         which_is_centrotype <- which.max(apply(S_cor[cluster_labels, cluster_labels], 2, sum))
         centrotypes[[comp]] <- S_all[, cluster_labels[which_is_centrotype]]
     }
+    
+    if (!return_centrotypes) {
+        return(list(stab = stabilities, S_all = S_all, S_clust = S_clust, S_cor = S_cor))
+    }
 
     stability_order <- order(stabilities, decreasing = TRUE)
     centrotypes <- centrotypes[, stability_order]
@@ -132,7 +136,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
         centrotypes <- centrotypes[, above_stability_threshold]
         stabilities <- stabilities[above_stability_threshold]
     }
-
+    
     return(list(stab = stabilities, S = centrotypes))
 }
 

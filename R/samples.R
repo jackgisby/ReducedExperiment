@@ -1,3 +1,5 @@
+#' @importFrom lmerTest lmer
+#' @importFrom lme4 lmerControl
 .single_lmer <- function(data, formula_string, REML = TRUE) {
     out_model <- tryCatch(
         lmerTest::lmer(
