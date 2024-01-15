@@ -51,6 +51,11 @@ setReplaceMethod("featureNames", "ModularExperiment", function(x, value) {
     return(x)
 })
 
+setReplaceMethod("rownames", "ModularExperiment", function(x, value) {
+    featureNames(x) <- value
+    return(x)
+})
+
 setReplaceMethod("componentNames", "ModularExperiment", function(x, value) {
 
     curr_names <- colnames(x@reduced)

@@ -80,6 +80,11 @@ setReplaceMethod("featureNames", "FactorisedExperiment", function(x, value) {
     return(x)
 })
 
+setReplaceMethod("rownames", "FactorisedExperiment", function(x, value) {
+    featureNames(x) <- value
+    return(x)
+})
+
 setMethod("stability", "FactorisedExperiment", function(x) {return(x@stability)})
 
 setReplaceMethod("stability", "FactorisedExperiment", function(x, value) {
@@ -248,6 +253,7 @@ setMethod("runEnrich", c("FactorisedExperiment"),
                 enrich_res[[comp]]@result$n_features <- n_features
                 enrich_res[[comp]]@result$loadings_scaled <- scale_loadings
                 enrich_res[[comp]]@result$loadings_centered <- FALSE
+                enrich_res[[comp]]@result$abs_loadings <- abs_loadings
             }
         }
     }
