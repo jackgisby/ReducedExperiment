@@ -59,8 +59,10 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("loadings", "FactorisedExperiment", function(x, scale_X=FALSE, center_X=FALSE) {
-    return(scale(x@loadings, scale=scale_X, center=center_X))
+setMethod("loadings", "FactorisedExperiment", function(x, scale_X=FALSE, center_X=FALSE, abs_X=FALSE) {
+    l <- scale(x@loadings, scale=scale_X, center=center_X)
+    if (abs_X) l <- abs(l)
+    return(l)
 })
 
 setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
@@ -213,14 +215,15 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=
 
 setMethod("runEnrich", c("FactorisedExperiment"),
     function(x, method="overrepresentation", feature_id_col="rownames",
-             scale_loadings=TRUE, z_cutoff=3, n_features=20, as_dataframe=FALSE, ...)
+             scale_loadings=TRUE, abs_loadings=FALSE, z_cutoff=3, n_features=20,
+             as_dataframe=FALSE, ...)
 {
     if (method == "gsea") {
 
         z_cutoff <- NULL
         n_features <- NULL
 
-        S <- loadings(x, scale=scale_loadings)
+        S <- loadings(x, scale_X=scale_loadings, abs_X=abs_loadings)
         if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
 
         enrich_res <- reduced_gsea(S, ...)
