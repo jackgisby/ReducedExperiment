@@ -71,7 +71,7 @@ setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
     return(x)
 })
 
-setReplaceMethod("featureNames", "FactorisedExperiment", function(x, value) {
+setReplaceMethod("names", "FactorisedExperiment", function(x, value) {
     rownames(x@loadings) <- value
     if (!is.logical(x@scale)) names(x@scale) <- value
     if (!is.logical(x@center)) names(x@center) <- value
@@ -79,9 +79,12 @@ setReplaceMethod("featureNames", "FactorisedExperiment", function(x, value) {
     validObject(x)
     return(x)
 })
-
+setReplaceMethod("featureNames", "FactorisedExperiment", function(x, value) {
+    names(x) <- value
+    return(x)
+})
 setReplaceMethod("rownames", "FactorisedExperiment", function(x, value) {
-    featureNames(x) <- value
+    names(x) <- value
     return(x)
 })
 

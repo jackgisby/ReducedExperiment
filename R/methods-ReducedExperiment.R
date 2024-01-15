@@ -53,11 +53,20 @@ setReplaceMethod("componentNames", "ReducedExperiment", function(x, value) {
 
 setMethod("featureNames", "ReducedExperiment", function(x) {return(names(x))})
 
-setReplaceMethod("featureNames", "ReducedExperiment", function(x, value) {
-    names(x) <- value
+setReplaceMethod("names", "ReducedExperiment", function(x, value) {
+    x <- callNextMethod(x, value)
     validObject(x)
     return(x)
 })
+setReplaceMethod("rownames", "ReducedExperiment", function(x, value) {
+    names(x) <- value
+    return(x)
+})
+setReplaceMethod("featureNames", "ReducedExperiment", function(x, value) {
+    names(x) <- value
+    return(x)
+})
+
 
 setMethod("sampleNames", "ReducedExperiment", function(x) {return(colnames(x))})
 

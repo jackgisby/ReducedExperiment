@@ -44,17 +44,21 @@ setReplaceMethod("assignments", "ModularExperiment", function(x, value) {
     return(x)
 })
 
-setReplaceMethod("featureNames", "ModularExperiment", function(x, value) {
-    x@assignments <- setNames(x@assignments, names(x))
-    callNextMethod(x, value)
+setReplaceMethod("names", "ModularExperiment", function(x, value) {
+    x@assignments <- setNames(value, names(x@assignments))
+    x <- callNextMethod(x, value)
     validObject(x)
     return(x)
 })
-
-setReplaceMethod("rownames", "ModularExperiment", function(x, value) {
-    featureNames(x) <- value
+setReplaceMethod("featureNames", "ModularExperiment", function(x, value) {
+    names(x) <- value
     return(x)
 })
+setReplaceMethod("rownames", "ModularExperiment", function(x, value) {
+    names(x) <- value
+    return(x)
+})
+
 
 setReplaceMethod("componentNames", "ModularExperiment", function(x, value) {
 
