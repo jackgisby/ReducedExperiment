@@ -23,23 +23,23 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     # Check feature names/numbers
     if (obj_dims[1] != dim(loadings(object))[1])
         msg <- c(msg, "Loadings have invalid row dimensions")
-    if (!all.equal(featureNames(object), rownames(loadings(object))))
+    if (!identical(featureNames(object), rownames(loadings(object))))
         msg <- c(msg, "Loadings have incorrect column names (feature labels)")
 
     # Factors
     if (dim(loadings(object))[2] != dim(reduced(object))[2])
         msg <- c(msg, "Reduced data and loadings have incompatible column dimensions")
 
-    if (!all.equal(colnames(loadings(object)), colnames(reduced(object))))
+    if (!identical(colnames(loadings(object)), colnames(reduced(object))))
         msg <- c(msg, "Reduced data and loadings have incompatible column names (factor names)")
 
     # Center / Scale - check names matches feature names
     if (!is.logical(object@scale)) {
-        if (!all.equal(rownames(object), names(object@scale)))
+        if (!identical(rownames(object), names(object@scale)))
             msg <- c(msg, "Scaling vector has invalid names")
     }
     if (!is.logical(object@scale)) {
-        if (!all.equal(rownames(object), names(object@center)))
+        if (!identical(rownames(object), names(object@center)))
             msg <- c(msg, "Centering vector has invalid names")
     }
 
@@ -51,7 +51,7 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
 
         # If stability vector has names, check they are correct
         if (!is.null(names(stability(object)))) {
-            if (!all.equal(names(stability(object)), componentNames(object)))
+            if (!identical(names(stability(object)), componentNames(object)))
                 msg <- c(msg, "Component names do not match with component stability")
         }
     }
@@ -151,7 +151,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata, scale_newdata=TRUE, center_newdata=TRUE) {
 
     if (!identical(rownames(x), rownames(newdata)))
-        warning("Rownames of x do not match those of newdata")
+        stop("Rownames of x do not match those of newdata")
 
     if (scale_newdata) scale_newdata <- x@scale
     if (center_newdata) center_newdata <- x@center

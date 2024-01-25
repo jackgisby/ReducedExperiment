@@ -14,20 +14,20 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
     obj_dims <- dim(object)
 
     # Check sampleNames method matches with other methods
-    if (!all.equal(sampleNames(object), colnames(object)))
+    if (!identical(sampleNames(object), colnames(object)))
         msg <- c(msg, "Reduced data have invalid row names")
 
     # Check featureNames matches with other methods
-    if (!all.equal(featureNames(object), names(object)))
+    if (!identical(featureNames(object), names(object)))
         msg <- c(msg, "Feature names do not match with names")
-    if (!all.equal(featureNames(object), rownames(object)))
+    if (!identical(featureNames(object), rownames(object)))
         msg <- c(msg, "Feature names do not match with rownames")
 
     # Check reduced matrix
     if (obj_dims[2] != dim(reduced(object))[1])
         msg <- c(msg, "Reduced data have invalid row dimensions")
 
-    if (!all.equal(sampleNames(object), rownames(reduced(object))))
+    if (!identical(sampleNames(object), rownames(reduced(object))))
         msg <- c(msg, "Reduced data have invalid row names")
 
     return(if (is.null(msg)) TRUE else msg)
@@ -160,8 +160,8 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
     rownames(row_data_merged) <- row_data_merged[[gene_id_type]]
     row_data_merged <- row_data_merged[match(rowData(x)[[gene_id_type]], row_data_merged[[gene_id_type]]) ,]
 
-    stopifnot(all.equal(row_data_merged[[gene_id_type]], rownames(row_data_merged)))
-    stopifnot(all.equal(rownames(x), rownames(row_data_merged)))
+    stopifnot(identical(row_data_merged[[gene_id_type]], rownames(row_data_merged)))
+    stopifnot(identical(rownames(x), rownames(row_data_merged)))
 
     rowData(x) <- row_data_merged
 
