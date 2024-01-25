@@ -23,7 +23,7 @@ test_that("FactorisedExperiment enrichment", {
     airway_fe <- estimate_factors(airway, nc=2, seed=1, use_stability=FALSE, method="imax")
 
     # Run overrepresentation analysis
-    overrep_res <- runEnrich(airway_fe, method="overrepresentation", feature_id_col="gene_id", as_dataframe=TRUE, p_cutoff=0.1, universe=rownames(airway_fe))
+    overrep_res <- runEnrich(airway_fe, method="overrepresentation", feature_id_col="rownames", as_dataframe=TRUE, p_cutoff=0.1, universe=rownames(airway_fe))
     gsea_res <- runEnrich(airway_fe, method="gsea", feature_id_col="rownames", as_dataframe=TRUE, p_cutoff=0.1)
 
     expect_true("factor_1" %in% overrep_res$component & "factor_2" %in% overrep_res$component)

@@ -154,7 +154,7 @@ setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdat
         warning("Rownames of x do not match those of newdata")
 
     if (scale_newdata) scale_newdata <- x@scale
-    if (center_newdata) center_newdata <- x@scale
+    if (center_newdata) center_newdata <- x@center
 
     newdata <- t(scale(t(newdata), scale=scale_newdata, center=center_newdata))
 

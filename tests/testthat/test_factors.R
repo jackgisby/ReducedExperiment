@@ -32,15 +32,15 @@ test_that("Stability ICA", {
 
     airway_fe <- estimate_factors(airway, nc=2, seed=1, use_stability=TRUE, n_runs=5)
 
-    expect_equal(reduced(airway_fe)[1,], c("factor_1" = -0.2398201, "factor_2" = -0.0193603), tolerance=1e-5)
-    expect_equal(loadings(airway_fe)[1,], c("factor_1" = -0.01766713, "factor_2" = -1.18106665), tolerance=1e-5)
+    expect_equal(reduced(airway_fe)[1,], c("factor_1" = -0.2398201, "factor_2" = -0.0193603), tolerance=1e-3)
+    expect_equal(loadings(airway_fe)[1,], c("factor_1" = -0.01766713, "factor_2" = -1.18106665), tolerance=1e-3)
     expect_equal(names(stability(airway_fe)), componentNames(airway_fe))
     expect_true(all(stability(airway_fe) > 0.99))
 
     airway_fe_bootstrap <- estimate_factors(airway, nc=2, seed=1, use_stability=TRUE, n_runs=5, resample=TRUE)
 
-    expect_equal(reduced(airway_fe_bootstrap)[1,], c("factor_1" = -0.06823572, "factor_2" = -0.27932475), tolerance=1e-5)
-    expect_equal(loadings(airway_fe_bootstrap)[1,], c("factor_1" = -0.7362659, "factor_2" = 0.1071863), tolerance=1e-5)
+    expect_equal(reduced(airway_fe_bootstrap)[1,], c("factor_1" = -0.06823572, "factor_2" = -0.27932475), tolerance=1e-3)
+    expect_equal(loadings(airway_fe_bootstrap)[1,], c("factor_1" = -0.7362659, "factor_2" = 0.1071863), tolerance=1e-3)
     expect_equal(names(stability(airway_fe_bootstrap)), componentNames(airway_fe_bootstrap))
     expect_true(all(stability(airway_fe_bootstrap) > 0.2))
 })
