@@ -16,7 +16,7 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp",
             universe=universe,
             ...
         )
-
+        
         enrich_res_single <- .format_enrich_res(enrich_res_single, adj_method=adj_method, min_genes=min_genes, p_cutoff=p_cutoff)
 
         if (!is.null(enrich_res_single)) {
@@ -57,8 +57,7 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp",
 
     enrich_res_single@result$p.adjust <- p.adjust(enrich_res_single@result$pvalue, method=adj_method)
 
-
-    enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$p.adjust < p_cutoff) ,]
+    enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$p.adjust <= p_cutoff) ,]
 
     if (nrow(enrich_res_single@result) >= 1) {
         enrich_res_single@result$adj_method <- adj_method
@@ -74,7 +73,7 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp",
 
 #' Gene set enrichment analysis
 reduced_gsea <- function(S, database="msigdb_c2_cp", TERM2GENE=NULL,
-                         p_cutoff=1, adj_method="BH", nPermSimple=10000, eps=1e-50, ...) {
+                         p_cutoff=1, adj_method="BH", nPermSimple=1000, eps=1e-10, ...) {
 
     TERM2GENE <- .get_t2g(database, TERM2GENE)
     enrich_res <- list()

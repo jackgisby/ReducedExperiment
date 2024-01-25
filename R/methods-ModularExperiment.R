@@ -122,7 +122,9 @@ setMethod("runEnrich", c("ModularExperiment"),
           function(x, method="overrepresentation", feature_id_col="rownames", as_dataframe=FALSE, ...)
 {
     if (method == "overrepresentation") {
-
+        
+        if (feature_id_col != "rownames") names(x) <- rowData(x)[[feature_id_col]]
+        
         modules <- assignments(x, as_list=TRUE)
 
         enrich_res <- reduced_oa(modules, ...)

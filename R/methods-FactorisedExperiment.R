@@ -148,20 +148,26 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 })
 
 #' Project data
-setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata) {
+setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata, scale_newdata=TRUE, center_newdata=TRUE) {
 
-    newdata <- t(scale(t(newdata), scale=x@scale, center=x@center))
+    if (!identical(rownames(x), rownames(newdata)))
+        warning("Rownames of x do not match those of newdata")
+
+    if (scale_newdata) scale_newdata <- x@scale
+    if (center_newdata) center_newdata <- x@scale
+
+    newdata <- t(scale(t(newdata), scale=scale_newdata, center=center_newdata))
 
     return(.project_ica(newdata, loadings(x)))
 })
 
-setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(x, newdata) {
-    return(projectData(x, as.matrix(newdata)))
+setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(x, newdata, scale_newdata=TRUE, center_newdata=TRUE) {
+    return(projectData(x, as.matrix(newdata), scale_newdata=scale_newdata, center_newdata=center_newdata))
 })
 
-setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, assay_name="normal") {
+setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, scale_newdata=TRUE, center_newdata=TRUE, assay_name="normal") {
 
-    projected_data <- projectData(x, assay(newdata, assay_name))
+    projected_data <- projectData(x, assay(newdata, assay_name), scale_newdata=scale_newdata, center_newdata=center_newdata)
 
     return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), stability=stability(x), center=x@center, scale=x@scale))
 })
