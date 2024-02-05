@@ -7,8 +7,6 @@
 FactorisedExperiment <- function(
         loadings = new("matrix"),
         stability = NULL,
-        scale = FALSE,
-        center = FALSE,
         ...)
 {
     re <- ReducedExperiment(...)
@@ -32,16 +30,6 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
 
     if (!identical(colnames(loadings(object)), colnames(reduced(object))))
         msg <- c(msg, "Reduced data and loadings have incompatible column names (factor names)")
-
-    # Center / Scale - check names matches feature names
-    if (!is.logical(object@scale)) {
-        if (!identical(rownames(object), names(object@scale)))
-            msg <- c(msg, "Scaling vector has invalid names")
-    }
-    if (!is.logical(object@scale)) {
-        if (!identical(rownames(object), names(object@center)))
-            msg <- c(msg, "Centering vector has invalid names")
-    }
 
     # Stability - check names/length matches
     if (!is.null(stability(object)) & length(stability(object)) > 0) {
@@ -114,8 +102,6 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 
     lod <- loadings(x)
     stab <- x@stability
-    center <- x@center
-    scale <- x@scale
 
     if (!missing(i)) {
         if (is.character(i)) {
@@ -144,30 +130,31 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
     }
 
     out <- callNextMethod(x, i, j, k, ...)
-    BiocGenerics:::replaceSlots(out, loadings=lod, stability=stab, center=center, scale=scale, check=FALSE)
+    BiocGenerics:::replaceSlots(out, loadings=lod, stability=stab, check=FALSE)
 })
 
 #' Project data
-setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata, scale_newdata=TRUE, center_newdata=TRUE) {
+setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata, scale_newdata=FALSE, center_newdata=TRUE, use_scaling_vectors=TRUE) {
 
     if (!identical(rownames(x), rownames(newdata)))
         stop("Rownames of x do not match those of newdata")
 
-    if (scale_newdata) scale_newdata <- x@scale
-    if (center_newdata) center_newdata <- x@center
+    # apply known vectors for scaling and centering (returned as attributes by `scale`)
+    if (scale_newdata & !is.logical(x@scale) & use_scaling_vectors) scale_newdata <- x@scale
+    if (center_newdata & !is.logical(x@center) & use_scaling_vectors) center_newdata <- x@center
 
     newdata <- t(scale(t(newdata), scale=scale_newdata, center=center_newdata))
 
     return(.project_ica(newdata, loadings(x)))
 })
 
-setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(x, newdata, scale_newdata=TRUE, center_newdata=TRUE) {
-    return(projectData(x, as.matrix(newdata), scale_newdata=scale_newdata, center_newdata=center_newdata))
+setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(x, newdata, scale_newdata=FALSE, center_newdata=TRUE, use_scaling_vectors=TRUE) {
+    return(projectData(x, as.matrix(newdata), scale_newdata=scale_newdata, center_newdata=center_newdata, use_scaling_vectors=use_scaling_vectors))
 })
 
-setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, scale_newdata=TRUE, center_newdata=TRUE, assay_name="normal") {
+setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, scale_newdata=FALSE, center_newdata=TRUE, use_scaling_vectors=TRUE, assay_name="normal") {
 
-    projected_data <- projectData(x, assay(newdata, assay_name), scale_newdata=scale_newdata, center_newdata=center_newdata)
+    projected_data <- projectData(x, assay(newdata, assay_name), scale_newdata=scale_newdata, center_newdata=center_newdata, use_scaling_vectors=use_scaling_vectors)
 
     return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), stability=stability(x), center=x@center, scale=x@scale))
 })

@@ -15,6 +15,9 @@ test_that("Build and subset", {
     expect_equal(colnames(assay(rrs, "normal")), sampleNames(rrs))
     expect_equal(rownames(reduced(rrs)), sampleNames(rrs))
 
+    rrs@scale <- setNames(1:i, featureNames(rrs))
+    rrs@center <- setNames(1:i, featureNames(rrs))
+
     # Subset and re-test
     rrs_subset <- rrs[5:10, 50:90, 1:2]
     expect_equal(dim(rrs_subset), c("Features" = 6, "Samples" = 41, "Components" = 2))
@@ -25,11 +28,15 @@ test_that("Build and subset", {
     expect_true(nrow(rrs_subset) == nFeatures(rrs_subset))
     expect_equal(rownames(reduced(rrs_subset)), sampleNames(rrs_subset))
     expect_equal(paste0("sample_", 50:90), sampleNames(rrs_subset))
+    expect_equal(names(rrs_subset@scale), featureNames(rrs_subset))
+    expect_equal(names(rrs_subset@center), featureNames(rrs_subset))
 
     # Now test an empty object
     rrs_empy <- ReducedExperiment()
     expect_equal(dim(rrs_empy), c("Features" = 0, "Samples" = 0, "Components" = 0))
     expect_equal(reduced(rrs_empy), matrix(0, 0, 0))
+    expect_equal(rrs_empy@scale, FALSE)
+    expect_equal(rrs_empy@center, FALSE)
 })
 
 test_that("Access and replace reduced data", {
@@ -92,12 +99,55 @@ test_that("Access and replace sample names", {
 })
 
 test_that("Access and replace feature names", {
+
     rrs <- .createRandomisedReducedExperiment(i=300, j=100, k=10)
+
+    rrs@scale <- setNames(1:300, featureNames(rrs))
+    rrs@center <- setNames(1:300, featureNames(rrs))
 
     expect_equal(featureNames(rrs), paste0("gene_", 1:300))
     expect_equal(rownames(assay(rrs, 1)), paste0("gene_", 1:300))
+    expect_equal(names(rrs@center), paste0("gene_", 1:300))
+    expect_equal(names(rrs@scale), paste0("gene_", 1:300))
 
     featureNames(rrs)[5] <- "new_name"
     expect_equal(featureNames(rrs)[5], "new_name")
     expect_equal(rownames(assay(rrs, 1))[5], "new_name")
+    expect_equal(names(rrs@center)[5], "new_name")
+    expect_equal(names(rrs@scale)[5], "new_name")
+})
+
+test_that("Access and replace scale/center", {
+
+    rrs <- .createRandomisedFactorisedExperiment(i=300, j=100, k=10)
+
+    # This should work
+    rrs@scale <- setNames(1:300, featureNames(rrs))
+    rrs@center <- setNames(1:300, featureNames(rrs))
+
+    # This should not work (mismatch with feature names/length)
+    expect_error((function() {
+        rrs@scale <- setNames(1:10, paste0("module_", 1:10))
+        validObject(rrs)
+    })())
+    expect_error((function() {
+        rrs@scale <- setNames(1:5, paste0("factor_", 1:5))
+        validObject(rrs)
+    })())
+    expect_error((function() {
+        rrs@scale <- 1:5
+        validObject(rrs)
+    })())
+    expect_error((function() {
+        rrs@center <- setNames(1:10, paste0("module_", 1:10))
+        validObject(rrs)
+    })())
+    expect_error((function() {
+        rrs@center <- setNames(1:5, paste0("factor_", 1:5))
+        validObject(rrs)
+    })())
+    expect_error((function() {
+        rrs@center <- 1:5
+        validObject(rrs)
+    })())
 })

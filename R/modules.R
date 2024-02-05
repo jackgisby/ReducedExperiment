@@ -10,13 +10,19 @@ identify_modules <- function(X, assay_name="normal", ...)
         assay(X, "normal") <- assay(X, assay_name)
     }
 
+    if ("transformed" %in% assayNames(X)) warning("Overwriting 'transformed' assay slot in X")
+    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center_X, scale=scale_X))
+
+    if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
+    if (scale_X) scale_X <- attr(assay(X, "transformed"), "scaled:scale")
+
     wgcna_res <- run_wgcna(assay(X, "normal"), return_full_output=FALSE, ...)
-    reduced_set <- .se_to_me(X, reduced=as.matrix(wgcna_res$E), assignments=wgcna_res$assignments, dendrogram=wgcna_res$dendrogram, threshold=wgcna_res$threshold)
+    reduced_set <- .se_to_me(X, reduced=as.matrix(wgcna_res$E), assignments=wgcna_res$assignments, center=center_X, scale=scale_X, dendrogram=wgcna_res$dendrogram, threshold=wgcna_res$threshold)
 
     return(reduced_set)
 }
 
-.se_to_me <- function(se, assignments, reduced, dendrogram=NULL, threshold=NULL) {
+.se_to_me <- function(se, assignments, reduced, center, scale, dendrogram=NULL, threshold=NULL) {
     return(ModularExperiment(assignments=assignments, reduced=reduced,
                              dendrogram=dendrogram, threshold=threshold,
                              assays=assays(se), rowData=rowData(se),

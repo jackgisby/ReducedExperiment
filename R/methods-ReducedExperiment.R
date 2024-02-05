@@ -2,6 +2,8 @@
 #' @import SummarizedExperiment
 ReducedExperiment <- function(
         reduced = new("matrix"),
+        scale = FALSE,
+        center = FALSE,
         ...)
 {
     se <- SummarizedExperiment::SummarizedExperiment(...)
@@ -22,6 +24,16 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
         msg <- c(msg, "Feature names do not match with names")
     if (!identical(featureNames(object), rownames(object)))
         msg <- c(msg, "Feature names do not match with rownames")
+
+    # Center / Scale - check names matches feature names
+    if (!is.logical(object@scale)) {
+        if (!identical(rownames(object), names(object@scale)))
+            msg <- c(msg, "Scaling vector has invalid names")
+    }
+    if (!is.logical(object@center)) {
+        if (!identical(rownames(object), names(object@center)))
+            msg <- c(msg, "Centering vector has invalid names")
+    }
 
     # Check reduced matrix
     if (obj_dims[2] != dim(reduced(object))[1])
@@ -89,6 +101,20 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
 
     red <- reduced(x)
+    center <- x@center
+    scale <- x@scale
+
+    if (!missing(i)) {
+        if (is.character(i)) {
+            fmt <- paste0("<", class(x), ">[i,] index out of bounds: %s")
+            i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+                i, rownames(x), fmt
+            )
+        }
+        i <- as.vector(i)
+        if (!is.logical(center)) center <- center[i,drop=FALSE]
+        if (!is.logical(scale)) scale <- scale[i,drop=FALSE]
+    }
 
     if (!missing(j)) {
         if (is.character(j)) {
@@ -114,7 +140,7 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
     }
 
     out <- callNextMethod(x, i, j, ...)
-    BiocGenerics:::replaceSlots(out, reduced=red, check=FALSE)
+    BiocGenerics:::replaceSlots(out, reduced=red, center=center, scale=scale, check=FALSE)
 })
 
 setMethod("dim", "ReducedExperiment", function(x) {
