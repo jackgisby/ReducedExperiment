@@ -25,7 +25,7 @@ test_that("Build and subset", {
 
     rrs_empy <- ModularExperiment()
     expect_equal(dim(rrs_empy), c("Features" = 0, "Samples" = 0, "Components" = 0))
-    expect_equal(reduced(rrs_empy), matrix(0, 0, 0))
+    expect_equal(reduced(rrs_empy), matrix(0, 0, 0), check.attributes = FALSE)
     expect_equal(assignments(rrs_empy), character())
 })
 
@@ -64,7 +64,14 @@ test_that("Eigengene calculation / projection / prediction", {
 
     # Use real data from airway package
     airway <- .get_airway_data(n_features=500)
-    airway_me <- identify_modules(airway, verbose=0, powers=21)
+    airway_me <- identify_modules(airway, verbose=0, powers=21)  # , return_full_output=TRUE
+
+    # Recalculate eigengenes using WGCNA::moduleEigengenes
+    eig <- WGCNA::moduleEigengenes(t(assay(airway_me, "transformed")), setNames(names(assignments(airway_me)), assignments(airway_me)))
+    colnames(eig$eigengenes) <- gsub("ME", "", colnames(eig$eigengenes))
+
+    # Ensure method equality
+    expect_equal(reduced(airway_me), scale(eig$eigengenes), check.attributes = FALSE)
 
     # Check that projecting the data reproduces the original results
     for (input_type in c("se", "matrix", "data.frame")) {
@@ -78,12 +85,14 @@ test_that("Eigengene calculation / projection / prediction", {
         }
 
         for (projection_function in c(calcEigengenes, predict)) {
+            for (project in c(FALSE, TRUE)) {
 
-            res <- projection_function(airway_me, newdata)
+                res <- projection_function(airway_me, newdata, project=project)
 
-            if (input_type == "se") res <- reduced(res)
+                if (input_type == "se") res <- reduced(res)
 
-            expect_equal(res, reduced(airway_me))
+                expect_equal(scale(res), scale(reduced(airway_me)), check.attributes = FALSE)
+            }
         }
     }
 })

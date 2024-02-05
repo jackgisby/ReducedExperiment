@@ -2,12 +2,12 @@
 #' @import SummarizedExperiment
 ReducedExperiment <- function(
         reduced = new("matrix"),
-        scale = FALSE,
-        center = FALSE,
+        scale = TRUE,
+        center = TRUE,
         ...)
 {
     se <- SummarizedExperiment::SummarizedExperiment(...)
-    return(.ReducedExperiment(se, reduced=reduced))
+    return(.ReducedExperiment(se, reduced=reduced, scale=scale, center=center))
 }
 
 S4Vectors::setValidity2("ReducedExperiment", function(object) {
@@ -45,8 +45,8 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("reduced", "ReducedExperiment", function(x, scale_X=FALSE, center_X=FALSE) {
-    return(scale(x@reduced, scale=scale_X, center=center_X))
+setMethod("reduced", "ReducedExperiment", function(x, scale_reduced=FALSE, center_reduced=FALSE) {
+    return(scale(x@reduced, scale=scale_reduced, center=center_reduced))
 })
 
 setReplaceMethod("reduced", "ReducedExperiment", function(x, value) {
@@ -67,6 +67,8 @@ setMethod("featureNames", "ReducedExperiment", function(x) {return(names(x))})
 
 setReplaceMethod("names", "ReducedExperiment", function(x, value) {
     x <- callNextMethod(x, value)
+    if (!is.logical(x@scale)) names(x@scale) <- value
+    if (!is.logical(x@center)) names(x@center) <- value
     validObject(x)
     return(x)
 })
@@ -83,7 +85,7 @@ setReplaceMethod("featureNames", "ReducedExperiment", function(x, value) {
 setMethod("sampleNames", "ReducedExperiment", function(x) {return(colnames(x))})
 
 setReplaceMethod("sampleNames", "ReducedExperiment", function(x, value) {
-    rownames(reduced(x)) <- colnames(x) <- value
+    rownames(x@reduced) <- colnames(x) <- value
     validObject(x)
     return(x)
 })
@@ -100,7 +102,7 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
     if (1L != length(drop) || (!missing(drop) && drop))
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
 
-    red <- reduced(x)
+    red <- x@reduced
     center <- x@center
     scale <- x@scale
 
@@ -181,7 +183,7 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
     biomart_out <- biomart_out[which(!duplicated(biomart_out[[gene_id_type]])),]
     rownames(biomart_out) <- biomart_out[[gene_id_type]]
 
-    # TODO: improve this messy approach
+    # TODO: This approach can probably be improved
     row_data_merged <- merge(rowData(x), biomart_out, by=gene_id_type, all.x=TRUE)
     rownames(row_data_merged) <- row_data_merged[[gene_id_type]]
     row_data_merged <- row_data_merged[match(rowData(x)[[gene_id_type]], row_data_merged[[gene_id_type]]) ,]

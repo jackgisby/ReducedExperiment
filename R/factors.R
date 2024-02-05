@@ -19,12 +19,12 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, assay_name="no
     ica_res <- run_ica(assay(X, "transformed"), nc=nc,
                        center_X=FALSE, scale_X=FALSE, ...)
 
-    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, stability=ica_res$stab, center=center_X, scale=scale_X))
+    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, stability=ica_res$stab, center_X=center_X, scale_X=scale_X))
 }
 
-.se_to_fe <- function(se, reduced, loadings, stability, center, scale) {
+.se_to_fe <- function(se, reduced, loadings, stability, center_X, scale_X) {
     return(FactorisedExperiment(loadings=loadings, stability=stability,
-                                center=center, scale=scale, reduced=reduced,
+                                center=center_X, scale=scale_X, reduced=reduced,
                                 assays=assays(se), rowData=rowData(se),
                                 colData=colData(se), metadata=metadata(se)))
 }
@@ -36,7 +36,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
                     method="fast", stability_threshold=NULL,
                     center_X=TRUE, scale_X=FALSE,
                     reorient_skewed=TRUE, seed=1,
-                    scale_components=TRUE,
+                    scale_components=TRUE, scale_reduced=TRUE,
                     n_runs=30,
                     BPPARAM = BiocParallel::SerialParam(),
                     ...) {
@@ -56,8 +56,9 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 
     # Reorient and scale factors before recalculating M
     if (reorient_skewed) ica_res$S <- .reorient_factors(ica_res$S)
-    if (scale_components) ica_res$S <- scale(ica_res$S, center = FALSE)
+    if (scale_components) ica_res$S <- scale(ica_res$S)
     ica_res$M <- .project_ica(X, ica_res$S)
+    if (scale_reduced) ica_res$M <- scale(ica_res$M)
 
     # Add factors / sample names
     rownames(ica_res$M) <- colnames(X)
@@ -71,7 +72,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #' Stability ICA method
 #' @import ica
 #' @import BiocParallel
-.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, stability_threshold, 
+.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, stability_threshold,
                            BPOPTIONS = bpoptions(), return_centrotypes = TRUE, ...) {
 
     .ica_random <- function(i, nc, method, resample) {
@@ -122,7 +123,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
         which_is_centrotype <- which.max(apply(S_cor[cluster_labels, cluster_labels], 2, sum))
         centrotypes[[comp]] <- S_all[, cluster_labels[which_is_centrotype]]
     }
-    
+
     if (!return_centrotypes) {
         return(list(stab = stabilities, S_all = S_all, S_clust = S_clust, S_cor = S_cor))
     }
@@ -136,7 +137,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
         centrotypes <- centrotypes[, above_stability_threshold]
         stabilities <- stabilities[above_stability_threshold]
     }
-    
+
     return(list(stab = stabilities, S = centrotypes))
 }
 
@@ -152,9 +153,11 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #' X = M * S
 #' X / S = M
 #' X * inv(S) = M
-#' @import MASS
 .project_ica <- function(newdata, S) {
-    M <- t(newdata) %*% t(MASS::ginv(S))
+
+    # M <- t(newdata) %*% t(MASS::ginv(S))
+    M <- t(newdata) %*% S
+
     colnames(M) <- colnames(S)
 
     return(M)

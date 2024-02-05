@@ -54,12 +54,12 @@
 }
 
 associate_components <- function(re, formula, method="lm",
-                              scale=TRUE, center=TRUE,
+                              scale_reduced=TRUE, center_reduced=TRUE,
                               type="II", adj_method="BH", ...) {
 
     models <- list()
     summaries <- anovas <- data.frame()
-    red <- reduced(re, scale=scale, center=center)
+    red <- reduced(re, scale_reduced=scale_reduced, center_reduced=center_reduced)
 
     for (comp in componentNames(re)) {
 

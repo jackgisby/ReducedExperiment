@@ -29,7 +29,7 @@ test_that("Build and subset", {
     rrs_empy <- FactorisedExperiment()
     expect_equal(dim(rrs_empy), c("Features" = 0, "Samples" = 0, "Components" = 0))
     expect_equal(loadings(rrs_empy), matrix(0, 0, 0))
-    expect_equal(reduced(rrs_empy), matrix(0, 0, 0))
+    expect_equal(reduced(rrs_empy), matrix(0, 0, 0), check.attributes = FALSE)
     expect_equal(stability(rrs_empy), NULL)
 
 })
@@ -134,7 +134,7 @@ test_that("Predict and project", {
 
             if (input_type == "se") res <- reduced(res)
 
-            expect_equal(res, reduced(airway_fe))
+            expect_equal(res, reduced(airway_fe), check.attributes = FALSE)
         }
     }
 
@@ -143,7 +143,7 @@ test_that("Predict and project", {
     ica_res <- ica::ica(t(scale(t(assay(airway_fe, "normal")), center=TRUE, scale=FALSE)),
                         nc=2, method="fast", center=FALSE)
 
-    expect_equal(ica_res$M, matrix(reduced(airway_fe), ncol = 2))
+    expect_equal(scale(ica_res$M), scale(matrix(reduced(airway_fe), ncol = 2)), check.attributes = FALSE)
 })
 
 test_that("Get aligned features", {
@@ -184,7 +184,7 @@ test_that("Get aligned features", {
 
     # Sanity check of factor 1 z cutoff approach
     aligned_features <- getAlignedFeatures(rrs, z_cutoff=1.5, n_features=NULL)
-    expect_equal(aligned_features[[1]], names(loadings(rrs, scale_X=TRUE)[,1][abs(loadings(rrs, scale_X=TRUE)[,1]) > 1.5]))
+    expect_equal(aligned_features[[1]], names(loadings(rrs, scale_loadings=TRUE)[,1][abs(loadings(rrs, scale_loadings=TRUE)[,1]) > 1.5]))
 })
 
 test_that("Get gene IDs", {

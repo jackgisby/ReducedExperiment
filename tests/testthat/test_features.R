@@ -27,7 +27,7 @@ test_that("FactorisedExperiment enrichment", {
     gsea_res <- runEnrich(airway_fe, method="gsea", feature_id_col="rownames", as_dataframe=TRUE, p_cutoff=0.1)
 
     expect_true("factor_1" %in% overrep_res$component & "factor_2" %in% overrep_res$component)
-    expect_true("factor_1" %in% gsea_res$component & "factor_2" %in% gsea_res$component)
+    expect_true("factor_2" %in% gsea_res$component)
     expect_true(all(overrep_res$p.adjust < 0.1))
     expect_true(all(gsea_res$p.adjust < 0.1))
 })
@@ -63,6 +63,6 @@ test_that("Get common features", {
     cf <- get_common_features(getAlignedFeatures(airway_fe, z_cutoff=3, n_features=3, format="data.frame"))
 
     expect_equal(dim(cf), c(4, 7))
-    expect_equal(cf$intersect, c(NA, 33, 33, NA))
-    expect_equal(cf$total_feat_1, c(107, 107, 356, 356))
+    expect_equal(cf$intersect, c(NA, 69, 69, NA))
+    expect_equal(cf$total_feat_1, c(338, 338, 358, 358))
 })

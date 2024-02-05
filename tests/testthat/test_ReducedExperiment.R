@@ -34,9 +34,9 @@ test_that("Build and subset", {
     # Now test an empty object
     rrs_empy <- ReducedExperiment()
     expect_equal(dim(rrs_empy), c("Features" = 0, "Samples" = 0, "Components" = 0))
-    expect_equal(reduced(rrs_empy), matrix(0, 0, 0))
-    expect_equal(rrs_empy@scale, FALSE)
-    expect_equal(rrs_empy@center, FALSE)
+    expect_equal(reduced(rrs_empy), matrix(0, 0, 0), check.attributes = FALSE)
+    expect_equal(rrs_empy@scale, TRUE)
+    expect_equal(rrs_empy@center, TRUE)
 })
 
 test_that("Access and replace reduced data", {
@@ -54,6 +54,7 @@ test_that("Access and replace reduced data", {
     )
 
     # Expect that the reduced method returns the original data
+    expect_equal(reduced(rrs, scale_reduced=TRUE, center_reduced=TRUE), scale(reduced_data))
     expect_equal(reduced(rrs), reduced_data)
 
     # Replacing a value should work
@@ -61,7 +62,7 @@ test_that("Access and replace reduced data", {
     expect_equal(reduced(rrs)[3, 5], 5)
 
     reduced(rrs)[3, 5] <- reduced_data[3, 5]
-    expect_equal(reduced(rrs), reduced_data)
+    expect_equal(reduced(rrs), reduced_data, check.attributes = FALSE)
 
     # This should work
     reduced(rrs) <- reduced_data[, 1:5]
@@ -119,7 +120,7 @@ test_that("Access and replace feature names", {
 
 test_that("Access and replace scale/center", {
 
-    rrs <- .createRandomisedFactorisedExperiment(i=300, j=100, k=10)
+    rrs <- .createRandomisedReducedExperiment(i=300, j=100, k=10)
 
     # This should work
     rrs@scale <- setNames(1:300, featureNames(rrs))

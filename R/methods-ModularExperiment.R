@@ -4,10 +4,10 @@
 #'
 #' @export
 #' @import SummarizedExperiment
-ModularExperiment <- function(assignments=character(), dendrogram=NULL, threshold=NULL, ...)
+ModularExperiment <- function(loadings=numeric(), assignments=character(), dendrogram=NULL, threshold=NULL, ...)
 {
     re <- ReducedExperiment(...)
-    return(.ModularExperiment(re, assignments=assignments, dendrogram=dendrogram, threshold=threshold))
+    return(.ModularExperiment(re, loadings=loadings, assignments=assignments, dendrogram=dendrogram, threshold=threshold))
 }
 
 S4Vectors::setValidity2("ModularExperiment", function(object) {
@@ -21,6 +21,13 @@ S4Vectors::setValidity2("ModularExperiment", function(object) {
 
     if (!all(assignments(object) == rownames(object)))
         msg <- c(msg, "Assignments have incompatible names (rownames)")
+
+    # Loadings
+    if (obj_dims[1] != length(loadings(object)))
+        msg <- c(msg, "Loadings have invalid length")
+
+    if (!all(names(loadings(object)) == rownames(object)))
+        msg <- c(msg, "Loadings have incompatible names (rownames)")
 
     return(if (is.null(msg)) TRUE else msg)
 })
@@ -37,9 +44,19 @@ setMethod("assignments", "ModularExperiment", function(x, as_list=FALSE) {
 
     return(a)
 })
-
 setReplaceMethod("assignments", "ModularExperiment", function(x, value) {
     x@assignments <- value
+    validObject(x)
+    return(x)
+})
+
+setMethod("loadings", "ModularExperiment", function(x, scale_loadings=FALSE, center_loadings=FALSE, abs_loadings=FALSE) {
+    l <- scale(x@loadings, scale=scale_loadings, center=center_loadings)
+    if (abs_loadings) l <- abs(l)
+    return(l[,1])
+})
+setReplaceMethod("loadings", "ModularExperiment", function(x, value) {
+    x@loadings <- value
     validObject(x)
     return(x)
 })
@@ -101,6 +118,7 @@ setMethod("[", c("ModularExperiment", "ANY", "ANY", "ANY"),
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
 
     assignments <- x@assignments
+    lod <- x@loadings
 
     if (!missing(i)) {
         if (is.character(i)) {
@@ -108,14 +126,15 @@ setMethod("[", c("ModularExperiment", "ANY", "ANY", "ANY"),
             i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
               i, rownames(x), fmt
             )
-      }
+        }
 
         i <- as.vector(i)
         assignments <- assignments[i, drop=FALSE]
+        lod <- lod[i, drop=FALSE]
     }
 
     out <- callNextMethod(x, i, j, k, ...)
-    BiocGenerics:::replaceSlots(out, assignments=assignments, check=FALSE)
+    BiocGenerics:::replaceSlots(out, loadings=lod, assignments=assignments, check=FALSE)
 })
 
 setMethod("runEnrich", c("ModularExperiment"),
@@ -166,22 +185,56 @@ setMethod("plotDendro", c("ModularExperiment"),
 })
 
 setMethod("calcEigengenes", c("ModularExperiment", "matrix"),
-          function(x, newdata, ...) {
+          function(x, newdata, project=TRUE, scale_reduced=TRUE, return_loadings=FALSE, scale_newdata=NULL, center_newdata=NULL, realign=TRUE) {
 
-    eig <- WGCNA::moduleEigengenes(t(newdata), setNames(names(assignments(x)), assignments(x)), ...)
-    colnames(eig$eigengenes) <- gsub("ME", "", colnames(eig$eigengenes))
-    return(as.matrix(eig$eigengenes))
+    if (!identical(rownames(x), rownames(newdata)))
+        stop("Rownames of x do not match those of newdata")
+
+    # apply known vectors for scaling and centering (returned as attributes by `scale`)
+    if (is.null(scale_newdata)) scale_newdata <- x@scale
+    if (is.null(center_newdata)) center_newdata <- x@center
+
+    newdata <- t(scale(t(newdata), scale=scale_newdata, center=center_newdata))
+
+    if (project) {
+
+        red <- .project_eigengenes(newdata, moduleNames(x), assignments(x), loadings(x))
+        eigengenes <- list("reduced" = as.matrix(red), "loadings" = loadings(x))
+
+    } else {
+
+        eigengenes <- .calculate_eigengenes(newdata, moduleNames(x), assignments(x), realign=realign)
+
+        # eig <- WGCNA::moduleEigengenes(t(newdata), setNames(names(assignments(x)), assignments(x)), ...)
+        # colnames(eig$eigengenes) <- gsub("ME", "", colnames(eig$eigengenes))
+        # red <- eig$eigengenes
+    }
+
+    if (scale_reduced) eigengenes$red <- scale(eigengenes$red)
+
+    if (return_loadings) {
+        return(eigengenes)
+    } else {
+        return(eigengenes$red)
+    }
 })
 
-setMethod("calcEigengenes", c("ModularExperiment", "data.frame"), function(x, newdata, ...) {
-    return(calcEigengenes(x, as.matrix(newdata), ...))
+setMethod("calcEigengenes", c("ModularExperiment", "data.frame"), function(
+        x, newdata, project=TRUE, scale_reduced=TRUE, return_loadings=FALSE, scale_newdata=NULL, center_newdata=NULL, realign=TRUE) {
+
+    return(calcEigengenes(x, as.matrix(newdata), project=project, return_loadings=return_loadings,
+                          scale_newdata=scale_newdata, center_newdata=center_newdata, realign=realign,
+                          scale_reduced=scale_reduced))
 })
 
 setMethod("calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
-          function(x, newdata, assay_name="normal", ...) {
+          function(x, newdata, project=TRUE, scale_reduced=TRUE, assay_name="normal", scale_newdata=NULL, center_newdata=NULL, realign=TRUE) {
 
-    eig <- calcEigengenes(x, assay(newdata, assay_name), ...)
-    return(.se_to_me(newdata, reduced=as.matrix(eig), assignments=assignments(x)))
+    eig <- calcEigengenes(x, assay(newdata, assay_name), project=project, return_loadings=FALSE,
+                          scale_newdata=scale_newdata, center_newdata=center_newdata, realign=realign,
+                          scale_reduced=scale_reduced)
+
+    return(.se_to_me(newdata, reduced=as.matrix(eig), loadings=loadings(x), assignments=assignments(x), center_X=x@center, scale_X=x@scale))
 })
 
 setMethod("predict", c("ModularExperiment"), function(object, newdata, ...) {

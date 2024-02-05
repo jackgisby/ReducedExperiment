@@ -36,7 +36,8 @@
     return(ModularExperiment(
         assays = list("normal"=.makeRandomData(i, j, "gene", "sample")),
         reduced = .makeRandomData(j, k, "sample", "module"),
-        assignments = assignments
+        assignments = assignments,
+        loadings = .makeRandomData(i, 1, "gene", "gene")[,1]
     ))
 }
 

@@ -10,7 +10,7 @@ FactorisedExperiment <- function(
         ...)
 {
     re <- ReducedExperiment(...)
-    return(.FactorisedExperiment(re, loadings=loadings, stability=stability, scale=scale, center=center))
+    return(.FactorisedExperiment(re, loadings=loadings, stability=stability))
 }
 
 S4Vectors::setValidity2("FactorisedExperiment", function(object) {
@@ -47,12 +47,11 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("loadings", "FactorisedExperiment", function(x, scale_X=FALSE, center_X=FALSE, abs_X=FALSE) {
-    l <- scale(x@loadings, scale=scale_X, center=center_X)
-    if (abs_X) l <- abs(l)
+setMethod("loadings", "FactorisedExperiment", function(x, scale_loadings=FALSE, center_loadings=FALSE, abs_loadings=FALSE) {
+    l <- scale(x@loadings, scale=scale_loadings, center=center_loadings)
+    if (abs_loadings) l <- abs(l)
     return(l)
 })
-
 setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
     x@loadings <- value
     validObject(x)
@@ -61,8 +60,6 @@ setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
 
 setReplaceMethod("names", "FactorisedExperiment", function(x, value) {
     rownames(x@loadings) <- value
-    if (!is.logical(x@scale)) names(x@scale) <- value
-    if (!is.logical(x@center)) names(x@center) <- value
     x <- callNextMethod(x, value)
     validObject(x)
     return(x)
@@ -100,7 +97,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
     if (1L != length(drop) || (!missing(drop) && drop))
         warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
 
-    lod <- loadings(x)
+    lod <- x@loadings
     stab <- x@stability
 
     if (!missing(i)) {
@@ -112,8 +109,6 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
         }
         i <- as.vector(i)
         lod <- lod[i,,drop=FALSE]
-        if (!is.logical(center)) center <- center[i,drop=FALSE]
-        if (!is.logical(scale)) scale <- scale[i,drop=FALSE]
     }
 
     if (!missing(k)) {
@@ -134,29 +129,32 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 })
 
 #' Project data
-setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata, scale_newdata=FALSE, center_newdata=TRUE, use_scaling_vectors=TRUE) {
+setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL) {
 
     if (!identical(rownames(x), rownames(newdata)))
         stop("Rownames of x do not match those of newdata")
 
     # apply known vectors for scaling and centering (returned as attributes by `scale`)
-    if (scale_newdata & !is.logical(x@scale) & use_scaling_vectors) scale_newdata <- x@scale
-    if (center_newdata & !is.logical(x@center) & use_scaling_vectors) center_newdata <- x@center
+    if (is.null(scale_newdata)) scale_newdata <- x@scale
+    if (is.null(center_newdata)) center_newdata <- x@center
 
     newdata <- t(scale(t(newdata), scale=scale_newdata, center=center_newdata))
+    red <- .project_ica(newdata, loadings(x))
 
-    return(.project_ica(newdata, loadings(x)))
+    if (scale_reduced) red <- scale(red)
+
+    return(red)
 })
 
-setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(x, newdata, scale_newdata=FALSE, center_newdata=TRUE, use_scaling_vectors=TRUE) {
-    return(projectData(x, as.matrix(newdata), scale_newdata=scale_newdata, center_newdata=center_newdata, use_scaling_vectors=use_scaling_vectors))
+setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(x, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL) {
+    return(projectData(x, as.matrix(newdata), scale_reduced=scale_reduced, scale_newdata=scale_newdata, center_newdata=center_newdata))
 })
 
-setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, scale_newdata=FALSE, center_newdata=TRUE, use_scaling_vectors=TRUE, assay_name="normal") {
+setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL, assay_name="normal") {
 
-    projected_data <- projectData(x, assay(newdata, assay_name), scale_newdata=scale_newdata, center_newdata=center_newdata, use_scaling_vectors=use_scaling_vectors)
+    projected_data <- projectData(x, assay(newdata, assay_name), scale_reduced=scale_reduced, scale_newdata=scale_newdata, center_newdata=center_newdata)
 
-    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), stability=stability(x), center=x@center, scale=x@scale))
+    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), stability=stability(x), center_X=x@center, scale_X=x@scale))
 })
 
 setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
@@ -165,8 +163,9 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
 
 setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=NULL, n_features=NULL,
                                                                     feature_id_col="rownames", format="list",
-                                                                    scale_loadings=TRUE) {
-    S <- loadings(x, scale=scale_loadings)
+                                                                    scale_loadings=TRUE, center_loadings=FALSE) {
+
+    S <- loadings(x, scale_loadings=scale_loadings, center_loadings=center_loadings)
 
     if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
 
@@ -191,7 +190,7 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=
                 feature = rownames(S)[which_features],
                 value = S[,f][which_features],
                 loadings_scaled = scale_loadings,
-                loadings_centered = TRUE
+                loadings_centered = center_loadings
             ))
         }
     }
@@ -224,7 +223,7 @@ setMethod("runEnrich", c("FactorisedExperiment"),
         z_cutoff <- NULL
         n_features <- NULL
 
-        S <- loadings(x, scale_X=scale_loadings, abs_X=abs_loadings)
+        S <- loadings(x, scale_loadings=scale_loadings, abs_loadings=abs_loadings)
         if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
 
         enrich_res <- reduced_gsea(S, ...)

@@ -1,6 +1,6 @@
 #' Run WGCNA
 #' @export
-identify_modules <- function(X, assay_name="normal", ...)
+identify_modules <- function(X, center_X=TRUE, scale_X=TRUE, assay_name="normal", ...)
 {
     if (!inherits(X, "SummarizedExperiment")) {
         X <- SummarizedExperiment(assays = list("normal" = X))
@@ -16,14 +16,15 @@ identify_modules <- function(X, assay_name="normal", ...)
     if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
     if (scale_X) scale_X <- attr(assay(X, "transformed"), "scaled:scale")
 
-    wgcna_res <- run_wgcna(assay(X, "normal"), return_full_output=FALSE, ...)
-    reduced_set <- .se_to_me(X, reduced=as.matrix(wgcna_res$E), assignments=wgcna_res$assignments, center=center_X, scale=scale_X, dendrogram=wgcna_res$dendrogram, threshold=wgcna_res$threshold)
+    wgcna_res <- run_wgcna(assay(X, "transformed"), return_full_output=FALSE, ...)
+    reduced_set <- .se_to_me(X, reduced=wgcna_res$E, loadings=wgcna_res$L, assignments=wgcna_res$assignments, center_X=center_X, scale_X=scale_X, dendrogram=wgcna_res$dendrogram, threshold=wgcna_res$threshold)
 
     return(reduced_set)
 }
 
-.se_to_me <- function(se, assignments, reduced, center, scale, dendrogram=NULL, threshold=NULL) {
-    return(ModularExperiment(assignments=assignments, reduced=reduced,
+.se_to_me <- function(se, reduced, loadings, assignments, center_X, scale_X, dendrogram=NULL, threshold=NULL) {
+    return(ModularExperiment(reduced=reduced, loadings=loadings, assignments=assignments,
+                             center=center_X, scale=scale_X,
                              dendrogram=dendrogram, threshold=threshold,
                              assays=assays(se), rowData=rowData(se),
                              colData=colData(se), metadata=metadata(se)))
@@ -35,7 +36,8 @@ run_wgcna <- function(X, powers=1:30,
                       min_r_squared=0.85, max_mean_connectivity=100,
                       corType="pearson", networkType="signed",
                       module_labels="numbers", maxBlockSize = 30000,
-                      seed=1, verbose = 0, return_full_output = FALSE, ...) {
+                      seed=1, verbose = 0, return_full_output = FALSE,
+                      scale_reduced=TRUE, ...) {
     set.seed(seed)
 
     if (maxBlockSize < nrow(X)) warning("maxBlockSize < total features, module detection will be performed in a block-wise manner")
@@ -82,6 +84,8 @@ run_wgcna <- function(X, powers=1:30,
         threshold = threshold$fitIndices
     )
 
+    original_E <- wgcna_res$E
+
     colnames(wgcna_res$E) <- gsub("ME", "", colnames(wgcna_res$E))
 
     if (module_labels == "numbers") {
@@ -114,9 +118,58 @@ run_wgcna <- function(X, powers=1:30,
     colnames(wgcna_res$E) <- paste0("module_", colnames(wgcna_res$E))
     wgcna_res$E <- wgcna_res$E[, order(colnames(wgcna_res$E))]
 
+    original_E <- wgcna_res$E
+    recalculated_E <- .calculate_eigengenes(X, colnames(wgcna_res$E), wgcna_res$assignments, realign = TRUE)
+    wgcna_res$E <- scale(recalculated_E$reduced)
+    wgcna_res$L <- recalculated_E$loadings
+
+    if (scale_reduced) wgcna_res$E <- scale(wgcna_res$E)
+
     if (return_full_output) {
-        return(list("run_wgcna_output" = wgcna_res, "blockwise_modules_output" = bwms, "pick_soft_threshold_output" = threshold))
+        return(list("run_wgcna_output" = wgcna_res, "original_E" = original_E, "blockwise_modules_output" = bwms, "pick_soft_threshold_output" = threshold))
     } else {
         return(wgcna_res)
     }
+}
+
+.calculate_eigengenes <- function(newdata, module_names, module_assignments, realign = TRUE) {
+
+    red <- data.frame(row.names = colnames(newdata))
+    lod <- c()
+
+    for (m in module_names) {
+
+        module_data <- newdata[rownames(newdata) %in% module_assignments[names(module_assignments) == m], ]
+
+        prcomp_res <- prcomp(t(module_data), center = FALSE, scale. = FALSE, rank = 1)
+
+        # Principal components may be anticorrelated, in which case change sign
+        align_sign <- ifelse(realign, sign(mean(cor(prcomp_res$x, t(module_data)))), 1)
+
+        red[[m]] <- prcomp_res$x * align_sign
+
+        stopifnot(all(t(module_data) %*% prcomp_res$rotation * align_sign == prcomp_res$x * align_sign))
+
+        lod <- c(lod, setNames(prcomp_res$rotation * align_sign, rownames(module_data)))
+    }
+
+    lod <- lod[match(rownames(newdata), names(lod))]
+
+    return(list("reduced" = as.matrix(red), "loadings" = lod))
+}
+
+.project_eigengenes <- function(newdata, module_names, module_assignments, lod) {
+
+    red <- data.frame(row.names = colnames(newdata))
+
+    for (m in module_names) {
+
+        module_data <- newdata[rownames(newdata) %in% module_assignments[names(module_assignments) == m], ]
+        module_lod <- lod[names(lod) %in% rownames(module_data)]
+        stopifnot(all(rownames(module_data) == names(module_lod)))
+
+        red[[m]] <- t(module_data) %*% module_lod
+    }
+
+    return(as.matrix(red))
 }
