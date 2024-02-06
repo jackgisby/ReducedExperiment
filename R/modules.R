@@ -120,7 +120,7 @@ run_wgcna <- function(X, powers=1:30,
 
     original_E <- wgcna_res$E
     recalculated_E <- .calculate_eigengenes(X, colnames(wgcna_res$E), wgcna_res$assignments, realign = TRUE)
-    wgcna_res$E <- scale(recalculated_E$reduced)
+    wgcna_res$E <- recalculated_E$reduced
     wgcna_res$L <- recalculated_E$loadings
 
     if (scale_reduced) wgcna_res$E <- scale(wgcna_res$E)
