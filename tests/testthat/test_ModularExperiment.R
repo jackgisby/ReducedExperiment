@@ -60,6 +60,55 @@ test_that("Access and replace component/module names", {
     expect_true(!any(names(assignments(rrs))[!is_module_5] == "new_name"))
 })
 
+test_that("Access and replace feature names", {
+
+    rrs <- .createRandomisedModularExperiment(i=300, j=100, k=10)
+
+    expect_equal(featureNames(rrs), paste0("gene_", 1:300))
+    expect_equal(rownames(assay(rrs, 1)), paste0("gene_", 1:300))
+    expect_equal(names(loadings(rrs)), paste0("gene_", 1:300))
+
+    featureNames(rrs)[5] <- "new_name"
+    expect_equal(featureNames(rrs)[5], "new_name")
+    expect_equal(rownames(assay(rrs, 1))[5], "new_name")
+    expect_equal(names(loadings(rrs))[5], "new_name")
+})
+
+test_that("Access and replace loadings", {
+
+    i <- 300
+    j <- 100
+    k <- 10
+
+    loadings_data <- .makeRandomData(1, i, "gene", "gene")[1,]
+    assignments_data <- paste0("gene_", 1:i)
+    names(assignments_data) <- paste0("module_", round(runif(i, 1, k), 0))
+
+    # Make a ModularExperiment and save original loadings data to an object
+    rrs <- ModularExperiment(
+        assays = list("normal" = .makeRandomData(i, j, "gene", "sample")),
+        reduced = .makeRandomData(j, k, "sample", "factor"),
+        assignments = assignments_data,
+        loadings = loadings_data
+    )
+
+    # Expect that the loadings method returns the original data
+    expect_equal(loadings(rrs), loadings_data)
+
+    # Replacing a value should work
+    loadings(rrs)[3] <- 5
+    expect_true(loadings(rrs)[3] == 5)
+
+    loadings(rrs)[3] <- loadings_data[3]
+    expect_equal(loadings(rrs), loadings_data)
+
+    # This should not work (validity should fail because there are a different number of factors in loadings vs. reduced slots)
+    expect_error((function() {loadings(rrs) <- loadings_data[, 1:5]})())
+
+    # Neither should this (validity should fail because different number of samples)
+    expect_error((function() {loadings(rrs) <- loadings_data[1:5 ,]})())
+})
+
 test_that("Eigengene calculation / projection / prediction", {
 
     # Use real data from airway package

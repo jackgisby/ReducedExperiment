@@ -63,6 +63,7 @@ setReplaceMethod("loadings", "ModularExperiment", function(x, value) {
 
 setReplaceMethod("names", "ModularExperiment", function(x, value) {
     x@assignments <- setNames(value, names(x@assignments))
+    x@loadings <- setNames(x@loadings, value)
     x <- callNextMethod(x, value)
     validObject(x)
     return(x)
