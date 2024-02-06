@@ -1,5 +1,42 @@
-#' ReducedExperiment
+#' ReducedExperiment: A container for dimensionally-reduced data
+#'
+#' @description
+#' Inherits from \link[SummarizedExperiment]{SummarizedExperiment}, a
+#' container for one or more matrices with features as rows (e.g., genes) and
+#' columns as samples. Additional information on features and samples are
+#' contained in \link[SummarizedExperiment]{DataFrame} tables. The
+#' `ReducedExperiment` extends \link[SummarizedExperiment]{SummarizedExperiment}
+#' by additionally providing access to a "reduced" data matrix, in which rows
+#' represent samples and columns represent a second set of dimensionally-reduced
+#' features.
+#'
+#' The methods available for \link[SummarizedExperiment]{SummarizedExperiment}
+#' objects are also available for `ReducedExperiment` and its children, including
+#' \link{FactorisedExperiment} and \link{ModularExperiment}
+#'
+#' Typically, `ReducedExperiment` objects contain two main assays. The first is,
+#' by default, named "normal" and contains some type of normalised data,
+#' such as gene expression data. The second is "transformed", which is typically
+#' the result of applying scaling and/or centering to the normalised data
+#' matrix.
+#'
+#' @param reduced A data matrix, usually the result of some type of
+#' dimensionality-reduction, with rows representing samples and columns
+#' representing a new set of features.
+#'
+#' @param scale Either a boolean, representing whether or not the original data
+#' has been scaled to unit variance, or a numeric vector indicating the
+#' standard deviations of the original features (as produced by
+#' \link[base]{scale}.)
+#'
+#' @param center Either a boolean, representing whether or not the original data
+#' has been centered to have a mean of 0, or a numeric vector indicating the
+#' means of the original features (as produced by
+#' \link[base]{scale}.)
+#'
 #' @import SummarizedExperiment
+#'
+#' @export
 ReducedExperiment <- function(
         reduced = new("matrix"),
         scale = TRUE,

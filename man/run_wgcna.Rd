@@ -16,6 +16,7 @@ run_wgcna(
   seed = 1,
   verbose = 0,
   return_full_output = FALSE,
+  scale_reduced = TRUE,
   ...
 )
 }

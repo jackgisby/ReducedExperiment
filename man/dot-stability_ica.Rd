@@ -13,6 +13,7 @@
   BPPARAM,
   stability_threshold,
   BPOPTIONS = bpoptions(),
+  return_centrotypes = TRUE,
   ...
 )
 }

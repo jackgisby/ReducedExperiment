@@ -1,9 +1,34 @@
-#' FactorisedExperiment
+#' FactorisedExperiment: A container for the results of factor analysis
 #'
-#' A class to represent the results of factor analysis
+#' @description
+#' A container inheriting from \link[ReducedExperiment]{ReducedExperiment}, that
+#' contains one or more data matrices, to which factor analysis has been applied
+#' to identify a reduced set of features.
+#'
+#' @param reduced A data matrix, produced by factor analysis, with rows
+#' representing samples and columns representing factors.
+#'
+#' @param loadings A data matrix, produced by factor analysis, with rows
+#' representing features and columns representing factors.
+#'
+#' @param scale Either a boolean, representing whether or not the original data
+#' has been scaled to unit variance, or a numeric vector indicating the
+#' standard deviations of the original features (as produced by
+#' \link[base]{scale}.)
+#'
+#' @param center Either a boolean, representing whether or not the original data
+#' has been centered to have a mean of 0, or a numeric vector indicating the
+#' means of the original features (as produced by
+#' \link[base]{scale}.)
+#'
+#' @param stability A vector containing some measure of stability or variance
+#' explained for each factor. If factor analysis was performed using
+#' \link[estimate_factors] and `use_stability = True`, this slot will indicate
+#' the stability of the factors across multiple runs of ICA.
+#'
+#' @import SummarizedExperiment
 #'
 #' @export
-#' @import SummarizedExperiment
 FactorisedExperiment <- function(
         loadings = new("matrix"),
         stability = NULL,
@@ -128,7 +153,45 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
     BiocGenerics:::replaceSlots(out, loadings=lod, stability=stab, check=FALSE)
 })
 
-#' Project data
+#' Project new data using pre-defined factors
+#'
+#' @description
+#' Applies defined factors to new data.
+#'
+#' @param object A \link[FactorisedExperiment] object. The `loadings` slot of
+#' this class will be used for projection. Additionally, by default, the `scale`
+#' and `center` slots are used to apply the original transformation to the
+#' new data.
+#'
+#' @param newdata New data for projection. Must be a `data.frame` or `matrix`
+#' with features as rows and samples as columns, or a
+#' \link[SummarizedExperiment]{SummarizedExperiment} object.
+#'
+#' @param scale_reduced Whether or not the reduced data should be scaled
+#' after calculation.
+#'
+#' @param scale_newdata Controls whether the `newdata` are scaled. If NULL,
+#' performs scaling based on the \link[ReducedExperiment]{FactorisedExperiment}
+#' object's `scale` slot. The value of this argument will be passed to the
+#' `scale` argument of \link[base]{scale}.
+#'
+#' @param center_newdata Controls whether the `newdata` are centered If NULL,
+#' performs centering based on the \link[ReducedExperiment]{FactorisedExperiment}
+#' object's `center` slot. The value of this argument will be passed to the
+#' `center` argument of \link[base]{scale}.
+#'
+#' @param assay_name If a \link[SummarizedExperiment]{SummarizedExperiment}
+#' object is passed as new data, this argument indicates which assay should be
+#' used for projection.
+#'
+#' @returns Calculates a matrix with samples as rows and factors as columns. If
+#' `newdata` was a `matrix` or `data.frame`, this will be returned as a matrix.
+#' If a \link[SummarizedExperiment]{SummarizedExperiment} object was passed
+#' instead, then a If a \link[SummarizedExperiment]{FactorisedExperiment}
+#' object will be created containing this matrix in its `reduced` slot.
+#'
+#' @rdname projectData
+#' @export
 setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL) {
 
     if (!identical(rownames(x), rownames(newdata)))
@@ -146,10 +209,14 @@ setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdat
     return(red)
 })
 
+#' @rdname projectData
+#' @export
 setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(x, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL) {
     return(projectData(x, as.matrix(newdata), scale_reduced=scale_reduced, scale_newdata=scale_newdata, center_newdata=center_newdata))
 })
 
+#' @rdname projectData
+#' @export
 setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL, assay_name="normal") {
 
     projected_data <- projectData(x, assay(newdata, assay_name), scale_reduced=scale_reduced, scale_newdata=scale_newdata, center_newdata=center_newdata)
@@ -157,6 +224,8 @@ setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), func
     return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), stability=stability(x), center_X=x@center, scale_X=x@scale))
 })
 
+#' @rdname projectData
+#' @export
 setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
     return(projectData(object, newdata, ...))
 })

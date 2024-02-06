@@ -2,16 +2,34 @@
 % Please edit documentation in R/methods-FactorisedExperiment.R
 \name{FactorisedExperiment}
 \alias{FactorisedExperiment}
-\title{FactorisedExperiment}
+\title{FactorisedExperiment: A container for the results of factor analysis}
 \usage{
-FactorisedExperiment(
-  loadings = new("matrix"),
-  stability = NULL,
-  scale = FALSE,
-  center = FALSE,
-  ...
-)
+FactorisedExperiment(loadings = new("matrix"), stability = NULL, ...)
+}
+\arguments{
+\item{loadings}{A data matrix, produced by factor analysis, with rows
+representing features and columns representing factors.}
+
+\item{stability}{A vector containing some measure of stability or variance
+explained for each factor. If factor analysis was performed using
+\link\link{estimate_factors} and \code{use_stability = True}, this slot will indicate
+the stability of the factors across multiple runs of ICA.}
+
+\item{reduced}{A data matrix, produced by factor analysis, with rows
+representing samples and columns representing factors.}
+
+\item{scale}{Either a boolean, representing whether or not the original data
+has been scaled to unit variance, or a numeric vector indicating the
+standard deviations of the original features (as produced by
+\link[base]{scale}.)}
+
+\item{center}{Either a boolean, representing whether or not the original data
+has been centered to have a mean of 0, or a numeric vector indicating the
+means of the original features (as produced by
+\link[base]{scale}.)}
 }
 \description{
-A class to represent the results of factor analysis
+A container inheriting from \link[ReducedExperiment]{ReducedExperiment}, that
+contains one or more data matrices, to which factor analysis has been applied
+to identify a reduced set of features.
 }

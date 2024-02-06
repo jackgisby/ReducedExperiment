@@ -4,7 +4,13 @@
 \alias{identify_modules}
 \title{Run WGCNA}
 \usage{
-identify_modules(X, assay_name = "normal", ...)
+identify_modules(
+  X,
+  center_X = TRUE,
+  scale_X = TRUE,
+  assay_name = "normal",
+  ...
+)
 }
 \description{
 Run WGCNA

@@ -10,8 +10,8 @@ reduced_gsea(
   TERM2GENE = NULL,
   p_cutoff = 1,
   adj_method = "BH",
-  nPermSimple = 10000,
-  eps = 1e-50,
+  nPermSimple = 1000,
+  eps = 1e-10,
   ...
 )
 }

@@ -5,6 +5,8 @@ setClassUnion("logical_OR_numeric", c("logical", "numeric"))
 
 #' @import methods
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#'
+#' @exportClass ReducedExperiment
 .ReducedExperiment <- setClass(
     "ReducedExperiment",
     contains="SummarizedExperiment",
@@ -14,6 +16,8 @@ setClassUnion("logical_OR_numeric", c("logical", "numeric"))
 
 #' @import methods
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#'
+#' @exportClass FactorisedExperiment
 .FactorisedExperiment <- setClass(
     "FactorisedExperiment",
     contains="ReducedExperiment",
@@ -23,6 +27,8 @@ setClassUnion("logical_OR_numeric", c("logical", "numeric"))
 
 #' @import methods
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#'
+#' @exportClass ModularExperiment
 .ModularExperiment <- setClass(
     "ModularExperiment",
     contains="ReducedExperiment",

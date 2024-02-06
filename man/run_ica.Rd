@@ -16,6 +16,7 @@ run_ica(
   reorient_skewed = TRUE,
   seed = 1,
   scale_components = TRUE,
+  scale_reduced = TRUE,
   n_runs = 30,
   BPPARAM = BiocParallel::SerialParam(),
   ...

@@ -1,9 +1,47 @@
-#' ModularExperiment
+#' ModularExperiment: A container for the results of module analysis
+#'
+#' @description
+#' A container inheriting from \link[ReducedExperiment]{ReducedExperiment}, that
+#' contains one or more data matrices, to which module analysis has been applied
+#' to identify a reduced set of features.
+#'
+#' @param reduced A data matrix, produced by module analysis, with rows
+#' representing samples and columns representing module expression profiles.
+#' Typically, this matrix contains "eigengenes" produced by the Weighted Gene
+#' Correlation Network Analysis Approach, as is applied by
+#' \link[identify_modules].
+#'
+#' @param assignments A vector of features, named according to the module to which the
+#' feature belongs.
+#'
+#' @param loadings A numeric vector representing the loadings used to generate
+#' module expression profiles. Typically, these values are obtained from the
+#' rotation matrix produced by \link[stats]{prcomp}, which is used to identify
+#' the first principal component of each module. The vector names represent
+#' features.
+#'
+#' @param scale Either a boolean, representing whether or not the original data
+#' has been scaled to unit variance, or a numeric vector indicating the
+#' standard deviations of the original features (as produced by
+#' \link[base]{scale}.)
+#'
+#' @param center Either a boolean, representing whether or not the original data
+#' has been centered to have a mean of 0, or a numeric vector indicating the
+#' means of the original features (as produced by
+#' \link[base]{scale}.)
+#'
+#' @param dendrogram Either NULL, or the dendrogram used to identify modules from the
+#' original data.
+#'
+#' @param threshold Either NULL, or a matrix produced by
+#' \link[WGCNA]{pickSoftThreshold} indicating the parameters used for network
+#' construction.
 #'
 #' A class to represent the results of module analysis
 #'
-#' @export
 #' @import SummarizedExperiment
+#'
+#' @export
 ModularExperiment <- function(loadings=numeric(), assignments=character(), dendrogram=NULL, threshold=NULL, ...)
 {
     re <- ReducedExperiment(...)
@@ -76,7 +114,6 @@ setReplaceMethod("rownames", "ModularExperiment", function(x, value) {
     names(x) <- value
     return(x)
 })
-
 
 setReplaceMethod("componentNames", "ModularExperiment", function(x, value) {
 
