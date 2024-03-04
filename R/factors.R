@@ -12,7 +12,8 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, assay_name="no
 
     if ("transformed" %in% assayNames(X)) warning("Overwriting 'transformed' assay slot in X")
     assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center_X, scale=scale_X))
-
+    
+    # print(assay(X, "transformed"))
     if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
     if (scale_X) scale_X <- attr(assay(X, "transformed"), "scaled:scale")
 
@@ -59,7 +60,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
     if (scale_components) ica_res$S <- scale(ica_res$S)
     ica_res$M <- .project_ica(X, ica_res$S)
     if (scale_reduced) ica_res$M <- scale(ica_res$M)
-
+    
     # Add factors / sample names
     rownames(ica_res$M) <- colnames(X)
     rownames(ica_res$S) <- rownames(X)

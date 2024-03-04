@@ -46,6 +46,7 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     # Check feature names/numbers
     if (obj_dims[1] != dim(loadings(object))[1])
         msg <- c(msg, "Loadings have invalid row dimensions")
+
     if (!identical(featureNames(object), rownames(loadings(object))))
         msg <- c(msg, "Loadings have incorrect column names (feature labels)")
 
@@ -114,8 +115,6 @@ setReplaceMethod("componentNames", "FactorisedExperiment", function(x, value) {
     return(x)
 })
 
-
-
 setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=FALSE)
 {
@@ -151,6 +150,23 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 
     out <- callNextMethod(x, i, j, k, ...)
     BiocGenerics:::replaceSlots(out, loadings=lod, stability=stab, check=FALSE)
+})
+
+# Same features, different samples
+setMethod("cbind", "FactorisedExperiment", function(..., deparse.level=1) {
+
+    args <- list(...)
+
+    loadings_stability_equal <- sapply(args, function(re) {
+        return(identical(re@loadings, args[[1]]@loadings) & identical(re@stability, args[[1]]@stability))
+    })
+
+    if (!all(loadings_stability_equal))
+        stop("Row bind expects loadings and stability slots are equal. Set check_duplicate_slots to FALSE to ignore these slots.")
+
+    args[["deparse.level"]] <- deparse.level
+
+    return(do.call(callNextMethod, args))
 })
 
 #' Project new data using pre-defined factors

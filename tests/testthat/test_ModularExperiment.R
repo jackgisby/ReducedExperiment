@@ -145,3 +145,21 @@ test_that("Eigengene calculation / projection / prediction", {
         }
     }
 })
+
+test_that("Combine ModularExperiments with cbind", {
+
+    rrs_a <- .createRandomisedModularExperiment(i=300, j=100, k=10, seed=1)
+    rrs_b <- .createRandomisedModularExperiment(i=300, j=100, k=10, seed=2)
+
+    # Objects should be cbind-able due to matching names
+    rrs_a_a <- cbind(rrs_a, rrs_a)
+    expect_true(validObject(rrs_a_a))
+
+    # This should fail because of non-matching loadings/assignments
+    expect_error(cbind(rrs_a, rrs_b))
+
+    # Should succeed when loadings are equivalent
+    loadings(rrs_b) <- loadings(rrs_a)
+    assignments(rrs_b) <- assignments(rrs_a)
+    expect_no_error(cbind(rrs_a, rrs_b))
+})

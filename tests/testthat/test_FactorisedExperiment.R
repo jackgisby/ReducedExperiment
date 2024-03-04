@@ -199,3 +199,25 @@ test_that("Get gene IDs", {
     expect_true(mean(is.na(rowData(airway_fe)$hgnc_symbol)) < 0.05)
     expect_true(mean(is.na(rowData(airway_fe)$entrezgene_id)) < 0.3)
 })
+
+test_that("Combine FactorisedExperiments with cbind", {
+
+    rrs_a <- .createRandomisedFactorisedExperiment(i=300, j=100, k=10, seed=1)
+    rrs_b <- .createRandomisedFactorisedExperiment(i=300, j=100, k=10, seed=2)
+
+    # Objects should be cbind-able due to matching names
+    rrs_a_a <- cbind(rrs_a, rrs_a)
+    expect_true(validObject(rrs_a_a))
+
+    # This should fail because of non-matching loadings/assignments
+    expect_error(cbind(rrs_a, rrs_b))
+
+    # Should succeed when loadings are equivalent
+    loadings(rrs_b) <- loadings(rrs_a)
+    expect_no_error(cbind(rrs_a, rrs_b))
+
+    # Should fail when stability is different
+    stability(rrs_b) <- setNames(1:10, componentNames(rrs_b))
+    expect_true(validObject(rrs_b))
+    expect_error(cbind(rrs_a, rrs_b))
+})

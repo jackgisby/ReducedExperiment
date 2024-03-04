@@ -118,7 +118,6 @@ setReplaceMethod("featureNames", "ReducedExperiment", function(x, value) {
     return(x)
 })
 
-
 setMethod("sampleNames", "ReducedExperiment", function(x) {return(colnames(x))})
 
 setReplaceMethod("sampleNames", "ReducedExperiment", function(x, value) {
@@ -182,8 +181,44 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
     BiocGenerics:::replaceSlots(out, reduced=red, center=center, scale=scale, check=FALSE)
 })
 
+# Row bind operations do not make sense following dimensionality reduction
+# setMethod("rbind", "ReducedExperiment", function(...) {
+#     out <- callNextMethod(...)
+#
+#     scale <- do.call(c, lapply(..., scale))
+#     center <- do.call(c, lapply(..., center))
+#
+#     BiocGenerics:::replaceSlots(out, scale=scale, center=center)
+#
+#     return(out)
+# })
+removeMethod("rbind", "ReducedExperiment")
+
+
+# Same features, different samples
+setMethod("cbind", "ReducedExperiment", function(..., deparse.level=1) {
+
+    args <- list(...)
+
+    reduced <- do.call(rbind, lapply(args, reduced))
+
+    std_slots_equal <- sapply(args, function(re) {
+        return(identical(re@scale, args[[1]]@scale) & identical(re@center, args[[1]]@center))
+    })
+
+    if (all(std_slots_equal)) {
+        args[[1]] <- BiocGenerics:::replaceSlots(args[[1]], reduced=reduced, check=FALSE)
+    } else {
+        stop("Row bind expects scale and center slots are equal")
+    }
+
+    args[["deparse.level"]] <- deparse.level
+
+    return(do.call(callNextMethod, args))
+})
+
 setMethod("dim", "ReducedExperiment", function(x) {
-    out <- c(callNextMethod(x), ncol(reduced(x)))
+    out <- c(callNextMethod(x), ncol(x@reduced))
     names(out) <- c("Features", "Samples", "Components")
     return(out)
 })

@@ -175,6 +175,22 @@ setMethod("[", c("ModularExperiment", "ANY", "ANY", "ANY"),
     BiocGenerics:::replaceSlots(out, loadings=lod, assignments=assignments, check=FALSE)
 })
 
+# Same features, different samples
+setMethod("cbind", "ModularExperiment", function(..., deparse.level=1) {
+    args <- list(...)
+
+    loadings_assignments_equal <- sapply(args, function(re) {
+        return(identical(re@loadings, args[[1]]@loadings) & identical(re@assignments, args[[1]]@assignments))
+    })
+
+    if (!all(loadings_assignments_equal))
+        stop("Row bind expects loadings and assignments slots are equal")
+
+    args[["deparse.level"]] <- deparse.level
+
+    return(do.call(callNextMethod, args))
+})
+
 setMethod("runEnrich", c("ModularExperiment"),
           function(x, method="overrepresentation", feature_id_col="rownames", as_dataframe=FALSE, ...)
 {
@@ -223,7 +239,7 @@ setMethod("plotDendro", c("ModularExperiment"),
 })
 
 setMethod("calcEigengenes", c("ModularExperiment", "matrix"),
-          function(x, newdata, project=TRUE, scale_reduced=TRUE, return_loadings=FALSE, scale_newdata=NULL, center_newdata=NULL, realign=TRUE) {
+          function(x, newdata, project=TRUE, scale_reduced=TRUE, return_loadings=FALSE, scale_newdata=NULL, center_newdata=NULL, realign=TRUE, min_module_genes=10) {
 
     if (!identical(rownames(x), rownames(newdata)))
         stop("Rownames of x do not match those of newdata")
@@ -236,7 +252,7 @@ setMethod("calcEigengenes", c("ModularExperiment", "matrix"),
 
     if (project) {
 
-        red <- .project_eigengenes(newdata, moduleNames(x), assignments(x), loadings(x))
+        red <- .project_eigengenes(newdata, moduleNames(x), assignments(x), loadings(x), min_module_genes=min_module_genes)
         eigengenes <- list("reduced" = as.matrix(red), "loadings" = loadings(x))
 
     } else {
@@ -258,19 +274,19 @@ setMethod("calcEigengenes", c("ModularExperiment", "matrix"),
 })
 
 setMethod("calcEigengenes", c("ModularExperiment", "data.frame"), function(
-        x, newdata, project=TRUE, scale_reduced=TRUE, return_loadings=FALSE, scale_newdata=NULL, center_newdata=NULL, realign=TRUE) {
+        x, newdata, project=TRUE, scale_reduced=TRUE, return_loadings=FALSE, scale_newdata=NULL, center_newdata=NULL, realign=TRUE, min_module_genes=10) {
 
     return(calcEigengenes(x, as.matrix(newdata), project=project, return_loadings=return_loadings,
                           scale_newdata=scale_newdata, center_newdata=center_newdata, realign=realign,
-                          scale_reduced=scale_reduced))
+                          scale_reduced=scale_reduced, min_module_genes=min_module_genes))
 })
 
 setMethod("calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
-          function(x, newdata, project=TRUE, scale_reduced=TRUE, assay_name="normal", scale_newdata=NULL, center_newdata=NULL, realign=TRUE) {
+          function(x, newdata, project=TRUE, scale_reduced=TRUE, assay_name="normal", scale_newdata=NULL, center_newdata=NULL, realign=TRUE, min_module_genes=10) {
 
     eig <- calcEigengenes(x, assay(newdata, assay_name), project=project, return_loadings=FALSE,
                           scale_newdata=scale_newdata, center_newdata=center_newdata, realign=realign,
-                          scale_reduced=scale_reduced)
+                          scale_reduced=scale_reduced, min_module_genes=min_module_genes)
 
     return(.se_to_me(newdata, reduced=as.matrix(eig), loadings=loadings(x), assignments=assignments(x), center_X=x@center, scale_X=x@scale))
 })

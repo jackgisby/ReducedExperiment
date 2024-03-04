@@ -11,33 +11,33 @@
 }
 
 #' i (features), j (samples), k components)
-.createRandomisedReducedExperiment <- function(i, j, k) {
+.createRandomisedReducedExperiment <- function(i, j, k, seed=1) {
     return(ReducedExperiment(
-        assays = list("normal"=.makeRandomData(i, j, "gene", "sample")),
-        reduced = .makeRandomData(j, k, "sample", "factor")
+        assays = list("normal"=.makeRandomData(i, j, "gene", "sample", seed=seed)),
+        reduced = .makeRandomData(j, k, "sample", "factor", seed=seed)
     ))
 }
 
 #' i (features), j (samples), k components)
-.createRandomisedFactorisedExperiment <- function(i, j, k) {
+.createRandomisedFactorisedExperiment <- function(i, j, k, seed=1) {
     return(FactorisedExperiment(
-        assays = list("normal"=.makeRandomData(i, j, "gene", "sample")),
-        reduced = .makeRandomData(j, k, "sample", "factor"),
-        loadings = .makeRandomData(i, k, "gene", "factor")
+        assays = list("normal"=.makeRandomData(i, j, "gene", "sample", seed=seed)),
+        reduced = .makeRandomData(j, k, "sample", "factor", seed=seed),
+        loadings = .makeRandomData(i, k, "gene", "factor", seed=seed)
     ))
 }
 
 #' i (features), j (samples), k components)
-.createRandomisedModularExperiment <- function(i, j, k) {
+.createRandomisedModularExperiment <- function(i, j, k, seed=1) {
 
     assignments <- paste0("gene_", 1:i)
     names(assignments) <- paste0("module_", round(runif(i, 1, k), 0))
 
     return(ModularExperiment(
-        assays = list("normal"=.makeRandomData(i, j, "gene", "sample")),
-        reduced = .makeRandomData(j, k, "sample", "module"),
+        assays = list("normal"=.makeRandomData(i, j, "gene", "sample", seed=seed)),
+        reduced = .makeRandomData(j, k, "sample", "module", seed=seed),
         assignments = assignments,
-        loadings = .makeRandomData(i, 1, "gene", "gene")[,1]
+        loadings = .makeRandomData(i, 1, "gene", "gene", seed=seed)[,1]
     ))
 }
 

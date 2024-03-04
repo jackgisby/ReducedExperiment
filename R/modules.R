@@ -158,16 +158,22 @@ run_wgcna <- function(X, powers=1:30,
     return(list("reduced" = as.matrix(red), "loadings" = lod))
 }
 
-.project_eigengenes <- function(newdata, module_names, module_assignments, lod) {
+.project_eigengenes <- function(newdata, module_names, module_assignments, lod, min_module_genes) {
 
     red <- data.frame(row.names = colnames(newdata))
 
     for (m in module_names) {
-
-        module_data <- newdata[rownames(newdata) %in% module_assignments[names(module_assignments) == m], ]
-        module_lod <- lod[names(lod) %in% rownames(module_data)]
+        
+        module_genes <- module_assignments[names(module_assignments) == m]
+        
+        if (length(module_genes) < min_module_genes) next
+        if (!any(rownames(newdata) %in% module_genes)) next
+        
+        
+        module_data <- newdata[rownames(newdata) %in% module_genes, ]
+        module_lod <- lod[names(lod) %in% module_genes]
         stopifnot(all(rownames(module_data) == names(module_lod)))
-
+        
         red[[m]] <- t(module_data) %*% module_lod
     }
 

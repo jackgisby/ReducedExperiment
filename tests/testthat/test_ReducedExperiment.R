@@ -152,3 +152,38 @@ test_that("Access and replace scale/center", {
         validObject(rrs)
     })())
 })
+
+test_that("Combine ReducedExperiments with cbind", {
+
+    rrs_a <- .createRandomisedReducedExperiment(i=300, j=100, k=10, seed=1)
+    rrs_b <- .createRandomisedReducedExperiment(i=300, j=100, k=10, seed=2)
+
+    # Objects should be cbind-able due to matching names
+    rrs_a_a <- cbind(rrs_a, rrs_a)
+    expect_true(validObject(rrs_a_a))
+    rrs_a_b <- cbind(rrs_a, rrs_b)
+    expect_true(validObject(rrs_a_b))
+
+    expect_equal(dim(rrs_a_b), c("Features" = 300, "Samples" = 200, "Components" = 10))
+
+    # Add scaling information to rrs_b but not a
+    rrs_b@scale <- 1:300
+    names(rrs_b@scale) <- rownames(rrs_b)
+    expect_true(validObject(rrs_b))
+
+    # Should fail due to non-matching scaling slots
+    expect_error(cbind(rrs_a, rrs_b))
+
+    # Add scaling information to rrs_a and it should work again
+    rrs_a@scale <- rrs_b@scale
+    expect_no_error(cbind(rrs_a, rrs_b))
+
+    # Same with centering
+    rrs_b@center <- 1:300
+    names(rrs_b@center) <- rownames(rrs_b)
+    expect_true(validObject(rrs_b))
+    expect_error(cbind(rrs_a, rrs_b))
+
+    rrs_a@center <- rrs_b@center
+    expect_no_error(cbind(rrs_a, rrs_b))
+})
