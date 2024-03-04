@@ -345,9 +345,9 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
 #' @export
 setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, loading_threshold=0.5, proportional_threshold=0.01,
                                                                     feature_id_col="rownames", format="list",
-                                                                    scale_loadings=TRUE, center_loadings=FALSE) {
+                                                                    center_loadings=FALSE) {
 
-    S <- loadings(object, scale_loadings=scale_loadings, center_loadings=center_loadings)
+    S <- loadings(object, scale_loadings=TRUE, center_loadings=center_loadings)
 
     if (feature_id_col != "rownames") rownames(S) <- rowData(object)[[feature_id_col]]
 
@@ -366,7 +366,6 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, load
                 component = f,
                 feature = rownames(S)[which_features],
                 value = S[,f][which_features],
-                loadings_scaled = scale_loadings,
                 loadings_centered = center_loadings
             ))
         }
@@ -393,17 +392,67 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, load
     }
 })
 
+
+#' Functional enrichment analyses for dimensionally-reduced data
+#'
+#' @param object \link[ReducedExperiment]{FactorisedExperiment}  or
+#' \link[ReducedExperiment]{ModularExperiment} object.
+#'
+#' @param method The method to use for identifying enriched pathways. One of
+#' "overrepresentation" or "gsea". The overrepresentation method calls
+#' \link[clusterProfiler]{enricher} whereas the gsea method calls
+#' \link[clusterProfiler]{GSEA}. Note that GSEA is not available for modules.
+#'
+#' @param feature_id_col The column in `rowData(object)` that will be used as a
+#' feature ID. Setting this to "rownames" (default) instead uses
+#' `rownames(object)`.
+#'
+#' @param as_dataframe If `TRUE`, the results will be returned as a data.frame.
+#' Otherwise, the results will be returned as a list of objects created by either
+#' \link[clusterProfiler]{enricher}, in the case of overrepresentation
+#' analysis, or \link[clusterProfiler]{GSEA}, in the case of GSEA.
+#'
+#' @param center_loadings Factors only: If `TRUE`, loadings will be centered
+#' column-wise to have a mean of 0.
+#'
+#' @param abs_loadings Factors only: If `TRUE`, the absolute values of the
+#' loadings will be used for enrichment analysis. If `FALSE`, the signed
+#' loadings will be used for GSEA enrichment. Note that, regardless of the
+#' value of this term, the process used to select genes for overrepresentation
+#' analysis will be based on absolute loadings.
+#'
+#' @param loading_threshold Factors only: See
+#' \link[ReducedExperiment]{getAlignedGenes}. Only relevant for overresentation
+#' analysis.
+#'
+#' @param proportional_threshold Factors only: See
+#' \link[ReducedExperiment]{getAlignedGenes}. Only relevant for overresentation
+#' analysis.
+#'
+#' @details
+#' When running module analysis, the overrepresentation method identifies
+#' pathways that are overrepresented in each module.
+#'
+#' For factor analysis, the overrepresentation method first identifies the genes
+#' most highly aligned with each factor
+#' (using \link[ReducedExperiment]{getAlignedGenes}), then uses
+#' the resulting gene lists to perform overrepresentation analysis. The GSEA
+#' method instead uses the entire set of factor loadings, and identifies pathways
+#' that are overrepresented in the tails of this distribution.
+#'
+#' @rdname enrichment
+#' @export
 setMethod("runEnrich", c("FactorisedExperiment"),
     function(object, method="overrepresentation", feature_id_col="rownames",
-             scale_loadings=TRUE, abs_loadings=FALSE, z_cutoff=3, n_features=20,
+             center_loadings=FALSE, abs_loadings=FALSE, loading_threshold=0.5, proportional_threshold=0.01,
              as_dataframe=FALSE, ...)
 {
     if (method == "gsea") {
 
-        z_cutoff <- NULL
-        n_features <- NULL
+        loading_threshold <- NULL
+        proportional_threshold <- NULL
 
-        S <- loadings(object, scale_loadings=scale_loadings, abs_loadings=abs_loadings)
+        S <- loadings(object, scale_loadings=TRUE, center_loadings=center_loadings, abs_loadings=abs_loadings)
         if (feature_id_col != "rownames") rownames(S) <- rowData(object)[[feature_id_col]]
 
         enrich_res <- reduced_gsea(S, ...)
@@ -411,9 +460,9 @@ setMethod("runEnrich", c("FactorisedExperiment"),
     } else if (method == "overrepresentation") {
 
         factor_features <- getAlignedFeatures(object, feature_id_col=feature_id_col,
-                                              scale_loadings=scale_loadings,
-                                              z_cutoff=z_cutoff,
-                                              n_features=n_features)
+                                              center_loadings=center_loadings,
+                                              loading_threshold=loading_threshold,
+                                              proportional_threshold=proportional_threshold)
 
         enrich_res <- reduced_oa(factor_features, ...)
 
@@ -424,10 +473,10 @@ setMethod("runEnrich", c("FactorisedExperiment"),
     for (comp in names(enrich_res)) {
         if (!is.null(enrich_res[[comp]]@result)) {
             if (nrow(enrich_res[[comp]]@result) >= 1) {
-                enrich_res[[comp]]@result$z_cutoff <- z_cutoff
-                enrich_res[[comp]]@result$n_features <- n_features
-                enrich_res[[comp]]@result$loadings_scaled <- scale_loadings
-                enrich_res[[comp]]@result$loadings_centered <- FALSE
+                enrich_res[[comp]]@result$loading_threshold <- loading_threshold
+                enrich_res[[comp]]@result$proportional_threshold <- proportional_threshold
+                enrich_res[[comp]]@result$loadings_centered <- center_loadings
+                enrich_res[[comp]]@result$loadings_scaled <- TRUE
                 enrich_res[[comp]]@result$abs_loadings <- abs_loadings
             }
         }
