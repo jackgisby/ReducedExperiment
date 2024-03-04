@@ -172,16 +172,20 @@ setMethod("cbind", "FactorisedExperiment", function(..., deparse.level=1) {
 #' Project new data using pre-defined factors
 #'
 #' @description
-#' Applies defined factors to new data.
+#' Uses a projection approach to calculate factors in new data. Functions in a
+#' similar fashion to the `predict` method of \link[stats]{prcomp}. The transposed
+#' `newdata` are multiplied by the original loadings matrix.
 #'
-#' @param object A \link[FactorisedExperiment] object. The `loadings` slot of
+#' @param object A \link[ReducedExperiment]{FactorisedExperiment} object. The `loadings` slot of
 #' this class will be used for projection. Additionally, by default, the `scale`
 #' and `center` slots are used to apply the original transformation to the
 #' new data.
 #'
 #' @param newdata New data for projection. Must be a `data.frame` or `matrix`
 #' with features as rows and samples as columns, or a
-#' \link[SummarizedExperiment]{SummarizedExperiment} object.
+#' \link[SummarizedExperiment]{SummarizedExperiment} object. Assumes that the
+#' rows of `newdata` match those of the \link[ReducedExperiment]{FactorisedExperiment}
+#' object.
 #'
 #' @param scale_reduced Whether or not the reduced data should be scaled
 #' after calculation.
@@ -205,6 +209,8 @@ setMethod("cbind", "FactorisedExperiment", function(..., deparse.level=1) {
 #' If a \link[SummarizedExperiment]{SummarizedExperiment} object was passed
 #' instead, then a If a \link[SummarizedExperiment]{FactorisedExperiment}
 #' object will be created containing this matrix in its `reduced` slot.
+#'
+#' @seealso [ReducedExperiment::calcEigengenes()]
 #'
 #' @rdname projectData
 #' @export

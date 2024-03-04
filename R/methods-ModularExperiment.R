@@ -238,6 +238,65 @@ setMethod("plotDendro", c("ModularExperiment"),
                            addGuide = addGuide, guideHang = guideHang)
 })
 
+#' Project new data using pre-defined factors
+#'
+#' @description
+#' Calculates eigengenes for modules in new data. If in `project` mode, functions
+#' in a similar fashion to the `predict` method of \link[stats]{prcomp}. Else,
+#' eigengenes are calculated from scratch using PCA, in a similar manner to the
+#' \link[WGCNA]{moduleEigengenes} function.
+#'
+#' @param x A \link[ModularExperiment] object. The `loadings` slot of
+#' this class will be used for projection. Additionally, by default, the `scale`
+#' and `center` slots are used to apply the original transformation to the
+#' new data.
+#'
+#' @param newdata New data for eigengenes to be calculates in. Must be a
+#' `data.frame` or `matrix` with features as rows and samples as columns, or a
+#' \link[SummarizedExperiment]{SummarizedExperiment} object. Assumes that the
+#' rows of `newdata` match those of the \link[ReducedExperiment]{ModularExperiment}
+#' object.
+#'
+#' @param project Whether to perform projection (i.e., using PCA rotation matrix
+#' from the original data to calculate modules) or calculate eigengenes from
+#' scratch in the new data (i.e., performing PCA for each module in `newdata`).
+#'
+#' @param scale_reduced Whether or not the reduced data should be scaled
+#' after calculation.
+#'
+#' @param scale_newdata Controls whether the `newdata` are scaled. If NULL,
+#' performs scaling based on the \link[ReducedExperiment]{ModularExperiment}
+#' object's `scale` slot. The value of this argument will be passed to the
+#' `scale` argument of \link[base]{scale}.
+#'
+#' @param center_newdata Controls whether the `newdata` are centered If NULL,
+#' performs centering based on the \link[ReducedExperiment]{ModularExperiment}
+#' object's `center` slot. The value of this argument will be passed to the
+#' `center` argument of \link[base]{scale}.
+#'
+#' @param assay_name If a \link[SummarizedExperiment]{SummarizedExperiment}
+#' object is passed as new data, this argument indicates which assay should be
+#' used for projection.
+#'
+#' @param realign If `project` is TRUE, this argument is ignored. Else, controls
+#' whether eigengenes are realigned after PCA is performed to ensure the resultant
+#' signatures are positively correlated with average expression of the module.
+#' Similar to the `align` argument of \link[WGCNA]{moduleEigengenes}.
+#'
+#' @param min_module_genes If `project` is FALSE, this argument is ignores. Else,
+#' controls the minimum number of genes required in a module for projection. Projected
+#' eigengenes are not calculated for modules with sizes below this threshold.
+#'
+#' @returns Calculates a matrix with samples as rows and modules as columns. If
+#' `newdata` was a `matrix` or `data.frame`, this will be returned as a matrix.
+#' If a \link[SummarizedExperiment]{SummarizedExperiment} object was passed
+#' instead, then a If a \link[SummarizedExperiment]{ModularExperiment}
+#' object will be created containing this matrix in its `reduced` slot.
+#'
+#' @seealso [ReducedExperiment::projectData()], [WGCNA::moduleEigengenes()]
+#'
+#' @rdname calcEigengenes
+#' @export
 setMethod("calcEigengenes", c("ModularExperiment", "matrix"),
           function(x, newdata, project=TRUE, scale_reduced=TRUE, return_loadings=FALSE, scale_newdata=NULL, center_newdata=NULL, realign=TRUE, min_module_genes=10) {
 
@@ -273,6 +332,8 @@ setMethod("calcEigengenes", c("ModularExperiment", "matrix"),
     }
 })
 
+#' @rdname calcEigengenes
+#' @export
 setMethod("calcEigengenes", c("ModularExperiment", "data.frame"), function(
         x, newdata, project=TRUE, scale_reduced=TRUE, return_loadings=FALSE, scale_newdata=NULL, center_newdata=NULL, realign=TRUE, min_module_genes=10) {
 
@@ -281,6 +342,8 @@ setMethod("calcEigengenes", c("ModularExperiment", "data.frame"), function(
                           scale_reduced=scale_reduced, min_module_genes=min_module_genes))
 })
 
+#' @rdname calcEigengenes
+#' @export
 setMethod("calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
           function(x, newdata, project=TRUE, scale_reduced=TRUE, assay_name="normal", scale_newdata=NULL, center_newdata=NULL, realign=TRUE, min_module_genes=10) {
 
@@ -291,6 +354,8 @@ setMethod("calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
     return(.se_to_me(newdata, reduced=as.matrix(eig), loadings=loadings(x), assignments=assignments(x), center_X=x@center, scale_X=x@scale))
 })
 
+#' @rdname calcEigengenes
+#' @export
 setMethod("predict", c("ModularExperiment"), function(object, newdata, ...) {
     return(calcEigengenes(object, newdata, ...))
 })

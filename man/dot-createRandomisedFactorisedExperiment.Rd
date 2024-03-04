@@ -4,7 +4,7 @@
 \alias{.createRandomisedFactorisedExperiment}
 \title{i (features), j (samples), k components)}
 \usage{
-.createRandomisedFactorisedExperiment(i, j, k)
+.createRandomisedFactorisedExperiment(i, j, k, seed = 1)
 }
 \description{
 i (features), j (samples), k components)

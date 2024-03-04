@@ -4,7 +4,7 @@
 \alias{.createRandomisedModularExperiment}
 \title{i (features), j (samples), k components)}
 \usage{
-.createRandomisedModularExperiment(i, j, k)
+.createRandomisedModularExperiment(i, j, k, seed = 1)
 }
 \description{
 i (features), j (samples), k components)
