@@ -155,6 +155,8 @@ setReplaceMethod("dendrogram", "ModularExperiment", function(object, value) {
     return(object)
 })
 
+#' @rdname slice
+#' @export
 setMethod("[", c("ModularExperiment", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=FALSE)
 {

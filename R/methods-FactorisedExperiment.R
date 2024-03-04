@@ -73,17 +73,42 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
+#' Get and set factor loadings
+#'
+#' Retrieves the loadings matrix, with features as rows and reduced
+#' components as columns.
+#'
+#' The loadings can be modified with `<-`.
+#'
+#' @param object \link[ReducedExperiment]{FactorisedExperiment} object.
+#'
+#' @param scale_loadings If `TRUE`, loadings will be scaled column-wise to have a
+#' standard deviation of 0.
+#'
+#' @param center_loadings If `TRUE`, loadings will be centered column-wise to have a mean
+#' of 0.
+#'
+#' @param abs_loadings If `TRUE`, the absolute values of the loadings will be
+#' returned.
+#'
+#' @rdname factor_loadings
+#' @export
 setMethod("loadings", "FactorisedExperiment", function(object, scale_loadings=FALSE, center_loadings=FALSE, abs_loadings=FALSE) {
     l <- scale(object@loadings, scale=scale_loadings, center=center_loadings)
     if (abs_loadings) l <- abs(l)
     return(l)
 })
+
+#' @rdname factor_loadings
+#' @export
 setReplaceMethod("loadings", "FactorisedExperiment", function(object, value) {
     object@loadings <- value
     validObject(object)
     return(object)
 })
 
+#' @rdname feature_names
+#' @export
 setReplaceMethod("names", "FactorisedExperiment", function(x, value) {
     object <- x
 
@@ -92,10 +117,16 @@ setReplaceMethod("names", "FactorisedExperiment", function(x, value) {
     validObject(object)
     return(object)
 })
+
+#' @rdname feature_names
+#' @export
 setReplaceMethod("featureNames", "FactorisedExperiment", function(object, value) {
     names(object) <- value
     return(object)
 })
+
+#' @rdname feature_names
+#' @export
 setReplaceMethod("rownames", "FactorisedExperiment", function(x, value) {
     object <- x
 
@@ -103,14 +134,26 @@ setReplaceMethod("rownames", "FactorisedExperiment", function(x, value) {
     return(object)
 })
 
+#' Gets the stability values for factors
+#'
+#' The stability values can be modified with `<-`.
+#'
+#' @param object \link[ReducedExperiment]{FactorisedExperiment} object.
+#'
+#' @rdname stability
+#' @export
 setMethod("stability", "FactorisedExperiment", function(object) {return(object@stability)})
 
+#' @rdname stability
+#' @export
 setReplaceMethod("stability", "FactorisedExperiment", function(object, value) {
     object@stability <- value
     validObject(object)
     return(object)
 })
 
+#' @rdname component_names
+#' @export
 setReplaceMethod("componentNames", "FactorisedExperiment", function(object, value) {
     colnames(object@loadings) <- value
     if (!is.null(object@stability)) names(object@stability) <- value
@@ -119,6 +162,8 @@ setReplaceMethod("componentNames", "FactorisedExperiment", function(object, valu
     return(object)
 })
 
+#' @rdname slice
+#' @export
 setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=FALSE)
 {
@@ -159,6 +204,8 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 })
 
 # Same features, different samples
+#' @rdname cbind
+#' @export
 setMethod("cbind", "FactorisedExperiment", function(..., deparse.level=1) {
 
     args <- list(...)
@@ -258,7 +305,45 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
     return(projectData(object, newdata, ...))
 })
 
-setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, z_cutoff=NULL, n_features=NULL,
+
+#' Get feature alignments with factors
+#'
+#' Retrieves features (usually genes) and their alignment (`loadings`) with the
+#' factors. Allows for the selection of features whose alignments are high
+#' relative to other features. Useful for functional interpretation of factors.
+#'
+#' @param object \link[ReducedExperiment]{FactorisedExperiment} object.
+#'
+#' @param loading_threshold A value between 0 and 1 indicating the proportion of
+#' the maximal loading to be used as a threshold. A value of 0.5 (default) means
+#' that genes will be selected if their factor alignment
+#' (derived from the `loadings` slot) exceeds or equals 50% of the maximally
+#' aligned feature.
+#'
+#' @param proportional_threshold A value between 0 and 1 indicating the maximal
+#' proportion of features to be returned. A value of 0.01 (default) means that a
+#' maximum of 1% of the input features (usually genes) will be returned for
+#' each factor. These will be the genes in the top percentile with respect to
+#' the `loadings`
+#'
+#' @param feature_id_col The column in `rowData(object)` that will be used as a
+#' feature ID. Setting this to "rownames" (default) instead uses
+#' `rownames(object)`.
+#'
+#' @format The format in which to return the results. If `list`, then a list will
+#' be returned with an entry for each factor, each containing a vector of input
+#' features. Otherwise, if `format` is `data.frame`, a data.frame is returned
+#' with a row for each gene-factor combination. The `format` argument can also be
+#' a function to be applied to the output data.frame before returning the results.
+#'
+#' @param scale_loadings If `TRUE`, loadings will be scaled column-wise to have a
+#' standard deviation of 0.
+#'
+#' @param center_loadings If `TRUE`, loadings will be centered column-wise to have a mean
+#' of 0.
+#'
+#' @export
+setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, loading_threshold=0.5, proportional_threshold=0.01,
                                                                     feature_id_col="rownames", format="list",
                                                                     scale_loadings=TRUE, center_loadings=FALSE) {
 
@@ -266,20 +351,15 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, z_cu
 
     if (feature_id_col != "rownames") rownames(S) <- rowData(object)[[feature_id_col]]
 
-    if (is.null(z_cutoff) & is.null(n_features)) n_features <- nrow(S)
-    if (is.null(n_features)) n_features <- 0
-    if (n_features > nrow(S)) n_features <- nrow(S)
+    abs_thresholds <- apply(S, 2, function(l) {max(abs(l)) * loading_threshold})
+    perc_thresholds <- apply(S, 2, function(l) {stats::quantile(abs(l), probs = 1 - proportional_threshold)})
 
     factor_features <- data.frame()
     for (f in componentNames(object)) {
 
-        which_features <- c()
-        if (!is.null(z_cutoff)) which_features <- which(abs(S[,f]) > z_cutoff)
+        abs_loadings <- abs(S[,f])
 
-        if (length(which_features) < n_features) {
-
-            which_features <- order(abs(S[,f]), decreasing = TRUE)[1:n_features]
-        }
+        which_features <- which(abs_loadings >= abs_thresholds[f] & abs_loadings >= perc_thresholds[f])
 
         if (length(which_features) > 0) {
             factor_features <- rbind(factor_features, data.frame(
@@ -292,8 +372,11 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, z_cu
         }
     }
 
-    factor_features$z_cutoff = z_cutoff
-    factor_features$n_features = n_features
+    factor_features$loading_threshold = loading_threshold
+    factor_features$proportional_threshold = proportional_threshold
+
+    factor_features <- factor_features[order(abs(factor_features$value), decreasing = TRUE) ,]
+    factor_features <- factor_features[order(factor_features$component) ,]
 
     if (is.function(format)) {
         return(format(factor_features))

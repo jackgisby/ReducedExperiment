@@ -150,23 +150,37 @@ test_that("Get aligned features", {
 
     rrs <- .createRandomisedFactorisedExperiment(i=300, j=100, k=10)
 
-    # Check z cutoff
-    aligned_features <- getAlignedFeatures(rrs, z_cutoff=3, n_features=NULL,
+    # Selecting one feature
+    aligned_features <- getAlignedFeatures(rrs, loading_threshold=1, proportional_threshold=0,
                                            feature_id_col="rownames", format="list")
 
-    expect_equal(aligned_features, list(
-        "factor_2"="gene_195",
-        "factor_4"="gene_265",
-        "factor_5"=c("gene_95", "gene_242"),
-        "factor_9"="gene_60"
-    ))
+    expect_equal(unique(sapply(aligned_features, length)), 1)
+
+    # Selecting all features
+    aligned_features <- getAlignedFeatures(rrs, loading_threshold=0, proportional_threshold=1,
+                                           feature_id_col="rownames", format="list")
+
+    expect_equal(unique(sapply(aligned_features, length)), 300)
+
+    # Check proportional_threshold
+    proportional_threshold <- 0.02
+    loading_threshold <- 0.5
+
+    aligned_features <- getAlignedFeatures(rrs, loading_threshold=loading_threshold, proportional_threshold=proportional_threshold,
+                                           feature_id_col="rownames", format="list")
+
+    expect_equal(unique(sapply(aligned_features, length)), proportional_threshold * 300)
 
     # Get top three factors for each
-    aligned_features <- getAlignedFeatures(rrs, z_cutoff=3, n_features=3,
+    proportional_threshold <- 0.01
+    aligned_features <- getAlignedFeatures(rrs, loading_threshold=0.5, proportional_threshold=proportional_threshold,
                                            feature_id_col="rownames", format="list")
+
+    expect_equal(unique(sapply(aligned_features, length)), proportional_threshold * 300)
 
     expect_equal(aligned_features, list(
         "factor_1"=c("gene_232", "gene_274", "gene_206"),
+        "factor_10"=c("gene_112", "gene_26", "gene_293"),
         "factor_2"=c("gene_195", "gene_146", "gene_61"),
         "factor_3"=c("gene_243", "gene_56", "gene_15"),
         "factor_4"=c("gene_265", "gene_75", "gene_63"),
@@ -174,17 +188,14 @@ test_that("Get aligned features", {
         "factor_6"=c("gene_237", "gene_33", "gene_99"),
         "factor_7"=c("gene_41", "gene_52", "gene_83"),
         "factor_8"=c("gene_32", "gene_267", "gene_104"),
-        "factor_9"=c("gene_60", "gene_139", "gene_206"),
-        "factor_10"=c("gene_112", "gene_26", "gene_293")
+        "factor_9"=c("gene_60", "gene_139", "gene_206")
     ))
 
-    # Should work the same way for these data
-    expect_equal(getAlignedFeatures(rrs, z_cutoff=3, n_features=3),
-                 getAlignedFeatures(rrs, z_cutoff=NULL, n_features=3))
-
     # Sanity check of factor 1 z cutoff approach
-    aligned_features <- getAlignedFeatures(rrs, z_cutoff=1.5, n_features=NULL)
-    expect_equal(aligned_features[[1]], names(loadings(rrs, scale_loadings=TRUE)[,1][abs(loadings(rrs, scale_loadings=TRUE)[,1]) > 1.5]))
+    aligned_features <- getAlignedFeatures(rrs, loading_threshold=loading_threshold, proportional_threshold=1,
+                                           feature_id_col="rownames", format="list")
+    abs_factor_1 <- abs(loadings(rrs, scale_loadings=TRUE)[,1])
+    expect_equal(setdiff(aligned_features[[1]], names(rrs[abs_factor_1 > loading_threshold * max(abs_factor_1)])), character())
 })
 
 test_that("Get gene IDs", {

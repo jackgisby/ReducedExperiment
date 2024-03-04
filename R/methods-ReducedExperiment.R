@@ -82,26 +82,71 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
+#' Get and set reduced data
+#'
+#' Retrieves the reduced data matrix, with samples as rows and reduced
+#' components as columns.
+#'
+#' The reduced data can be modified with `<-`.
+#'
+#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @param scale_reduced If `TRUE`, data will be scaled column-wise to have a
+#' standard deviation of 0.
+#'
+#' @param center_reduced If `TRUE`, data will be center4ed column-wise to have a mean
+#' of 0.
+#'
+#' @rdname reduced
+#' @export
 setMethod("reduced", "ReducedExperiment", function(object, scale_reduced=FALSE, center_reduced=FALSE) {
     return(scale(object@reduced, scale=scale_reduced, center=center_reduced))
 })
 
+#' @rdname reduced
+#' @export
 setReplaceMethod("reduced", "ReducedExperiment", function(object, value) {
     object@reduced <- value
     validObject(object)
     return(object)
 })
 
+#' Get names of reduced components
+#'
+#' Retrieves the feature names post-dimensionality reduction In the case of
+#' module analysis, these are the names of the gene modules; in the case of
+#' factor analysis, these are the names of the factors.
+#'
+#' Component names can be updated with `<-`.
+#'
+#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @rdname component_names
+#' @export
 setMethod("componentNames", "ReducedExperiment", function(object) {return(colnames(object@reduced))})
 
+#' @rdname component_names
+#' @export
 setReplaceMethod("componentNames", "ReducedExperiment", function(object, value) {
     colnames(object@reduced) <- value
     validObject(object)
     return(object)
 })
 
+#' Get feature names
+#'
+#' Retrieves feature names (usually genes).
+#'
+#' Feature names can be modified with `<-`.
+#'
+#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @rdname feature_names
+#' @export
 setMethod("featureNames", "ReducedExperiment", function(object) {return(names(object))})
 
+#' @rdname feature_names
+#' @export
 setReplaceMethod("names", "ReducedExperiment", function(x, value) {
     object <- callNextMethod(x, value)
     if (!is.logical(object@scale)) names(object@scale) <- value
@@ -109,30 +154,65 @@ setReplaceMethod("names", "ReducedExperiment", function(x, value) {
     validObject(object)
     return(object)
 })
+
+#' @rdname feature_names
+#' @export
 setReplaceMethod("rownames", "ReducedExperiment", function(x, value) {
     object <- x
     names(object) <- value
     return(object)
 })
+
+#' @rdname feature_names
+#' @export
 setReplaceMethod("featureNames", "ReducedExperiment", function(object, value) {
     names(object) <- value
     return(object)
 })
 
+#' Get sample names
+#'
+#' Retrieves sample names.
+#'
+#' Sample names can be modified with `<-`.
+#'
+#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @rdname sample_names
+#' @export
 setMethod("sampleNames", "ReducedExperiment", function(object) {return(colnames(object))})
 
+#' @rdname sample_names
+#' @export
 setReplaceMethod("sampleNames", "ReducedExperiment", function(object, value) {
     rownames(object@reduced) <- colnames(object) <- value
     validObject(object)
     return(object)
 })
 
+#' Prints a summary of a ReducedExperiment object
+#'
+#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @export
 setMethod("show", "ReducedExperiment" ,
           function(object) {
               callNextMethod()
               cat(nComponents(object), "components\n")
           })
 
+#' Extract and replace parts of ReducedExperiment objects
+#'
+#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @param i Slicing by rows (features, usually genes)
+#'
+#' @param j Slicing by samples
+#'
+#' @param k Slicing by reduced dimensions
+#'
+#' @rdname slice
+#' @export
 setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=FALSE)
 {
@@ -187,7 +267,17 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
 # Row bind operations do not make sense following dimensionality reduction
 removeMethod("rbind", "ReducedExperiment")
 
-# Same features, different samples
+#' Combine ReducedExperiment objects by columns
+#'
+#' Comnbines \link[ReducedExperiment]{ReducedExperiment} objects by columns
+#' (samples). Combining these objects in such a way assumes that feature-level
+#' slots (e.g., loadings, module membership) are the same for all objects to
+#' be concatenated. If they are not, an error is returned.
+#'
+#' @param ... \link[ReducedExperiment]{ReducedExperiment} objects.
+#'
+#' @rdname cbind
+#' @export
 setMethod("cbind", "ReducedExperiment", function(..., deparse.level=1) {
 
     args <- list(...)
@@ -209,6 +299,14 @@ setMethod("cbind", "ReducedExperiment", function(..., deparse.level=1) {
     return(do.call(callNextMethod, args))
 })
 
+#' Get the dimensions of a Reducedexperiment object
+#'
+#' @param x \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @returns Returns a named vector containing the dimensions of the samples,
+#' features and reduced dimensions.
+#'
+#' @export
 setMethod("dim", "ReducedExperiment", function(x) {
     object <- x
 
@@ -217,10 +315,53 @@ setMethod("dim", "ReducedExperiment", function(x) {
     return(out)
 })
 
+#' Prints individual lengths of samples, components and features
+#'
+#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @returns The number of samples (`nSamples`), features (`nFeatures`)
+#' and dimensionally-reduced components (`nComponents`) are returned.
+#'
+#' @rdname individual_dims
+#' @export
 setMethod("nComponents", "ReducedExperiment", function(object) {dim(object)[3]})
+
+#' @rdname individual_dims
+#' @export
 setMethod("nSamples", "ReducedExperiment", function(object) {dim(object)[2]})
+
+#' @rdname individual_dims
+#' @export
 setMethod("nFeatures", "ReducedExperiment", function(object) {dim(object)[1]})
 
+#' Gets alternative gene annotations from biomaRt
+#'
+#' Uses \link[biomaRt]{getBM} to get alternative gene IDs for
+#' \link[ReducedExperiment]{ReducedExperiment} objects. The new annotations
+#' are added as columns to the input object's `rowData`
+#'
+#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @param gene_id_col The column in `rowData(object)` that will be used to
+#' query biomaRt. Setting this to "rownames" instead uses `rownames(object)`
+#' for matching.
+#'
+#' @param gene_id_type The type of attribute to be used to query with biomaRt.
+#' See the `filters` argument of \link[biomaRt]{getBM}.
+#'
+#' @param ids_to_get The type of attribute to get from biomaRt.
+#' See the `attributes` argument of \link[biomaRt]{getBM}.
+#'
+#' @param dataset The Ensembl dataset to retrieve. See the `dataset` argument
+#' of \link[biomaRt]{useEnsembl}. If `mart` is not NULL, this argument is
+#' ignored.
+#'
+#' @param mart An optional mart object to use. See the `mart` argument of
+#'  \link[biomaRt]{getBM}.
+#'
+#'  @returns Returns the original object, with additional variables added to
+#'  the `rowData` slot.
+#'
 #' @import biomaRt
 setMethod("getGeneIDs", "ReducedExperiment", function(
     object,
