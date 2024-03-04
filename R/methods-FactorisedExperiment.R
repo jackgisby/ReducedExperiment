@@ -23,7 +23,7 @@
 #'
 #' @param stability A vector containing some measure of stability or variance
 #' explained for each factor. If factor analysis was performed using
-#' \link[estimate_factors] and `use_stability = True`, this slot will indicate
+#' \link[ReducedExperiment]{estimate_factors} and `use_stability = True`, this slot will indicate
 #' the stability of the factors across multiple runs of ICA.
 #'
 #' @import SummarizedExperiment
@@ -73,62 +73,68 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
-setMethod("loadings", "FactorisedExperiment", function(x, scale_loadings=FALSE, center_loadings=FALSE, abs_loadings=FALSE) {
-    l <- scale(x@loadings, scale=scale_loadings, center=center_loadings)
+setMethod("loadings", "FactorisedExperiment", function(object, scale_loadings=FALSE, center_loadings=FALSE, abs_loadings=FALSE) {
+    l <- scale(object@loadings, scale=scale_loadings, center=center_loadings)
     if (abs_loadings) l <- abs(l)
     return(l)
 })
-setReplaceMethod("loadings", "FactorisedExperiment", function(x, value) {
-    x@loadings <- value
-    validObject(x)
-    return(x)
+setReplaceMethod("loadings", "FactorisedExperiment", function(object, value) {
+    object@loadings <- value
+    validObject(object)
+    return(object)
 })
 
 setReplaceMethod("names", "FactorisedExperiment", function(x, value) {
-    rownames(x@loadings) <- value
-    x <- callNextMethod(x, value)
-    validObject(x)
-    return(x)
+    object <- x
+
+    rownames(object@loadings) <- value
+    object <- callNextMethod(object, value)
+    validObject(object)
+    return(object)
 })
-setReplaceMethod("featureNames", "FactorisedExperiment", function(x, value) {
-    names(x) <- value
-    return(x)
+setReplaceMethod("featureNames", "FactorisedExperiment", function(object, value) {
+    names(object) <- value
+    return(object)
 })
 setReplaceMethod("rownames", "FactorisedExperiment", function(x, value) {
-    names(x) <- value
-    return(x)
+    object <- x
+
+    names(object) <- value
+    return(object)
 })
 
-setMethod("stability", "FactorisedExperiment", function(x) {return(x@stability)})
+setMethod("stability", "FactorisedExperiment", function(object) {return(object@stability)})
 
-setReplaceMethod("stability", "FactorisedExperiment", function(x, value) {
-    x@stability <- value
-    validObject(x)
-    return(x)
+setReplaceMethod("stability", "FactorisedExperiment", function(object, value) {
+    object@stability <- value
+    validObject(object)
+    return(object)
 })
 
-setReplaceMethod("componentNames", "FactorisedExperiment", function(x, value) {
-    colnames(x@loadings) <- value
-    if (!is.null(x@stability)) names(x@stability) <- value
-    x <- callNextMethod(x, value)
-    validObject(x)
-    return(x)
+setReplaceMethod("componentNames", "FactorisedExperiment", function(object, value) {
+    colnames(object@loadings) <- value
+    if (!is.null(object@stability)) names(object@stability) <- value
+    object <- callNextMethod(object, value)
+    validObject(object)
+    return(object)
 })
 
 setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
           function(x, i, j, k, ..., drop=FALSE)
 {
-    if (1L != length(drop) || (!missing(drop) && drop))
-        warning("'drop' ignored '[,", class(x), ",ANY,ANY-method'")
+    object <- x
 
-    lod <- x@loadings
-    stab <- x@stability
+    if (1L != length(drop) || (!missing(drop) && drop))
+        warning("'drop' ignored '[,", class(object), ",ANY,ANY-method'")
+
+    lod <- object@loadings
+    stab <- object@stability
 
     if (!missing(i)) {
         if (is.character(i)) {
-            fmt <- paste0("<", class(x), ">[i,] index out of bounds: %s")
+            fmt <- paste0("<", class(object), ">[i,] index out of bounds: %s")
             i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-                i, rownames(x), fmt
+                i, rownames(object), fmt
             )
         }
         i <- as.vector(i)
@@ -137,9 +143,9 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
 
     if (!missing(k)) {
         if (is.character(k)) {
-            fmt <- paste0("<", class(x), ">[k,] index out of bounds: %s")
+            fmt <- paste0("<", class(object), ">[k,] index out of bounds: %s")
             k <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-                k, componentNames(x), fmt
+                k, componentNames(object), fmt
             )
         }
 
@@ -148,7 +154,7 @@ setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
         stab <- stab[k, drop=FALSE]
     }
 
-    out <- callNextMethod(x, i, j, k, ...)
+    out <- callNextMethod(object, i, j, k, ...)
     BiocGenerics:::replaceSlots(out, loadings=lod, stability=stab, check=FALSE)
 })
 
@@ -207,24 +213,24 @@ setMethod("cbind", "FactorisedExperiment", function(..., deparse.level=1) {
 #' @returns Calculates a matrix with samples as rows and factors as columns. If
 #' `newdata` was a `matrix` or `data.frame`, this will be returned as a matrix.
 #' If a \link[SummarizedExperiment]{SummarizedExperiment} object was passed
-#' instead, then a If a \link[SummarizedExperiment]{FactorisedExperiment}
+#' instead, then a If a \link[ReducedExperiment]{FactorisedExperiment}
 #' object will be created containing this matrix in its `reduced` slot.
 #'
 #' @seealso [ReducedExperiment::calcEigengenes()]
 #'
 #' @rdname projectData
 #' @export
-setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL) {
+setMethod("projectData", c("FactorisedExperiment", "matrix"), function(object, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL) {
 
-    if (!identical(rownames(x), rownames(newdata)))
+    if (!identical(rownames(object), rownames(newdata)))
         stop("Rownames of x do not match those of newdata")
 
     # apply known vectors for scaling and centering (returned as attributes by `scale`)
-    if (is.null(scale_newdata)) scale_newdata <- x@scale
-    if (is.null(center_newdata)) center_newdata <- x@center
+    if (is.null(scale_newdata)) scale_newdata <- object@scale
+    if (is.null(center_newdata)) center_newdata <- object@center
 
     newdata <- t(scale(t(newdata), scale=scale_newdata, center=center_newdata))
-    red <- .project_ica(newdata, loadings(x))
+    red <- .project_ica(newdata, loadings(object))
 
     if (scale_reduced) red <- scale(red)
 
@@ -233,17 +239,17 @@ setMethod("projectData", c("FactorisedExperiment", "matrix"), function(x, newdat
 
 #' @rdname projectData
 #' @export
-setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(x, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL) {
-    return(projectData(x, as.matrix(newdata), scale_reduced=scale_reduced, scale_newdata=scale_newdata, center_newdata=center_newdata))
+setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(object, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL) {
+    return(projectData(object, as.matrix(newdata), scale_reduced=scale_reduced, scale_newdata=scale_newdata, center_newdata=center_newdata))
 })
 
 #' @rdname projectData
 #' @export
-setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(x, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL, assay_name="normal") {
+setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"), function(object, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL, assay_name="normal") {
 
-    projected_data <- projectData(x, assay(newdata, assay_name), scale_reduced=scale_reduced, scale_newdata=scale_newdata, center_newdata=center_newdata)
+    projected_data <- projectData(object, assay(newdata, assay_name), scale_reduced=scale_reduced, scale_newdata=scale_newdata, center_newdata=center_newdata)
 
-    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(x), stability=stability(x), center_X=x@center, scale_X=x@scale))
+    return(.se_to_fe(newdata, reduced=projected_data, loadings=loadings(object), stability=stability(object), center_X=object@center, scale_X=object@scale))
 })
 
 #' @rdname projectData
@@ -252,20 +258,20 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
     return(projectData(object, newdata, ...))
 })
 
-setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=NULL, n_features=NULL,
+setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, z_cutoff=NULL, n_features=NULL,
                                                                     feature_id_col="rownames", format="list",
                                                                     scale_loadings=TRUE, center_loadings=FALSE) {
 
-    S <- loadings(x, scale_loadings=scale_loadings, center_loadings=center_loadings)
+    S <- loadings(object, scale_loadings=scale_loadings, center_loadings=center_loadings)
 
-    if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
+    if (feature_id_col != "rownames") rownames(S) <- rowData(object)[[feature_id_col]]
 
     if (is.null(z_cutoff) & is.null(n_features)) n_features <- nrow(S)
     if (is.null(n_features)) n_features <- 0
     if (n_features > nrow(S)) n_features <- nrow(S)
 
     factor_features <- data.frame()
-    for (f in componentNames(x)) {
+    for (f in componentNames(object)) {
 
         which_features <- c()
         if (!is.null(z_cutoff)) which_features <- which(abs(S[,f]) > z_cutoff)
@@ -305,7 +311,7 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(x, z_cutoff=
 })
 
 setMethod("runEnrich", c("FactorisedExperiment"),
-    function(x, method="overrepresentation", feature_id_col="rownames",
+    function(object, method="overrepresentation", feature_id_col="rownames",
              scale_loadings=TRUE, abs_loadings=FALSE, z_cutoff=3, n_features=20,
              as_dataframe=FALSE, ...)
 {
@@ -314,14 +320,14 @@ setMethod("runEnrich", c("FactorisedExperiment"),
         z_cutoff <- NULL
         n_features <- NULL
 
-        S <- loadings(x, scale_loadings=scale_loadings, abs_loadings=abs_loadings)
-        if (feature_id_col != "rownames") rownames(S) <- rowData(x)[[feature_id_col]]
+        S <- loadings(object, scale_loadings=scale_loadings, abs_loadings=abs_loadings)
+        if (feature_id_col != "rownames") rownames(S) <- rowData(object)[[feature_id_col]]
 
         enrich_res <- reduced_gsea(S, ...)
 
     } else if (method == "overrepresentation") {
 
-        factor_features <- getAlignedFeatures(x, feature_id_col=feature_id_col,
+        factor_features <- getAlignedFeatures(object, feature_id_col=feature_id_col,
                                               scale_loadings=scale_loadings,
                                               z_cutoff=z_cutoff,
                                               n_features=n_features)
@@ -345,7 +351,7 @@ setMethod("runEnrich", c("FactorisedExperiment"),
     }
 
     if (as_dataframe)  {
-        enrich_res <- lapply(enrich_res, function(x) {x@result})
+        enrich_res <- lapply(enrich_res, function(object) {object@result})
         enrich_res <- do.call("rbind", enrich_res)
     }
 

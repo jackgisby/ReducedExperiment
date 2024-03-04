@@ -12,7 +12,7 @@ representing features and columns representing factors.}
 
 \item{stability}{A vector containing some measure of stability or variance
 explained for each factor. If factor analysis was performed using
-\link\link{estimate_factors} and \code{use_stability = True}, this slot will indicate
+\link[ReducedExperiment]{estimate_factors} and \code{use_stability = True}, this slot will indicate
 the stability of the factors across multiple runs of ICA.}
 
 \item{reduced}{A data matrix, produced by factor analysis, with rows

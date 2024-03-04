@@ -96,7 +96,7 @@ run_wgcna <- function(X, powers=1:30,
             color_table <- color_table[order(color_table, decreasing = TRUE)]
             color_table <- color_table[which(names(color_table) != "grey")]
 
-            color_table <- setNames(1:length(color_table), names(color_table))
+            color_table <- stats::setNames(1:length(color_table), names(color_table))
             color_table <- c(color_table, "grey" = 0)
 
             return(color_table)
@@ -114,7 +114,7 @@ run_wgcna <- function(X, powers=1:30,
         stop("Value of `module_labels` does not correspond to a valid option")
     }
 
-    wgcna_res$assignments <- setNames(names(wgcna_res$assignments), paste0("module_", wgcna_res$assignments))
+    wgcna_res$assignments <- stats::setNames(names(wgcna_res$assignments), paste0("module_", wgcna_res$assignments))
     colnames(wgcna_res$E) <- paste0("module_", colnames(wgcna_res$E))
     wgcna_res$E <- wgcna_res$E[, order(colnames(wgcna_res$E))]
 
@@ -141,16 +141,16 @@ run_wgcna <- function(X, powers=1:30,
 
         module_data <- newdata[rownames(newdata) %in% module_assignments[names(module_assignments) == m], ]
 
-        prcomp_res <- prcomp(t(module_data), center = FALSE, scale. = FALSE, rank = 1)
+        prcomp_res <- stats::prcomp(t(module_data), center = FALSE, scale. = FALSE, rank = 1)
 
         # Principal components may be anticorrelated, in which case change sign
-        align_sign <- ifelse(realign, sign(mean(cor(prcomp_res$x, t(module_data)))), 1)
+        align_sign <- ifelse(realign, sign(mean(stats::cor(prcomp_res$x, t(module_data)))), 1)
 
         red[[m]] <- prcomp_res$x * align_sign
 
         stopifnot(all(t(module_data) %*% prcomp_res$rotation * align_sign == prcomp_res$x * align_sign))
 
-        lod <- c(lod, setNames(prcomp_res$rotation * align_sign, rownames(module_data)))
+        lod <- c(lod, stats::setNames(prcomp_res$rotation * align_sign, rownames(module_data)))
     }
 
     lod <- lod[match(rownames(newdata), names(lod))]
@@ -163,17 +163,17 @@ run_wgcna <- function(X, powers=1:30,
     red <- data.frame(row.names = colnames(newdata))
 
     for (m in module_names) {
-        
+
         module_genes <- module_assignments[names(module_assignments) == m]
-        
+
         if (length(module_genes) < min_module_genes) next
         if (!any(rownames(newdata) %in% module_genes)) next
-        
-        
+
+
         module_data <- newdata[rownames(newdata) %in% module_genes, ]
         module_lod <- lod[names(lod) %in% module_genes]
         stopifnot(all(rownames(module_data) == names(module_lod)))
-        
+
         red[[m]] <- t(module_data) %*% module_lod
     }
 

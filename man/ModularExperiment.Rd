@@ -35,7 +35,7 @@ A class to represent the results of module analysis}
 representing samples and columns representing module expression profiles.
 Typically, this matrix contains "eigengenes" produced by the Weighted Gene
 Correlation Network Analysis Approach, as is applied by
-\link\link{identify_modules}.}
+\link[ReducedExperiment]{identify_modules}.}
 
 \item{scale}{Either a boolean, representing whether or not the original data
 has been scaled to unit variance, or a numeric vector indicating the

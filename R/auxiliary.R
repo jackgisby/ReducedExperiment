@@ -2,7 +2,7 @@
 .makeRandomData <- function(r, c, rname, cname, seed=1) {
     set.seed(seed)
 
-    m <- matrix(rnorm(n = r * c), nrow = r, ncol = c)
+    m <- matrix(stats::rnorm(n = r * c), nrow = r, ncol = c)
 
     rownames(m) <- as.character(paste0(rname, "_", 1:r))
     colnames(m) <- as.character(paste0(cname, "_", 1:c))
@@ -31,7 +31,7 @@
 .createRandomisedModularExperiment <- function(i, j, k, seed=1) {
 
     assignments <- paste0("gene_", 1:i)
-    names(assignments) <- paste0("module_", round(runif(i, 1, k), 0))
+    names(assignments) <- paste0("module_", round(stats::runif(i, 1, k), 0))
 
     return(ModularExperiment(
         assays = list("normal"=.makeRandomData(i, j, "gene", "sample", seed=seed)),

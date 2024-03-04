@@ -1,3 +1,5 @@
 ^ReducedExperiment\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^LICENSE\.md$
+import_scripts.R

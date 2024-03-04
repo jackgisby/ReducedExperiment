@@ -8,7 +8,7 @@
 \title{Project new data using pre-defined factors}
 \usage{
 \S4method{calcEigengenes}{ModularExperiment,matrix}(
-  x,
+  object,
   newdata,
   project = TRUE,
   scale_reduced = TRUE,
@@ -20,7 +20,7 @@
 )
 
 \S4method{calcEigengenes}{ModularExperiment,data.frame}(
-  x,
+  object,
   newdata,
   project = TRUE,
   scale_reduced = TRUE,
@@ -32,7 +32,7 @@
 )
 
 \S4method{calcEigengenes}{ModularExperiment,SummarizedExperiment}(
-  x,
+  object,
   newdata,
   project = TRUE,
   scale_reduced = TRUE,
@@ -46,7 +46,7 @@
 \S4method{predict}{ModularExperiment}(object, newdata, ...)
 }
 \arguments{
-\item{x}{A \link\link{ModularExperiment} object. The \code{loadings} slot of
+\item{object}{A \link[ReducedExperiment]{ModularExperiment} object. The \code{loadings} slot of
 this class will be used for projection. Additionally, by default, the \code{scale}
 and \code{center} slots are used to apply the original transformation to the
 new data.}
@@ -91,7 +91,7 @@ used for projection.}
 Calculates a matrix with samples as rows and modules as columns. If
 \code{newdata} was a \code{matrix} or \code{data.frame}, this will be returned as a matrix.
 If a \link[SummarizedExperiment]{SummarizedExperiment} object was passed
-instead, then a If a \link[SummarizedExperiment]{ModularExperiment}
+instead, then a If a \link[ReducedExperiment]{ModularExperiment}
 object will be created containing this matrix in its \code{reduced} slot.
 }
 \description{

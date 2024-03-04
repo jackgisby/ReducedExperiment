@@ -3,14 +3,14 @@
 .single_lmer <- function(data, formula_string, REML = TRUE) {
     out_model <- tryCatch(
         lmerTest::lmer(
-            as.formula(formula_string),
+            stats::as.formula(formula_string),
             data = data,
             REML = REML,
             control = lme4::lmerControl(check.conv.singular = "ignore")
         ),
         warning = function(w) {
             return(lmerTest::lmer(
-                as.formula(formula_string),
+                stats::as.formula(formula_string),
                 data = data,
                 REML = REML,
                 control = lme4::lmerControl(optimizer = "Nelder_Mead", check.conv.singular = "ignore")
@@ -30,18 +30,18 @@
 
     pheno$component <- X
 
-    formula <- as.formula(paste0("component", formula))
+    formula <- stats::as.formula(paste0("component", formula))
 
     if (method == "lmer") {
 
         linear_model <- .single_lmer(pheno, formula, ...)
 
-        anova_res <- data.frame(anova(linear_model, type=type))
+        anova_res <- data.frame(stats::anova(linear_model, type=type))
         summary_res <- data.frame(summary(linear_model)$coefficients)
 
     } else if (method == "lm") {
 
-        linear_model <- lm(formula, pheno)
+        linear_model <- stats::lm(formula, pheno)
 
         anova_res <- data.frame(car::Anova(linear_model, type=type))
         summary_res <- data.frame(summary(linear_model)$coefficients)
@@ -96,7 +96,7 @@ associate_components <- function(re, formula, method="lm",
     res$adj_pvalue <- NA
 
     for (term in unique(res$term)) {
-        res$adj_pvalue[which(res$term == term)] <- p.adjust(res$pvalue[which(res$term == term)], method=method)
+        res$adj_pvalue[which(res$term == term)] <- stats::p.adjust(res$pvalue[which(res$term == term)], method=method)
     }
 
     return(res$adj_pvalue)

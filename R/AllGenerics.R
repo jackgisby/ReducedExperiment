@@ -1,43 +1,43 @@
 
-setGeneric("reduced", function(x, ...) standardGeneric("reduced"))
-setGeneric("reduced<-", function(x, value) standardGeneric("reduced<-"))
+setGeneric("reduced", function(object, ...) standardGeneric("reduced"))
+setGeneric("reduced<-", function(object, value) standardGeneric("reduced<-"))
 
-setGeneric("loadings", function(x, ...) standardGeneric("loadings"))
-setGeneric("loadings<-", function(x, value) standardGeneric("loadings<-"))
+setGeneric("loadings", function(object, ...) standardGeneric("loadings"))
+setGeneric("loadings<-", function(object, value) standardGeneric("loadings<-"))
 
-setGeneric("stability", function(x) standardGeneric("stability"))
-setGeneric("stability<-", function(x, value) standardGeneric("stability<-"))
+setGeneric("stability", function(object) standardGeneric("stability"))
+setGeneric("stability<-", function(object, value) standardGeneric("stability<-"))
 
-setGeneric("componentNames", function(x) standardGeneric("componentNames"))
-setGeneric("componentNames<-", function(x, value) standardGeneric("componentNames<-"))
+setGeneric("componentNames", function(object) standardGeneric("componentNames"))
+setGeneric("componentNames<-", function(object, value) standardGeneric("componentNames<-"))
 
-setGeneric("moduleNames",       function(x, ...) standardGeneric("moduleNames"))
-setGeneric("moduleNames<-",     function(x, value) standardGeneric("moduleNames<-"))
+setGeneric("moduleNames",       function(object, ...) standardGeneric("moduleNames"))
+setGeneric("moduleNames<-",     function(object, value) standardGeneric("moduleNames<-"))
 
-setGeneric("sampleNames", function(x) standardGeneric("sampleNames"))
-setGeneric("sampleNames<-", function(x, value) standardGeneric("sampleNames<-"))
+setGeneric("sampleNames", function(object) standardGeneric("sampleNames"))
+setGeneric("sampleNames<-", function(object, value) standardGeneric("sampleNames<-"))
 
-setGeneric("featureNames", function(x) standardGeneric("featureNames"))
-setGeneric("featureNames<-", function(x, value) standardGeneric("featureNames<-"))
+setGeneric("featureNames", function(object) standardGeneric("featureNames"))
+setGeneric("featureNames<-", function(object, value) standardGeneric("featureNames<-"))
 
-setGeneric("projectData", function(x, newdata, ...) standardGeneric("projectData"))
-setGeneric("calcEigengenes", function(x, newdata, ...) standardGeneric("calcEigengenes"))
+setGeneric("projectData", function(object, newdata, ...) standardGeneric("projectData"))
+setGeneric("calcEigengenes", function(object, newdata, ...) standardGeneric("calcEigengenes"))
 
-setGeneric("assignments",       function(x, ...) standardGeneric("assignments"))
-setGeneric("assignments<-",     function(x, value) standardGeneric("assignments<-"))
+setGeneric("assignments",       function(object, ...) standardGeneric("assignments"))
+setGeneric("assignments<-",     function(object, value) standardGeneric("assignments<-"))
 
-setGeneric("nComponents",     function(x) standardGeneric("nComponents"))
-setGeneric("nModules",     function(x) standardGeneric("nModules"))
-setGeneric("nSamples",     function(x) standardGeneric("nSamples"))
-setGeneric("nFeatures",     function(x) standardGeneric("nFeatures"))
+setGeneric("nComponents",     function(object) standardGeneric("nComponents"))
+setGeneric("nModules",     function(object) standardGeneric("nModules"))
+setGeneric("nSamples",     function(object) standardGeneric("nSamples"))
+setGeneric("nFeatures",     function(object) standardGeneric("nFeatures"))
 
-setGeneric("getGeneIDs",     function(x, ...) standardGeneric("getGeneIDs"))
+setGeneric("getGeneIDs",     function(object, ...) standardGeneric("getGeneIDs"))
 
-setGeneric("getAlignedFeatures",     function(x, ...) standardGeneric("getAlignedFeatures"))
+setGeneric("getAlignedFeatures",     function(object, ...) standardGeneric("getAlignedFeatures"))
 
-setGeneric("runEnrich",     function(x, ...) standardGeneric("runEnrich"))
+setGeneric("runEnrich",     function(object, ...) standardGeneric("runEnrich"))
 
-setGeneric("plotDendro",     function(x, ...) standardGeneric("plotDendro"))
+setGeneric("plotDendro",     function(object, ...) standardGeneric("plotDendro"))
 
-setGeneric("dendrogram",     function(x) standardGeneric("dendrogram"))
-setGeneric("dendrogram<-",     function(x, value) standardGeneric("dendrogram<-"))
+setGeneric("dendrogram",     function(object) standardGeneric("dendrogram"))
+setGeneric("dendrogram<-",     function(object, value) standardGeneric("dendrogram<-"))

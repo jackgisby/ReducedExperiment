@@ -12,7 +12,7 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, assay_name="no
 
     if ("transformed" %in% assayNames(X)) warning("Overwriting 'transformed' assay slot in X")
     assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center_X, scale=scale_X))
-    
+
     # print(assay(X, "transformed"))
     if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
     if (scale_X) scale_X <- attr(assay(X, "transformed"), "scaled:scale")
@@ -60,7 +60,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
     if (scale_components) ica_res$S <- scale(ica_res$S)
     ica_res$M <- .project_ica(X, ica_res$S)
     if (scale_reduced) ica_res$M <- scale(ica_res$M)
-    
+
     # Add factors / sample names
     rownames(ica_res$M) <- colnames(X)
     rownames(ica_res$S) <- rownames(X)
@@ -80,7 +80,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 
         # Randomly initialises ICA
         set.seed(i)
-        Rmat = matrix(rnorm(nc ** 2), nrow = nc, ncol = nc)
+        Rmat = matrix(stats::rnorm(nc ** 2), nrow = nc, ncol = nc)
 
         if (resample) {
             X_bs <- X[, sample(ncol(X), replace = TRUE)]
@@ -101,8 +101,8 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
     S_all <- do.call(cbind, S_all)
 
     # Get correlations between factors and resulting clusters
-    S_cor <- abs(cor(S_all))
-    S_clust <- factor(cutree(hclust(as.dist(1 - S_cor)), k = nc))
+    S_cor <- abs(stats::cor(S_all))
+    S_clust <- factor(stats::cutree(stats::hclust(stats::as.dist(1 - S_cor)), k = nc))
     names(S_clust) <- colnames(S_all)
 
     stabilities <- c()
@@ -176,7 +176,7 @@ estimate_stability <- function(X, min_components=10, max_components=60,
 
     stabilities <- data.frame()
 
-    if (verbose) tpb <- txtProgressBar(min = min_components, max = max_components, initial = min_components, style = 3)
+    if (verbose) tpb <- utils::txtProgressBar(min = min_components, max = max_components, initial = min_components, style = 3)
 
     for (nc in seq(from = min_components, to = max_components, by = by)) {
 
@@ -189,7 +189,7 @@ estimate_stability <- function(X, min_components=10, max_components=60,
             stability = ica_res$stab
         ))
 
-        if (verbose) setTxtProgressBar(tpb, nc)
+        if (verbose) utils::setTxtProgressBar(tpb, nc)
     }
 
     if (verbose) close(tpb)
@@ -197,7 +197,7 @@ estimate_stability <- function(X, min_components=10, max_components=60,
     select_nc <- NULL
 
     if (!is.null(mean_stability_threshold)) {
-        mean_stabilities <- aggregate(stabilities$stability, list(stabilities$nc), mean)
+        mean_stabilities <- stats::aggregate(stabilities$stability, list(stabilities$nc), mean)
         colnames(mean_stabilities) <- c("nc", "stability")
 
         if (any(mean_stabilities$stability >= mean_stability_threshold)) {
@@ -233,7 +233,7 @@ plot_stability <- function(stability, plot_path,
             geom_hline(yintercept = stability_threshold)
     }
 
-    mean_stab_plot <- ggplot(aggregate(stability, list(stability$nc), mean), aes(nc, stability, group = 1)) +
+    mean_stab_plot <- ggplot(stats::aggregate(stability, list(stability$nc), mean), aes(nc, stability, group = 1)) +
         geom_line() +
         ylim(c(0,1)) +
         ylab("Mean component stability") +

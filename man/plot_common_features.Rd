@@ -7,7 +7,8 @@
 plot_common_features(
   common_features,
   filename = NA,
-  color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name = "YlOrRd"))(100)
+  color = (grDevices::colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
+    "YlOrRd")))(100)
 )
 }
 \description{

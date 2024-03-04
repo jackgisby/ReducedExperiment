@@ -16,7 +16,7 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp",
             universe=universe,
             ...
         )
-        
+
         enrich_res_single <- .format_enrich_res(enrich_res_single, adj_method=adj_method, min_genes=min_genes, p_cutoff=p_cutoff)
 
         if (!is.null(enrich_res_single)) {
@@ -55,7 +55,7 @@ reduced_oa <- function(component_features, database="msigdb_c2_cp",
         enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$Count >= min_genes) ,]
     }
 
-    enrich_res_single@result$p.adjust <- p.adjust(enrich_res_single@result$pvalue, method=adj_method)
+    enrich_res_single@result$p.adjust <- stats::p.adjust(enrich_res_single@result$pvalue, method=adj_method)
 
     enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$p.adjust <= p_cutoff) ,]
 
@@ -161,13 +161,13 @@ get_common_features <- function(factor_features) {
 
 #' Heatmap comparing commonality across factors
 plot_common_features <- function(common_features, filename=NA,
-        color=colorRampPalette(RColorBrewer::brewer.pal(n = 7, name = "YlOrRd"))(100)) {
+        color=grDevices::colorRampPalette(RColorBrewer::brewer.pal(n = 7, name = "YlOrRd"))(100)) {
 
     common_features <- subset(common_features, select=c("c_1", "c_2", "intersect_prop"))
-    prop_mat <- reshape(common_features, idvar = "c_1", v.names = "intersect_prop", timevar = "c_2", direction = "wide", sep = "_")
+    prop_mat <- stats::reshape(common_features, idvar = "c_1", v.names = "intersect_prop", timevar = "c_2", direction = "wide", sep = "_")
 
     rownames(prop_mat) <- prop_mat$c_1
-    prop_mat <- subset(prop_mat, select=-c_1)
+    prop_mat <- subset(prop_mat, select=-"c_1")
     colnames(prop_mat) <- gsub("intersect_prop_", "", colnames(prop_mat))
 
     max_abs <- max(abs(prop_mat), na.rm=TRUE)

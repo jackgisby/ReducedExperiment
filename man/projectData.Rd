@@ -8,7 +8,7 @@
 \title{Project new data using pre-defined factors}
 \usage{
 \S4method{projectData}{FactorisedExperiment,matrix}(
-  x,
+  object,
   newdata,
   scale_reduced = TRUE,
   scale_newdata = NULL,
@@ -16,7 +16,7 @@
 )
 
 \S4method{projectData}{FactorisedExperiment,data.frame}(
-  x,
+  object,
   newdata,
   scale_reduced = TRUE,
   scale_newdata = NULL,
@@ -24,7 +24,7 @@
 )
 
 \S4method{projectData}{FactorisedExperiment,SummarizedExperiment}(
-  x,
+  object,
   newdata,
   scale_reduced = TRUE,
   scale_newdata = NULL,
@@ -35,6 +35,11 @@
 \S4method{predict}{FactorisedExperiment}(object, newdata, ...)
 }
 \arguments{
+\item{object}{A \link[ReducedExperiment]{FactorisedExperiment} object. The \code{loadings} slot of
+this class will be used for projection. Additionally, by default, the \code{scale}
+and \code{center} slots are used to apply the original transformation to the
+new data.}
+
 \item{newdata}{New data for projection. Must be a \code{data.frame} or \code{matrix}
 with features as rows and samples as columns, or a
 \link[SummarizedExperiment]{SummarizedExperiment} object. Assumes that the
@@ -57,17 +62,12 @@ object's \code{center} slot. The value of this argument will be passed to the
 \item{assay_name}{If a \link[SummarizedExperiment]{SummarizedExperiment}
 object is passed as new data, this argument indicates which assay should be
 used for projection.}
-
-\item{object}{A \link[ReducedExperiment]{FactorisedExperiment} object. The \code{loadings} slot of
-this class will be used for projection. Additionally, by default, the \code{scale}
-and \code{center} slots are used to apply the original transformation to the
-new data.}
 }
 \value{
 Calculates a matrix with samples as rows and factors as columns. If
 \code{newdata} was a \code{matrix} or \code{data.frame}, this will be returned as a matrix.
 If a \link[SummarizedExperiment]{SummarizedExperiment} object was passed
-instead, then a If a \link[SummarizedExperiment]{FactorisedExperiment}
+instead, then a If a \link[ReducedExperiment]{FactorisedExperiment}
 object will be created containing this matrix in its \code{reduced} slot.
 }
 \description{
