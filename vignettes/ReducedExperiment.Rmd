@@ -16,19 +16,360 @@ vignette: >
 BiocStyle::markdown()
 
 library(ReducedExperiment)
+library(ggplot2)
 
 dir.create("tempOutput")
 ```
 
 # Introduction
 
-```{r ReducedExperimentInstall, eval=FALSE}
+Install the package
+
+```{r install_package, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))  {
     install.packages("BiocManager")
 }
 
 # The following initializes usage of Bioc devel
-BiocManager::install(version='devel')
+# BiocManager::install(version='devel')
+# 
+# BiocManager::install("ReducedExperiment")
 
-BiocManager::install("ReducedExperiment")
+devtools::install("jackgisby/ReducedExperiment")
 ```
+
+For the purposes of this vignette, we will be working with some RNA sequencing
+data generated for patients with COVID-19. The data were published in the 
+following paper: https://www.nature.com/articles/s41467-022-35454-4
+
+The data loaded below are based on the data available from the Zenodo 
+repository: https://zenodo.org/records/6497251
+
+The data were normalised with edgeR's TMM method and transformed to log-counts
+per million. Genes with low counts were removed before further filtering to
+select high-variance genes. For the purposes of this example, only ~2000
+genes were retained.
+
+The COVID-19 data are split up into two cohorts, one for the first wave of
+COVID-19 (early-mid 2020) and another for the second (early 2021). In this
+vignette, we will mainly use the first cohort, whereas the second cohort
+will be used as a validation set.
+
+```{r load_data}
+
+# TODO: Implement data loading best practices and document
+wave1_se <- readRDS("../data/wave1.rds")
+wave2_se <- readRDS("../data/wave1.rds")
+
+assay(wave1_se, "normal") <- assay(wave1_se, "cpm")
+assay(wave2_se, "normal") <- assay(wave2_se, "cpm")
+
+wave1_se
+```
+
+# Factor analysis
+
+The first step in performing independent component analysis is to estimate the
+optimal number of components. We can do this with the `estimate_stability` 
+function. The results of this may be plotted with `plot_stability`.
+
+Note that this can take a long time to run. To make this faster, we could
+change the `BPPARAM` term of `estimate_stability` to run the analysis in 
+parallel.
+
+The component estimation procedure is based on the maximally stable 
+transcriptome dimension approach, described here:
+https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-4112-9
+
+We can see the stability of the factors as a function of the number of 
+components. We ideally want to pick the maximal number of components with
+acceptable stability. There is an apparent elbow in the first curve between 
+30-40 components, so we move forward with 35 components.
+
+```{r estimate_stability, eval=FALSE}
+
+stability_res <- estimate_stability(wave1_se, seed=1, n_runs=30, min_components=10, max_components=60, by=2, mean_stability_threshold=0.85)
+
+plot_stability(stability_res, plot_path = "tempOutput/stability.png")
+```
+
+Now we run the factor analysis with these components. We additionally set a 
+stability threshold of 0.25 to remove components with low stability. This
+results in the identification of 34 factors.
+
+```{r run_factor_analysis}
+
+wave1_fe <- estimate_factors(wave1_se, nc=35, seed=1, use_stability=TRUE, 
+                             n_runs=30, stability_threshold=0.25)
+
+wave1_fe
+```
+
+The output of factor analysis is a FactorisedExperiment object. This is not
+dissimilar from a SummarizedExperiment object, with some additional slots.
+The FactorisedExperiment contains an additional matrix for the 
+dimensionally-reduced data (i.e., samples vs. factors) and one for the factor
+loadings (i.e., genes vs. factors).
+
+We can get the reduced data as so:
+```{r get_factor_reduced}
+
+# get reduced data for first 5 samples and factors
+reduced(wave1_fe)[1:5, 1:5]
+```
+
+And we get the factor loadings below:
+```{r get_factor_loadings}
+
+# get loadings for first 5 genes and factors
+loadings(wave1_fe)[1:5, 1:5]
+```
+
+Most of the normal operations that can be performed on SummarizedExperiment 
+objects
+can also be performed on FactorisedExperiments. We can slice them by samples,
+features and components, like so:
+
+```{r slice_fe}
+dim(wave1_fe[1:20, 1:10, 1:5])
+```
+
+# Module analysis
+
+Similarly, we can run a module analysis using the weighted gene correlation
+network analysis (WGCNA) package: 
+https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559
+
+The ReducedExperiment package provides wrapper functions for running 
+such an analysis, before packaging them into a ModularExperiment
+class.
+
+The dendrogram is also stored in this object, allowing us to plot the clusters
+of genes that are identified.
+
+```{r}
+wave1_me <- identify_modules(wave1_se, verbose=0, powers=1:30)
+
+plotDendro(wave1_me)
+```
+
+In this case we only identify 10 modules, far fewer than that identified in the
+original paper: https://www.nature.com/articles/s41467-022-35454-4#Fig4
+
+This is likely because we are only using a subset of genes and we have 
+allowed the `identify_modules` to automatically select the soft thresholding
+power. In general, it is recommended more careful consider the parameters used
+to generate modules, which can be aided by functions in the WGCNA package that
+allow for the creating of diagnostic plots. For now, however, we will move 
+forward with our 10 modules.
+
+```{r print_me}
+wave1_me
+```
+
+The ModularExperiment functions much like a FactorisedExperiment, with a slot 
+for the dimensionally-reduced data (samples vs. modules) and loadings (a vector 
+containing a value for each gene). There is additionally a slot for the module 
+assignments. 
+
+We can get the reduced data as so:
+```{r get_module_reduced}
+
+# get reduced data for first 5 samples and factors
+reduced(wave1_me)[1:5, 1:5]
+```
+
+The module assignments:
+```{r get_module_reduced}
+
+# get assignments for first 5 genes
+assignments(wave1_me)[1:5]
+```
+
+And the loadings:
+```{r get_module_reduced}
+
+# get loadings for first 5 genes
+loadings(wave1_me)[1:5]
+```
+
+# Identifying factor and module associations
+One thing we might be interested in doing is identifying factors that are 
+associated with disease outcomes. We can do this with the `associate_components` 
+function. First, we can look at the sample-level data available for 
+
+```{r show_coldata}
+colData(wave1_se)
+```
+
+In this case, we will focus on the `case_control` variable, indicating whether
+patients are COVID-19 positive or negative. We also adjust for sex, age
+and ethnicity in these models. In this study, there were multiple samples
+for each individual. To handle repeated measurements from the same individuals,
+we use the "lmer" method (i.e., a linear mixed model) and include a random
+intercept for the individual in the model formula.
+
+```{r associate_components}
+
+f <- "~ case_control + sex + calc_age + ethnicity + (1|individual_id)"
+
+associations_me <- associate_components(wave1_me, method = "lmer", formula = f)
+associations_fe <- associate_components(wave1_fe, method = "lmer", formula = f)
+```
+
+Below is a table for the associations of factors with our `case_control` 
+variable, encoding COVID-19 infection status.
+
+```{r associate_table}
+associations_fe$summaries[associations_fe$summaries$term == "case_controlPOSITIVE" ,]
+```
+
+We can plot out these results. In the plot below, factors that are "upregulated"
+in COVID-19 patients are shown in red, whereas "downregulated" factors are 
+in blue. The vertical line indicates significance (i.e., adjusted p-values
+less than 0.05).
+
+We can see a number of factors that are significantly downregulated in COVID-19
+patients. Factor 7, on the other hand, is up-regulated in COVID-19.
+
+```{r plot_factor_associations}
+ggplot(
+    associations_fe$summaries[associations_fe$summaries$term == "case_controlPOSITIVE" ,],
+    aes(-log10(adj_pvalue), reorder(component, -log10(adj_pvalue)), fill = estimate)
+) +
+    geom_point(pch = 21, size = 3) +
+    xlab("-log10(p-value)") +
+    ylab("Factor name (ordered by p-value)") +
+    geom_vline(xintercept = -log10(0.05)) +
+    scale_fill_distiller(type = "div", palette = "RdBu")
+```
+
+A similar plot for our modules shows significant upregulation of modules 1,
+8, 2 and 9, along with down-regulation of 3 modules.
+
+```{r plot_module_associations}
+ggplot(
+    associations_me$summaries[associations_me$summaries$term == "case_controlPOSITIVE" ,],
+    aes(-log10(adj_pvalue), reorder(component, -log10(adj_pvalue)), fill = estimate)
+) +
+    geom_point(pch = 21, size = 3) +
+    xlab("-log10(p-value)") +
+    ylab("Module name (ordered by p-value)") +
+    geom_vline(xintercept = -log10(0.05)) +
+    scale_fill_distiller(type = "div", palette = "RdBu")
+```
+
+# Finding functional enrichments for factors and modules
+
+Now that we know which of our modules are up- and downregulated in COVID-19,
+we want to know more about the genes and pathways that are associated
+with our factors.
+
+As shown before, we know which genes belong to each module by accessing
+the module assignments in the ModularExperiment object. We can also 
+identify the genes that are highly aligned with each factor, as follows:
+```{r factor_alignments}
+getAlignedFeatures(wave1_fe, format = "data.frame")
+```
+
+This shows the value of the loadings for the genes most highly associated with 
+each factor. Some factors display moderate associations with many genes, 
+whereas others show strong associations with just a few genes.
+
+We can also perform pathway enrichment analyses for both factors and modules.
+We use the enrichment methods implemented in the clusterProfiler package. By
+default, we run gene set enrichment analysis for the factors, whereas we use
+a simple overrepresentation analysis for the modules.
+
+```{r run_enrich, message=FALSE, warning=FALSE}
+factor_enrich <- runEnrich(wave1_fe, as_dataframe = TRUE)
+head(factor_enrich)
+
+module_enrich <- runEnrich(wave1_me, as_dataframe = TRUE)
+head(module_enrich)
+```
+
+We can again plot summaries of these results. For instance, we see that 
+factor 2, that was downregulated in COVID-19 patients, and is enriched for XX.
+
+```{r example_factor_enrichment}
+ggplot(
+    factor_enrich[factor_enrich$component == "factor_2" & factor_enrich$p.adjust < 0.05 ,],
+    aes(-log10(p.adjust), reorder(ID, -log10(p.adjust)), fill = estimate)
+) +
+    geom_point(pch = 21, size = 3) +
+    xlab("-log10(p-value)") +
+    ylab("Pathway name (ordered by p-value)") +
+    geom_vline(xintercept = -log10(0.05)) +
+    scale_fill_distiller(type = "div", palette = "RdBu")
+```
+
+Module 1 was upregulated in COVID-19 patients, and we see that it is
+enriched for XX.
+
+```{r example_module_enrichment}
+ggplot(
+    module_enrich[module_enrich$component == "module_2" & module_enrich$p.adjust < 0.05 ,],
+    aes(-log10(p.adjust), reorder(ID, -log10(p.adjust)))
+) +
+    geom_point(pch = 21, size = 3) +
+    xlab("-log10(p-value)") +
+    ylab("Pathway name (ordered by p-value)") +
+    geom_vline(xintercept = -log10(0.05))
+```
+
+# Projecting factors and modules into new datasets
+
+Sometimes, we might want to calculate sample-level values of our factors and
+modules in a new dataset. In this instance, we have a second cohort that we
+might want to validate our results in. The ReducedExperiment package has
+methods for projecting new data into the factor- or module-space defined
+previously.
+
+This projection approach is similar to that applied by the `predict` method
+of `prcomp`. It uses the loadings calculated in the original dataset to 
+calculate sample-level scores given new data. Essentially, it uses these
+loadings as a weighted score to perform the projection.
+
+Doing this is very simple, as you can see below. Note, however, that these
+methods assume that the new data (in this case, the wave 2 data) has been 
+processed in the same way as the original data (in this case, wave 1). By 
+default, the method applies standardisation to the new data using the means
+and standard deviations calculated in the original data. 
+
+Additionally, note that, by default, the projected data are rescaled to have
+a mean of 0 and standard deviation of 1. So, it cannot be assumed that the
+projected data are on the same scale as the original data.
+
+With all that in mind, we can apply projection as follows. These datasets were
+processed and normalised in the same way.
+
+```{r project_data}
+wave2_fe <- projectData(wave1_fe, wave2_se)
+wave2_fe
+
+wave2_me <- calcEigengenes(wave1_me, wave2_me)
+wave2_me
+```
+
+While we will avoid directly comparing the dimensionally-reduced data from
+the two cohorts, we can calculate associations between the factors and modules
+and COVID-19 status, as we did in the original cohort.
+
+```{r replicating_associations}
+replication_me <- associate_components(wave2_me, method = "lmer", formula = f)
+replication_fe <- associate_components(wave2_fe, method = "lmer", formula = f)
+```
+
+```{r plotting_replicated_associations}
+ggplot(
+    replication_me$summaries[replication_me$summaries$term == "case_controlPOSITIVE" ,],
+    aes(-log10(adj_pvalue), reorder(component, -log10(adj_pvalue)), fill = estimate)
+) +
+    geom_point(pch = 21, size = 3) +
+    xlab("-log10(p-value)") +
+    ylab("Module name (ordered by p-value)") +
+    geom_vline(xintercept = -log10(0.05)) +
+    scale_fill_distiller(type = "div", palette = "RdBu")
+```
+

@@ -443,7 +443,7 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, load
 #' @rdname enrichment
 #' @export
 setMethod("runEnrich", c("FactorisedExperiment"),
-    function(object, method="overrepresentation", feature_id_col="rownames",
+    function(object, method="gsea", feature_id_col="rownames",
              center_loadings=FALSE, abs_loadings=FALSE, loading_threshold=0.5, proportional_threshold=0.01,
              as_dataframe=FALSE, ...)
 {
