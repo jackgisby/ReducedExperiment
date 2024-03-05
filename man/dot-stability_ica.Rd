@@ -18,5 +18,5 @@
 )
 }
 \description{
-Stability ICA method
+Function for running stabilised ICA. See \link{ReducedExperiment}\link{run_ica}.
 }

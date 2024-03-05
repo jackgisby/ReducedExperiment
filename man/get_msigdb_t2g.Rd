@@ -12,6 +12,29 @@ get_msigdb_t2g(
   gene_id = "ensembl_gene"
 )
 }
+\arguments{
+\item{species}{The species for which to obtain MSigDB pathways. See
+\link[msigdbr]{msigdbr} for more details.}
+
+\item{category}{The MSigDB category to retrieve pathways for. See
+\link[msigdbr]{msigdbr} for more details.}
+
+\item{subcategory}{The MSigDB subcategory to retrieve pathways for. See
+\link[msigdbr]{msigdbr} for more details.}
+
+\item{subcategory_to_remove}{If not NULL, this is a character string
+indicating a subcategory to be removed from the results of
+\link[msigdbr]{msigdbr}.}
+
+\item{gene_id}{The name to be given to the gene_id column of the resulting
+data.frame.}
+}
+\value{
+Returns a data.frame, where the "gs_name" column indicates the name
+of a pathway, and the \code{gene_id} column indicates genes that belong to
+said pathway.
+}
 \description{
-Get TERM2GENE dataframe from MSigDB
+Gets C2 canonical pathways from the MSigDB database in the format required
+by \code{clusterProfiler} enrichment functions.
 }

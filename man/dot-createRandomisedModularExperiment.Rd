@@ -2,10 +2,20 @@
 % Please edit documentation in R/auxiliary.R
 \name{.createRandomisedModularExperiment}
 \alias{.createRandomisedModularExperiment}
-\title{i (features), j (samples), k components)}
+\title{Create a ModularExperiment with random data}
 \usage{
 .createRandomisedModularExperiment(i, j, k, seed = 1)
 }
+\arguments{
+\item{i}{Number of features}
+
+\item{j}{Number of samples}
+
+\item{k}{Number of modules}
+
+\item{seed}{Random seed that will be set before call to rnorm}
+}
 \description{
-i (features), j (samples), k components)
+Creates a \link[ReducedExperiment]{ModularExperiment}
+with i (features), j (samples), k components)
 }

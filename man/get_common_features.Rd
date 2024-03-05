@@ -6,6 +6,14 @@
 \usage{
 get_common_features(factor_features)
 }
+\arguments{
+\item{factor_features}{The result of
+\link[SummarizedExperiment]{getAlignedFeatures}.}
+}
+\value{
+A data.frame for each factor pair with the numbers and proportions
+of the genes in the input that overlap.
+}
 \description{
-Get common factor features
+Function to count how many genes are aligned with multiple factors.
 }

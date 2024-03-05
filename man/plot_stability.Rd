@@ -14,9 +14,24 @@ plot_stability(
   ...
 )
 }
-\description{
-Plot component stability as a function of the number of components
+\arguments{
+\item{stability}{The results of \link[ReducedExperiment]{estimate_stability}.}
+
+\item{plot_path}{The path at which the plot will be saved}
+
+\item{stability_threshold}{Plots a stability threshold, below which
+components can be pruned by \link[ReducedExperiment]{run_ica}.}
+
+\item{mean_stability_threshold}{Plots a stability threshold, which is used
+by \link[ReducedExperiment]{estimate_stability} to estimate the optimal
+number of components.}
+
+\item{height}{The height of the plot, to be passed to \link[ggplot2]{ggsave}.}
+
+\item{width}{The width of the plot, to be passed to \link[ggplot2]{ggsave}.}
+
+\item{...}{Additional arguments to be passed to \link[ggplot2]{ggsave}.}
 }
-\references{
-MSTD
+\description{
+Plots the results of \link[ReducedExperiment]{estimate_stability}.
 }

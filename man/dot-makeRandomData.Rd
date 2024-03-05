@@ -6,6 +6,18 @@
 \usage{
 .makeRandomData(r, c, rname, cname, seed = 1)
 }
+\arguments{
+\item{r}{Number of rows}
+
+\item{c}{Number of columns}
+
+\item{rname}{Name of rows (will be appended to the row number)}
+
+\item{cname}{Name of columns (will be appended to the column number)}
+
+\item{seed}{Random seed that will be set before call to rnorm}
+}
 \description{
-Turn rnorm into a matrix
+Used to generate a matrix of random numbers with dimensions r (rows) * c
+(columns)
 }

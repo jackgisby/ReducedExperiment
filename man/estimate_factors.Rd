@@ -13,6 +13,29 @@ estimate_factors(
   ...
 )
 }
+\arguments{
+\item{X}{Either a \link{SummarizedExperiment}\link{SummarizedExperiment} object
+or a matrix containing data to be subject to ICA. \code{X} should have rows as
+features and columns as samples.}
+
+\item{nc}{The number of components to be identified. See
+\link{ReducedExperiment}\link{estimate_stability} for a method to estimate the
+optimal number of components.}
+
+\item{center_X}{If TRUE, X is centered (i.e., features / rows are transformed
+to have a mean of 0) prior to ICA. Generally recommended.}
+
+\item{scale_X}{If TRUE, X is scaled (i.e., features / rows are transformed
+to have a standard deviation of 1) before ICA.}
+
+\item{assay_name}{If \code{X} is a
+\link{SummarizedExperiment}\link{SummarizedExperiment}, then this should be the
+name of the assay to be subject to ICA.}
+
+\item{...}{Additional arguments to be passed to
+\link{ReducedExperiment}\link{run_ica}.}
+}
 \description{
-Apply dimensionality reduction using ICA
+Performs independent component analysis (ICA).
+Calls \link{ReducedExperiment}\link{run_ica} to perform the analysis.
 }

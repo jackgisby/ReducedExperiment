@@ -2,14 +2,22 @@
 % Please edit documentation in R/factors.R
 \name{.project_ica}
 \alias{.project_ica}
-\title{X = M * S
-X / S = M
-X * inv(S) = M}
+\title{Calculate the mixture matrix}
 \usage{
 .project_ica(newdata, S)
 }
 \description{
+Calculates the mixture matrix (reduced data, sample-level) from the source
+signal matrix (loadings, gene-level) and original data
+(samples vs. features).
+}
+\details{
+Originally used MASS:ginv(S) to do the following calculation:
+
 X = M * S
 X / S = M
 X * inv(S) = M
+
+Now instead does the following:
+M = X * S
 }

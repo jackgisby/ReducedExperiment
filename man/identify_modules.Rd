@@ -2,7 +2,7 @@
 % Please edit documentation in R/modules.R
 \name{identify_modules}
 \alias{identify_modules}
-\title{Run WGCNA}
+\title{Apply dimensionality reduction using WGCNA}
 \usage{
 identify_modules(
   X,
@@ -12,6 +12,25 @@ identify_modules(
   ...
 )
 }
+\arguments{
+\item{X}{Either a \link{SummarizedExperiment}\link{SummarizedExperiment} object
+or a matrix containing data to be subject to WGCNA. \code{X} should have rows as
+features and columns as samples.}
+
+\item{center_X}{If TRUE, X is centered (i.e., features / rows are transformed
+to have a mean of 0) prior to WGCNA.}
+
+\item{scale_X}{If TRUE, X is scaled (i.e., features / rows are transformed
+to have a standard deviation of 1) before WGCNA.}
+
+\item{assay_name}{If \code{X} is a
+\link{SummarizedExperiment}\link{SummarizedExperiment}, then this should be the
+name of the assay to be subject to WGCNA.}
+
+\item{...}{Additional arguments to be passed to
+\link{ReducedExperiment}\link{run_wgcna}.}
+}
 \description{
-Run WGCNA
+Performs Weighted gene correlation network analysis (WGCNA).
+Calls \link{ReducedExperiment}\link{run_wgcna} to perform the analysis.
 }

@@ -16,5 +16,7 @@ reduced_gsea(
 )
 }
 \description{
-Gene set enrichment analysis
+Performs \link[clusterProfiler]{GSEA} using the \code{clusterProfiler} package.
+Expects a loadings matrix where features (genes) are rows and factors are
+columns.
 }

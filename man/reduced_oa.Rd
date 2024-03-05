@@ -16,5 +16,6 @@ reduced_oa(
 )
 }
 \description{
-Overrepresentation analysis
+Performs overrepresentation analysis given a set of components (factors or
+modules) that are each linked to a list of genes.
 }

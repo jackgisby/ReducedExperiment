@@ -15,8 +15,8 @@ test_that("Build and subset", {
     expect_equal(colnames(assay(rrs, "normal")), sampleNames(rrs))
     expect_equal(rownames(reduced(rrs)), sampleNames(rrs))
 
-    scale(rrs) <- setNames(1:i, featureNames(rrs))
-    center(rrs) <- setNames(1:i, featureNames(rrs))
+    rrs@scale <- setNames(1:i, featureNames(rrs))
+    rrs@center <- setNames(1:i, featureNames(rrs))
 
     # Subset and re-test
     rrs_subset <- rrs[5:10, 50:90, 1:2]
@@ -28,15 +28,15 @@ test_that("Build and subset", {
     expect_true(nrow(rrs_subset) == nFeatures(rrs_subset))
     expect_equal(rownames(reduced(rrs_subset)), sampleNames(rrs_subset))
     expect_equal(paste0("sample_", 50:90), sampleNames(rrs_subset))
-    expect_equal(names(scale(rrs_subset)), featureNames(rrs_subset))
-    expect_equal(names(center(rrs_subset)), featureNames(rrs_subset))
+    expect_equal(names(rrs_subset@scale), featureNames(rrs_subset))
+    expect_equal(names(rrs_subset@center), featureNames(rrs_subset))
 
     # Now test an empty object
     rrs_empy <- ReducedExperiment()
     expect_equal(dim(rrs_empy), c("Features" = 0, "Samples" = 0, "Components" = 0))
     expect_equal(reduced(rrs_empy), matrix(0, 0, 0), check.attributes = FALSE)
-    expect_equal(scale(rrs_empy), TRUE)
-    expect_equal(center(rrs_empy), TRUE)
+    expect_equal(rrs_empy@scale, TRUE)
+    expect_equal(rrs_empy@center, TRUE)
 })
 
 test_that("Access and replace reduced data", {

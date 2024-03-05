@@ -2,10 +2,20 @@
 % Please edit documentation in R/auxiliary.R
 \name{.createRandomisedReducedExperiment}
 \alias{.createRandomisedReducedExperiment}
-\title{i (features), j (samples), k components)}
+\title{Create a ReducedExperiment with random data}
 \usage{
 .createRandomisedReducedExperiment(i, j, k, seed = 1)
 }
+\arguments{
+\item{i}{Number of features}
+
+\item{j}{Number of samples}
+
+\item{k}{Number of dimensionally-reduced components}
+
+\item{seed}{Random seed that will be set before call to rnorm}
+}
 \description{
-i (features), j (samples), k components)
+Creates a \link[ReducedExperiment]{ReducedExperiment}
+with i (features), j (samples), k components)
 }

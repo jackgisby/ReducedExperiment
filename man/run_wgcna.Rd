@@ -20,6 +20,78 @@ run_wgcna(
   ...
 )
 }
+\arguments{
+\item{X}{A matrix with features as rows and columns as samples.}
+
+\item{powers}{The soft-thresholding power(s) to test, see
+\link[WGCNA]{pickSoftThreshold} for more details.}
+
+\item{min_r_squared}{The correlation threshold for selection of the
+soft-thresholding power, see \link[WGCNA]{pickSoftThreshold} for more
+details.}
+
+\item{max_mean_connectivity}{A threshold for the maximal mean connectivity,
+used when selecting the soft-thresholding power, see
+\link[WGCNA]{pickSoftThreshold} for more details.}
+
+\item{corType}{The type of correlation to be used to generate a correlation
+matrix during network formation. One of "pearson" (\link[WGCNA]{cor}) and
+"bicor" (\link[WGCNA]{bicor}).}
+
+\item{networkType}{The type of network to be generated, either "unsigned",
+"signed" or "signed hybrid". See \link[WGCNA]{blockwiseModules} for
+more details.}
+
+\item{module_labels}{Specifies whether the modules should be named based on
+"numbers" or "colours.}
+
+\item{maxBlockSize}{The chunk size (in terms of the number of features/genes)
+to process the data. See \link[WGCNA]{blockwiseModules} for
+more details. The default (30000) should process standard transcriptomic
+datasets in a single chunk. Results may differ if the number of features
+exceeds the chunk size. Lower values of this parameter may use less memory
+to calculate networks.}
+
+\item{seed}{The random seed.}
+
+\item{verbose}{The verbosity, passed to \link[WGCNA]{blockwiseModules}.}
+
+\item{return_full_output}{If FALSE (default), returns the results specified
+below in \code{returns}. Else, returns additional information, including
+i) the results specified below in \code{returns}; ii) the original eigengene
+matrix calculated by \link[WGCNA]{blockwiseModules}; iii) the object
+returned by \link[WGCNA]{blockwiseModules}; and iv) the output of
+\link[WGCNA]{pickSoftThreshold}.}
+
+\item{scale_reduced}{If TRUE, the reduced data (eigengenes) are standardised
+to have a mean of 0 and a standard deviation of 1.}
+
+\item{...}{Additional arguments to be passed to
+\link[WGCNA]{blockwiseModules}.}
+}
+\value{
+Returns a list containing:
+\itemize{
+\item{"E"}{The reduced data (eigengenes).}
+\item{"L"}{The module loadings. This represents the values of the PCA
+rotation matrix for the first principal component generated for each
+module.}
+\item{"assignments"}{A named vector representing the assignments of
+genes to modules.}
+}
+}
 \description{
-Run WGCNA for a data matrix
+Runs WGCNA. Largely a wrapper for the \link[WGCNA]{blockwiseModules}
+function. Additionally applies \link[WGCNA]{pickSoftThreshold} to
+aid in the selection of the soft thresholding power, reformats data
+into a format convenientg for creating a
+\link[ReducedExperiment]{ModularExperiment} object and changes module names
+from colours to numbers (default).
+}
+\details{
+The function also stores the loadings matrices generated when PCA is
+performed for each module to calculate eigengenes. These loadings can be
+used to quantify the alignment of genes with the module eigengene,
+can be used to recalculate the reduced data matrix (eigengenes) and these
+loadings can be used to transform new datasets.
 }
