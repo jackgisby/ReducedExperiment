@@ -25,6 +25,7 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+vignettes/tempOutput
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
@@ -52,3 +53,5 @@ rsconnect/
 # Script for manually importing package scripts
 import_scripts.R
 
+# Test outputs
+tests/testthat/testthat-problems.rds

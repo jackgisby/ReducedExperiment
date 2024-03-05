@@ -3,3 +3,5 @@
 ^\.github$
 ^LICENSE\.md$
 import_scripts.R
+vignettes/tempOutput
+tests/testthat/testthat-problems.rds

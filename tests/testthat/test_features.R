@@ -60,9 +60,9 @@ test_that("Get common features", {
     airway <- .get_airway_data()
     airway_fe <- estimate_factors(airway, nc=2, seed=1)
 
-    cf <- get_common_features(getAlignedFeatures(airway_fe, z_cutoff=3, n_features=3, format="data.frame"))
+    cf <- get_common_features(getAlignedFeatures(airway_fe, format="data.frame"))
 
     expect_equal(dim(cf), c(4, 7))
-    expect_equal(cf$intersect, c(NA, 69, 69, NA))
-    expect_equal(cf$total_feat_1, c(338, 338, 358, 358))
+    expect_equal(cf$intersect, c(NA, 8, 8, NA))
+    expect_equal(cf$total_feat_1, c(63, 63, 38, 38))
 })
