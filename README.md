@@ -9,7 +9,7 @@ A package for estimating and analysing low-dimensional representations of expres
 ## Installation
 `ReducedExperiment` can be downloaded directly from GitHub.
 ```
-devtools::install("jackgisby/ReducedExperiment")
+devtools::install_github("jackgisby/ReducedExperiment")
 ```
 
 ## Using ReducedExperiment

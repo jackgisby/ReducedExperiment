@@ -38,7 +38,7 @@ Install the package - currently only available on GitHub.
 # 
 # BiocManager::install("ReducedExperiment")
 
-devtools::install("jackgisby/ReducedExperiment")
+devtools::install_github("jackgisby/ReducedExperiment")
 ```
 
 For the purposes of this vignette, we will be working with some RNA sequencing
@@ -195,14 +195,14 @@ reduced(wave1_me)[1:5, 1:5]
 ```
 
 The module assignments:
-```{r get_module_reduced}
+```{r get_module_assignments}
 
 # get assignments for first 5 genes
 assignments(wave1_me)[1:5]
 ```
 
 And the loadings:
-```{r get_module_reduced}
+```{r get_module_loadings}
 
 # get loadings for first 5 genes
 loadings(wave1_me)[1:5]
@@ -284,7 +284,8 @@ As shown before, we know which genes belong to each module by accessing
 the module assignments in the ModularExperiment object. We can also 
 identify the genes that are highly aligned with each factor, as follows:
 ```{r factor_alignments}
-getAlignedFeatures(wave1_fe, format = "data.frame")
+aligned_features <- getAlignedFeatures(wave1_fe, format = "data.frame")
+head(aligned_features)
 ```
 
 This shows the value of the loadings for the genes most highly associated with 
@@ -298,10 +299,7 @@ a simple overrepresentation analysis for the modules.
 
 ```{r run_enrich, message=FALSE, warning=FALSE}
 factor_enrich <- runEnrich(wave1_fe, as_dataframe = TRUE)
-head(factor_enrich)
-
 module_enrich <- runEnrich(wave1_me, as_dataframe = TRUE)
-head(module_enrich)
 ```
 
 We can again plot summaries of these results. For instance, we see that 
@@ -372,7 +370,7 @@ The new ModularExperiment created by projecting the wave 2 data (above) has the
 same genes (2184) and modules (10) as the original ModularExperiment (below),
 but with different samples (119 vs. 234). 
 
-```{r}
+```{r reprint_original}
 wave1_me
 ```
 
@@ -414,14 +412,14 @@ can be explained by differences in the cohorts. For instance, different
 SARS-CoV-2 variants were in prevalent at the time the cohorts were sampled, and 
 there were more treatments available for the 2021 (wave 2) cohort.
 
-```{r}
+```{r correlation_with_projection}
 original_estimates <- associations_me$summaries$estimate[associations_me$summaries$term == "case_controlPOSITIVE"]
 replication_estimates <- replication_me$summaries$estimate[replication_me$summaries$term == "case_controlPOSITIVE"] 
 
 cor.test(original_estimates, replication_estimates)
 ```
 
-# References
+# Vignette references
 
 This vignette used publicly available gene expression data (RNA sequencing)
 from the following publication:
@@ -463,8 +461,9 @@ Weighted Gene Correlation Network Analysis (WGCNA) framework
 
 # Session Information
 
-This vignette was compiled during the following session:
+Here is the output of sessionInfo() on the system on which this document was 
+compiled:
 
-```{r SessionInfo}
+```{r session_info, echo=FALSE}
 sessionInfo()
 ```
