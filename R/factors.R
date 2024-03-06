@@ -383,7 +383,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #' number of components to be used for ICA. The results of this function
 #' can be plotted by \link[ReducedExperiment]{plot_stability}.
 #'
-#' This algorithm is similar to the Maximally Stable Transcriptome
+#' This algorithm is similar to the Most Stable Transcriptome
 #' Dimension (MSTD) approach
 #' (https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-4112-9).
 #'

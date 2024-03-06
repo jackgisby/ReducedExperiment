@@ -8,7 +8,7 @@
 \usage{
 \S4method{runEnrich}{FactorisedExperiment}(
   object,
-  method = "overrepresentation",
+  method = "gsea",
   feature_id_col = "rownames",
   center_loadings = FALSE,
   abs_loadings = FALSE,

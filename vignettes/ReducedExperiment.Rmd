@@ -13,23 +13,26 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
+
 BiocStyle::markdown()
 
 library(ReducedExperiment)
 library(ggplot2)
+
+theme_set(theme_bw())
 
 dir.create("tempOutput")
 ```
 
 # Introduction
 
-Install the package
+Install the package - currently only available on GitHub. 
 
 ```{r install_package, eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))  {
-    install.packages("BiocManager")
-}
-
+# if (!requireNamespace("BiocManager", quietly = TRUE))  {
+#     install.packages("BiocManager")
+# }
+# 
 # The following initializes usage of Bioc devel
 # BiocManager::install(version='devel')
 # 
@@ -59,7 +62,7 @@ will be used as a validation set.
 
 # TODO: Implement data loading best practices and document
 wave1_se <- readRDS("../data/wave1.rds")
-wave2_se <- readRDS("../data/wave1.rds")
+wave2_se <- readRDS("../data/wave2.rds")
 
 assay(wave1_se, "normal") <- assay(wave1_se, "cpm")
 assay(wave2_se, "normal") <- assay(wave2_se, "cpm")
@@ -88,7 +91,13 @@ acceptable stability. There is an apparent elbow in the first curve between
 
 ```{r estimate_stability, eval=FALSE}
 
-stability_res <- estimate_stability(wave1_se, seed=1, n_runs=30, min_components=10, max_components=60, by=2, mean_stability_threshold=0.85)
+stability_res <- estimate_stability(
+    wave1_se, 
+    seed=1, 
+    n_runs=30, 
+    min_components=10, max_components=60, by=2, 
+    mean_stability_threshold=0.85
+)
 
 plot_stability(stability_res, plot_path = "tempOutput/stability.png")
 ```
@@ -99,8 +108,14 @@ results in the identification of 34 factors.
 
 ```{r run_factor_analysis}
 
-wave1_fe <- estimate_factors(wave1_se, nc=35, seed=1, use_stability=TRUE, 
-                             n_runs=30, stability_threshold=0.25)
+wave1_fe <- estimate_factors(
+    wave1_se, 
+    nc=35, 
+    seed=1, 
+    use_stability=TRUE, 
+    n_runs=30, 
+    stability_threshold=0.25
+)
 
 wave1_fe
 ```
@@ -241,7 +256,7 @@ ggplot(
     xlab("-log10(p-value)") +
     ylab("Factor name (ordered by p-value)") +
     geom_vline(xintercept = -log10(0.05)) +
-    scale_fill_distiller(type = "div", palette = "RdBu")
+    scale_fill_gradient2(low = "#3A3A98", high = "#832424")
 ```
 
 A similar plot for our modules shows significant upregulation of modules 1,
@@ -256,7 +271,7 @@ ggplot(
     xlab("-log10(p-value)") +
     ylab("Module name (ordered by p-value)") +
     geom_vline(xintercept = -log10(0.05)) +
-    scale_fill_distiller(type = "div", palette = "RdBu")
+    scale_fill_gradient2(low = "#3A3A98", high = "#832424")
 ```
 
 # Finding functional enrichments for factors and modules
@@ -290,32 +305,34 @@ head(module_enrich)
 ```
 
 We can again plot summaries of these results. For instance, we see that 
-factor 2, that was downregulated in COVID-19 patients, and is enriched for XX.
+factor 2, that was downregulated in COVID-19 patients, and is enriched for 
+pathways related to IL4, -13 and -18 signaling and platelet activation..
 
 ```{r example_factor_enrichment}
 ggplot(
     factor_enrich[factor_enrich$component == "factor_2" & factor_enrich$p.adjust < 0.05 ,],
-    aes(-log10(p.adjust), reorder(ID, -log10(p.adjust)), fill = estimate)
+    aes(-log10(p.adjust), reorder(substr(ID, 1, 45), -log10(p.adjust)), fill = enrichmentScore)
 ) +
     geom_point(pch = 21, size = 3) +
     xlab("-log10(p-value)") +
     ylab("Pathway name (ordered by p-value)") +
     geom_vline(xintercept = -log10(0.05)) +
-    scale_fill_distiller(type = "div", palette = "RdBu")
+    scale_fill_gradient2(low = "#3A3A98", high = "#832424")
 ```
 
 Module 1 was upregulated in COVID-19 patients, and we see that it is
-enriched for XX.
+enriched for pathways related to histone-encoding genes (as was noted
+in the original publication) in addition to cytokine pathways and terms related
+to cell replication.
 
 ```{r example_module_enrichment}
 ggplot(
-    module_enrich[module_enrich$component == "module_2" & module_enrich$p.adjust < 0.05 ,],
-    aes(-log10(p.adjust), reorder(ID, -log10(p.adjust)))
+    module_enrich[module_enrich$component == "module_2" & module_enrich$p.adjust < 0.05 ,][1:15, ],
+    aes(-log10(p.adjust), reorder(substr(ID, 1, 45), -log10(p.adjust)))
 ) +
     geom_point(pch = 21, size = 3) +
     xlab("-log10(p-value)") +
-    ylab("Pathway name (ordered by p-value)") +
-    geom_vline(xintercept = -log10(0.05))
+    ylab("Pathway name (ordered by p-value)")
 ```
 
 # Projecting factors and modules into new datasets
@@ -346,10 +363,17 @@ processed and normalised in the same way.
 
 ```{r project_data}
 wave2_fe <- projectData(wave1_fe, wave2_se)
-wave2_fe
+wave2_me <- calcEigengenes(wave1_me, wave2_se)
 
-wave2_me <- calcEigengenes(wave1_me, wave2_me)
 wave2_me
+```
+
+The new ModularExperiment created by projecting the wave 2 data (above) has the
+same genes (2184) and modules (10) as the original ModularExperiment (below),
+but with different samples (119 vs. 234). 
+
+```{r}
+wave1_me
 ```
 
 While we will avoid directly comparing the dimensionally-reduced data from
@@ -361,6 +385,14 @@ replication_me <- associate_components(wave2_me, method = "lmer", formula = f)
 replication_fe <- associate_components(wave2_fe, method = "lmer", formula = f)
 ```
 
+While there are differences in the most significantly associated modules
+between the wave 1 and 2 cohorts, the results are broadly similar. Modules 1, 8,
+2 and 9 remain positively associated with COVID-19 status, whereas modules 0, 5
+and 4 remain negatively associated. 
+
+It's worth noting, however, that module 0 is not truly a module in itself, but
+rather represents all of the unclustered genes.
+
 ```{r plotting_replicated_associations}
 ggplot(
     replication_me$summaries[replication_me$summaries$term == "case_controlPOSITIVE" ,],
@@ -370,6 +402,69 @@ ggplot(
     xlab("-log10(p-value)") +
     ylab("Module name (ordered by p-value)") +
     geom_vline(xintercept = -log10(0.05)) +
-    scale_fill_distiller(type = "div", palette = "RdBu")
+    scale_fill_gradient2(low = "#3A3A98", high = "#832424")
 ```
 
+And, as we see in the following chunk, the estimated associations between
+the modules and COVID-19 status (positive vs. negative) have a strong positive
+correlation. 
+
+Differences in the estimated associations between modules and COVID-19 status
+can be explained by differences in the cohorts. For instance, different 
+SARS-CoV-2 variants were in prevalent at the time the cohorts were sampled, and 
+there were more treatments available for the 2021 (wave 2) cohort.
+
+```{r}
+original_estimates <- associations_me$summaries$estimate[associations_me$summaries$term == "case_controlPOSITIVE"]
+replication_estimates <- replication_me$summaries$estimate[replication_me$summaries$term == "case_controlPOSITIVE"] 
+
+cor.test(original_estimates, replication_estimates)
+```
+
+# References
+
+This vignette used publicly available gene expression data (RNA sequencing)
+from the following publication:
+
+* "Multi-omics identify falling LRRC15 as a COVID-19 severity marker and 
+    persistent pro-thrombotic signals in convalescence"
+    (https://doi.org/10.1038/s41467-022-35454-4)
+    - Gisby *et al*., 2022
+* Zenodo data deposition (https://zenodo.org/doi/10.5281/zenodo.6497250)
+
+The stability-based ICA algorithm implemented in this package for identifying
+latent factors is based on the ICASSO algorithm, references for which
+can be found below:
+
+* "Icasso: software for investigating the reliability of ICA estimates by 
+    clustering and visualization" 
+    (https://doi.org/10.1109/NNSP.2003.1318025) 
+    - Himberg *et al*., 2003
+* "stabilized-ica" Python package 
+    (https://github.com/ncaptier/stabilized-ica) 
+    - Nicolas Captier
+
+The `estimate_stability` function is based on the related Most Stable
+Transcriptome Dimension approach, which also has a Python implementation 
+provided by the stabilized-ica Python package.
+
+* "Determining the optimal number of independent components for reproducible 
+    transcriptomic data analysis" 
+    (https://doi.org/10.1186/s12864-017-4112-9) 
+    - Kairov *et al*., 2017
+
+Identification of coexpressed gene modules is carried out through the
+Weighted Gene Correlation Network Analysis (WGCNA) framework
+
+* "WGCNA: an R package for weighted correlation network analysis"
+    (https://doi.org/10.1186/1471-2105-9-559)
+    - Langfelder and Horvath, 2008
+* "WGCNA" R package (https://cran.r-project.org/web/packages/WGCNA/index.html)
+
+# Session Information
+
+This vignette was compiled during the following session:
+
+```{r SessionInfo}
+sessionInfo()
+```

@@ -109,7 +109,9 @@ identify_modules <- function(X, center_X=TRUE, scale_X=TRUE, assay_name="normal"
 #' more details.
 #'
 #' @param module_labels Specifies whether the modules should be named based on
-#' "numbers" or "colours.
+#' "numbers" or "colours. If `module_labels` is set to "numbers", then
+#' "module_0" represents unclustered genes, whereas if it is set to "colours"
+#' then "grey" represents unclustered genes.
 #'
 #' @param maxBlockSize The chunk size (in terms of the number of features/genes)
 #' to process the data. See \link[WGCNA]{blockwiseModules} for
@@ -134,6 +136,11 @@ identify_modules <- function(X, center_X=TRUE, scale_X=TRUE, assay_name="normal"
 #'
 #' @param ... Additional arguments to be passed to
 #' \link[WGCNA]{blockwiseModules}.
+#'
+#' @details
+#' Note that if `module_labels` is set to "numbers", then
+#' "module_0" represents unclustered genes, whereas if it is set to "colours"
+#' then "grey" represents unclustered genes.
 #'
 #' @returns Returns a list containing:
 #' \itemize{

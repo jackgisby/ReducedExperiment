@@ -43,7 +43,9 @@ matrix during network formation. One of "pearson" (\link[WGCNA]{cor}) and
 more details.}
 
 \item{module_labels}{Specifies whether the modules should be named based on
-"numbers" or "colours.}
+"numbers" or "colours. If \code{module_labels} is set to "numbers", then
+"module_0" represents unclustered genes, whereas if it is set to "colours"
+then "grey" represents unclustered genes.}
 
 \item{maxBlockSize}{The chunk size (in terms of the number of features/genes)
 to process the data. See \link[WGCNA]{blockwiseModules} for
@@ -94,4 +96,8 @@ performed for each module to calculate eigengenes. These loadings can be
 used to quantify the alignment of genes with the module eigengene,
 can be used to recalculate the reduced data matrix (eigengenes) and these
 loadings can be used to transform new datasets.
+
+Note that if \code{module_labels} is set to "numbers", then
+"module_0" represents unclustered genes, whereas if it is set to "colours"
+then "grey" represents unclustered genes.
 }

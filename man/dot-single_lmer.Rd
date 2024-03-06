@@ -4,7 +4,7 @@
 \alias{.single_lmer}
 \title{Helper function to run a linear mixed model}
 \usage{
-.single_lmer(data, formula_string, REML = TRUE)
+.single_lmer(data, formula_string, REML = TRUE, ...)
 }
 \description{
 Helper function to run a linear mixed model
