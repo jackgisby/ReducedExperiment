@@ -416,6 +416,8 @@ estimate_stability <- function(X, min_components=10, max_components=60,
         assay(X, "normal") <- assay(X, assay_name)
     }
 
+    if (dim(X)[2] > max_components) stop("Number of samples must be greater than max_components")
+
     stabilities <- data.frame()
 
     if (verbose) tpb <- utils::txtProgressBar(min = min_components, max = max_components, initial = min_components, style = 3)
