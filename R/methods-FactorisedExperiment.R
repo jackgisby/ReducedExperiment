@@ -162,6 +162,10 @@ setReplaceMethod("componentNames", "FactorisedExperiment", function(object, valu
     return(object)
 })
 
+#' Required for dollarsign autocomplete of colData columns
+.DollarNames.FactorisedExperiment <- function(x, pattern = "")
+    grep(pattern, names(colData(x)), value=TRUE)
+
 #' @rdname slice
 #' @export
 setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),

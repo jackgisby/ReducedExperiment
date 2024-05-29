@@ -224,6 +224,10 @@ setReplaceMethod("dendrogram", "ModularExperiment", function(object, value) {
     return(object)
 })
 
+#' Required for dollarsign autocomplete of colData columns
+.DollarNames.ModularExperiment <- function(x, pattern = "")
+    grep(pattern, names(colData(x)), value=TRUE)
+
 #' @rdname slice
 #' @export
 setMethod("[", c("ModularExperiment", "ANY", "ANY", "ANY"),

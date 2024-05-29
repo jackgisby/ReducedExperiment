@@ -201,6 +201,10 @@ setMethod("show", "ReducedExperiment" ,
               cat(nComponents(object), "components\n")
           })
 
+#' Required for dollarsign autocomplete of colData columns
+.DollarNames.ReducedExperiment <- function(x, pattern = "")
+    grep(pattern, names(colData(x)), value=TRUE)
+
 #' Extract and replace parts of ReducedExperiment objects
 #'
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
