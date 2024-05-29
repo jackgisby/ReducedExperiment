@@ -163,3 +163,18 @@ test_that("Combine ModularExperiments with cbind", {
     assignments(rrs_b) <- assignments(rrs_a)
     expect_no_error(cbind(rrs_a, rrs_b))
 })
+
+test_that("Get module hub genes", {
+
+    rrs <- .createRandomisedModularExperiment(i=300, j=100, k=10)
+
+    centrality <- getCentrality(rrs)
+
+    for (i in 1:nrow(centrality)) {
+
+        expect_equal(
+            centrality$r[i],
+            cor(assay(rrs)[centrality$feature[i] ,], data.frame(reduced(rrs))[[centrality$module[i]]])
+        )
+    }
+})

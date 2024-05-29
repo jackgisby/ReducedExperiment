@@ -34,6 +34,7 @@ setGeneric("nFeatures",     function(object) standardGeneric("nFeatures"))
 setGeneric("getGeneIDs",     function(object, ...) standardGeneric("getGeneIDs"))
 
 setGeneric("getAlignedFeatures",     function(object, ...) standardGeneric("getAlignedFeatures"))
+setGeneric("getCentrality",     function(object, ...) standardGeneric("getCentrality"))
 
 setGeneric("runEnrich",     function(object, ...) standardGeneric("runEnrich"))
 

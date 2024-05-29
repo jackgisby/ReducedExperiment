@@ -383,8 +383,11 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, load
 
     if (is.function(format)) {
         return(format(factor_features))
+
     } else if (format == "data.frame") {
+        rownames(factor_features) <- factor_features$feature
         return(factor_features)
+
     } else if (format == "list") {
 
         factor_list <- list()

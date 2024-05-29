@@ -80,7 +80,7 @@
     names(assignments) <- paste0("module_", round(stats::runif(i, 1, k), 0))
 
     return(ModularExperiment(
-        assays = list("normal"=.makeRandomData(i, j, "gene", "sample", seed=seed)),
+        assays = list("normal" = .makeRandomData(i, j, "gene", "sample", seed=seed)),
         reduced = .makeRandomData(j, k, "sample", "module", seed=seed),
         assignments = assignments,
         loadings = .makeRandomData(i, 1, "gene", "gene", seed=seed)[,1]

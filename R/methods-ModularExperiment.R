@@ -325,7 +325,7 @@ setMethod("runEnrich", c("ModularExperiment"),
 #'
 #' @param modules_are_colors If TRUE, expects the module names to be colors.
 #' Else, assumes that module names are are numbers that can be converted into
-#' colours by `color_func.`
+#' colours by `color_func`.
 #'
 #' @export
 setMethod("plotDendro", c("ModularExperiment"),
@@ -465,4 +465,58 @@ setMethod("calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
 #' @export
 setMethod("predict", c("ModularExperiment"), function(object, newdata, ...) {
     return(calcEigengenes(object, newdata, ...))
+})
+
+#' Get correlation of features with module eigengenes
+#'
+#' @param object \link[ReducedExperiment]{ModularExperiment} object.
+#'
+#' @param assay_name The name of the assay to be used for calculation of
+#' module centrality.
+#'
+#' @param feature_id_col The column in `rowData(object)` that will be used as a
+#' feature ID. Setting this to "rownames" (default) instead uses
+#' `rownames(object)`.
+#'
+#' Results indicate correlation (r) and squared correlation (rsq) with the module eigengene. Feature ranks
+#' within each module are also returned based on these statistics.
+#'
+#' @export
+setMethod("getCentrality", c("ModularExperiment"), function(object, assay_name = "normal", feature_id_col="rownames") {
+
+    # Get module membership (correlation with eigengene)
+    signed_kme <- WGCNA::signedKME(
+        t(assay(rrs, assay_name)),
+        reduced(rrs)
+    )
+
+    stopifnot(all(rownames(signed_kme) == rownames(object)))
+    if (feature_id_col != "rownames") rownames(signed_kme) <- rowData(object)[[feature_id_col]]
+    colnames(signed_kme) <- gsub("kME", "mo", colnames(signed_kme))
+
+    # Transform into a dataframe with relevant statistics
+    module_features <- data.frame()
+    for (m in componentNames(object)) {
+
+        which_features <- which(names(assignments(object)) == m)
+
+        module_kme <- data.frame(
+            module = m,
+            feature = rownames(signed_kme)[which_features],
+            r = signed_kme[[m]][which_features]
+        )
+
+        module_kme$rsq <- module_kme$r ** 2
+        module_kme$rank_r <- rank(1 / module_kme$r)
+        module_kme$rank_rsq <- rank(1 / module_kme$rsq)
+
+        module_features <- rbind(module_features, module_kme)
+    }
+
+    module_features <- module_features[order(module_features$rsq, decreasing = TRUE) ,]
+    module_features <- module_features[order(module_features$module) ,]
+
+    rownames(module_features) <- module_features$feature
+
+    return(module_features)
 })
