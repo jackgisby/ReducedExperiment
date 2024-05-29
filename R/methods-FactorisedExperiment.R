@@ -162,6 +162,10 @@ setReplaceMethod("componentNames", "FactorisedExperiment", function(object, valu
     return(object)
 })
 
+#' Required for dollarsign autocomplete of colData columns
+.DollarNames.FactorisedExperiment <- function(x, pattern = "")
+    grep(pattern, names(colData(x)), value=TRUE)
+
 #' @rdname slice
 #' @export
 setMethod("[", c("FactorisedExperiment", "ANY", "ANY", "ANY"),
@@ -379,8 +383,10 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, load
 
     if (is.function(format)) {
         return(format(factor_features))
+
     } else if (format == "data.frame") {
         return(factor_features)
+
     } else if (format == "list") {
 
         factor_list <- list()

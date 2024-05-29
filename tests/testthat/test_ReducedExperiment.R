@@ -14,6 +14,8 @@ test_that("Build and subset", {
 
     expect_equal(colnames(assay(rrs, "normal")), sampleNames(rrs))
     expect_equal(rownames(reduced(rrs)), sampleNames(rrs))
+    expect_equal(rownames(rowData(rrs)), rownames(rrs))
+    show(rrs)
 
     rrs@scale <- setNames(1:i, featureNames(rrs))
     rrs@center <- setNames(1:i, featureNames(rrs))
@@ -30,6 +32,9 @@ test_that("Build and subset", {
     expect_equal(paste0("sample_", 50:90), sampleNames(rrs_subset))
     expect_equal(names(rrs_subset@scale), featureNames(rrs_subset))
     expect_equal(names(rrs_subset@center), featureNames(rrs_subset))
+
+    rownames(rrs_subset) <- paste0("123_", rownames(rrs_subset))
+    expect_equal(rownames(rrs_subset)[1], "123_gene_5")
 
     # Now test an empty object
     rrs_empy <- ReducedExperiment()

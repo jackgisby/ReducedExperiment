@@ -220,9 +220,13 @@ setMethod("dendrogram", "ModularExperiment", function(object) {
 })
 
 setReplaceMethod("dendrogram", "ModularExperiment", function(object, value) {
-    dendrogram(object) <- value
+    object@dendrogram <- value
     return(object)
 })
+
+#' Required for dollarsign autocomplete of colData columns
+.DollarNames.ModularExperiment <- function(x, pattern = "")
+    grep(pattern, names(colData(x)), value=TRUE)
 
 #' @rdname slice
 #' @export
@@ -316,24 +320,21 @@ setMethod("runEnrich", c("ModularExperiment"),
 #'
 #' @param guideHang See \link[WGCNA]{plotDendroAndColors}.
 #'
-#' @param color_func Function for converting module names to colors.
+#' @param color_func Function for converting module names to colors. Only used
+#' if `modules_are_colors` is FALSE
+#'
+#' @param modules_are_colors If TRUE, expects the module names to be colors.
+#' Else, assumes that module names are are numbers that can be converted into
+#' colours by `color_func`.
 #'
 #' @export
 setMethod("plotDendro", c("ModularExperiment"),
           function(object, groupLabels = "Module colors", dendroLabels = FALSE,
                        hang = 0.03, addGuide = TRUE, guideHang = 0.05,
-                       color_func = WGCNA::labels2colors) {
+                       color_func = WGCNA::labels2colors, modules_are_colors = FALSE) {
 
-    colors <- gsub("module_", "", names(assignments(object)))
-
-    is_color <- function(object) {
-        sapply(object, function(object) {
-            tryCatch(is.matrix(grDevices::col2rgb(object)),
-                     error = function(e) FALSE)
-        })
-    }
-
-    if (!is.null(color_func) & !all(is_color(colors))) {
+    if (!modules_are_colors) {
+        colors <- as.numeric(gsub("module_", "", names(assignments(object))))
         colors <- color_func(colors)
     }
 
@@ -464,4 +465,56 @@ setMethod("calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
 #' @export
 setMethod("predict", c("ModularExperiment"), function(object, newdata, ...) {
     return(calcEigengenes(object, newdata, ...))
+})
+
+#' Get correlation of features with module eigengenes
+#'
+#' @param object \link[ReducedExperiment]{ModularExperiment} object.
+#'
+#' @param assay_name The name of the assay to be used for calculation of
+#' module centrality.
+#'
+#' @param feature_id_col The column in `rowData(object)` that will be used as a
+#' feature ID. Setting this to "rownames" (default) instead uses
+#' `rownames(object)`.
+#'
+#' Results indicate correlation (r) and squared correlation (rsq) with the module eigengene. Feature ranks
+#' within each module are also returned based on these statistics.
+#'
+#' @export
+setMethod("getCentrality", c("ModularExperiment"), function(object, assay_name = "normal", feature_id_col="rownames") {
+
+    # Get module membership (correlation with eigengene)
+    signed_kme <- WGCNA::signedKME(
+        t(assay(object, assay_name)),
+        reduced(object)
+    )
+
+    stopifnot(all(rownames(signed_kme) == rownames(object)))
+    if (feature_id_col != "rownames") rownames(signed_kme) <- rowData(object)[[feature_id_col]]
+    colnames(signed_kme) <- gsub("kME", "mo", colnames(signed_kme))
+
+    # Transform into a dataframe with relevant statistics
+    module_features <- data.frame()
+    for (m in componentNames(object)) {
+
+        which_features <- which(names(assignments(object)) == m)
+
+        module_kme <- data.frame(
+            module = m,
+            feature = rownames(signed_kme)[which_features],
+            r = signed_kme[[m]][which_features]
+        )
+
+        module_kme$rsq <- module_kme$r ** 2
+        module_kme$rank_r <- rank(1 / module_kme$r)
+        module_kme$rank_rsq <- rank(1 / module_kme$rsq)
+
+        module_features <- rbind(module_features, module_kme)
+    }
+
+    module_features <- module_features[order(module_features$rsq, decreasing = TRUE) ,]
+    module_features <- module_features[order(module_features$module) ,]
+
+    return(module_features)
 })

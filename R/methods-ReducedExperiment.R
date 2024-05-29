@@ -201,6 +201,10 @@ setMethod("show", "ReducedExperiment" ,
               cat(nComponents(object), "components\n")
           })
 
+#' Required for dollarsign autocomplete of colData columns
+.DollarNames.ReducedExperiment <- function(x, pattern = "")
+    grep(pattern, names(colData(x)), value=TRUE)
+
 #' Extract and replace parts of ReducedExperiment objects
 #'
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
@@ -263,9 +267,6 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
     out <- callNextMethod(object, i, j, ...)
     BiocGenerics:::replaceSlots(out, reduced=red, center=center, scale=scale, check=FALSE)
 })
-
-# Row bind operations do not make sense following dimensionality reduction
-removeMethod("rbind", "ReducedExperiment")
 
 #' Combine ReducedExperiment objects by columns
 #'

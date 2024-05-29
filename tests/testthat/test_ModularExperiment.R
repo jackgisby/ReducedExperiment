@@ -13,6 +13,8 @@ test_that("Build and subset", {
 
     expect_equal(colnames(assay(rrs, "normal")), sampleNames(rrs))
     expect_equal(rownames(reduced(rrs)), sampleNames(rrs))
+    expect_equal(rownames(rowData(rrs)), rownames(rrs))
+    show(rrs)
 
     rrs_subset <- rrs[5:10, 50:90, 1:2]
     expect_equal(dim(rrs_subset), c("Features" = 6, "Samples" = 41, "Components" = 2))
@@ -22,6 +24,9 @@ test_that("Build and subset", {
     expect_equal(rownames(reduced(rrs_subset)), sampleNames(rrs_subset))
     expect_equal(featureNames(rrs_subset), paste0("gene_", 5:10))
     expect_true(all(assignments(rrs_subset) == featureNames(rrs_subset)))
+
+    rownames(rrs_subset) <- paste0("123_", rownames(rrs_subset))
+    expect_equal(rownames(rrs_subset)[1], "123_gene_5")
 
     rrs_empy <- ModularExperiment()
     expect_equal(dim(rrs_empy), c("Features" = 0, "Samples" = 0, "Components" = 0))
@@ -49,7 +54,8 @@ test_that("Access and replace component/module names", {
     rrs <- .createRandomisedModularExperiment(i=300, j=100, k=10)
 
     expect_equal(componentNames(rrs), paste0("module_", 1:10))
-    expect_equal(colnames(reduced(rrs)), paste0("module_", 1:10))
+    expect_equal(componentNames(rrs), moduleNames(rrs))
+    expect_equal(componentNames(rrs), colnames(reduced(rrs)))
 
     is_module_5 <- names(assignments(rrs)) == "module_5"
 
@@ -58,6 +64,10 @@ test_that("Access and replace component/module names", {
     expect_equal(colnames(reduced(rrs))[5], "new_name")
     expect_true(all(names(assignments(rrs))[is_module_5] == "new_name"))
     expect_true(!any(names(assignments(rrs))[!is_module_5] == "new_name"))
+
+    expect_equal(moduleNames(rrs)[5], "new_name")
+    moduleNames(rrs)[3] <- "new_name_2"
+    expect_equal(moduleNames(rrs)[3], "new_name_2")
 })
 
 test_that("Access and replace feature names", {
@@ -162,4 +172,33 @@ test_that("Combine ModularExperiments with cbind", {
     loadings(rrs_b) <- loadings(rrs_a)
     assignments(rrs_b) <- assignments(rrs_a)
     expect_no_error(cbind(rrs_a, rrs_b))
+})
+
+test_that("Get module hub genes", {
+
+    rrs <- .createRandomisedModularExperiment(i=300, j=100, k=10)
+
+    centrality <- getCentrality(rrs)
+
+    for (i in 1:nrow(centrality)) {
+
+        expect_equal(
+            centrality$r[i],
+            cor(assay(rrs)[centrality$feature[i] ,], data.frame(reduced(rrs))[[centrality$module[i]]])
+        )
+    }
+})
+
+test_that("Plot and access dendrogram", {
+
+    # Use real data from airway package
+    airway <- .get_airway_data(n_features=500)
+    airway_me <- identify_modules(airway, verbose=0, powers=21)  # , return_full_output=TRUE
+
+    expect_true(dim(airway_me)[1] == length(dendrogram(airway_me)$order))
+
+    plotDendro(airway_me)
+
+    dendrogram(airway_me) <- NULL
+    expect_null(dendrogram(airway_me))
 })
