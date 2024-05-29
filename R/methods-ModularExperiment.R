@@ -482,7 +482,7 @@ setMethod("predict", c("ModularExperiment"), function(object, newdata, ...) {
 #' within each module are also returned based on these statistics.
 #'
 #' @export
-setMethod("getCentrality", c("ModularExperiment"), function(object, assay_name = "normal", feature_id_col="rownames") {
+setMethod("getCentrality", c("ModularExperiment"), function(object, assay_name = "normal", feature_id_col = "rownames") {
 
     # Get module membership (correlation with eigengene)
     signed_kme <- WGCNA::signedKME(

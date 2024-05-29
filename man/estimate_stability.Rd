@@ -14,6 +14,7 @@ estimate_stability(
   mean_stability_threshold = NULL,
   center_X = TRUE,
   scale_X = FALSE,
+  assay_name = "normal",
   BPPARAM = BiocParallel::SerialParam(),
   verbose = TRUE,
   ...
@@ -22,9 +23,7 @@ estimate_stability(
 \arguments{
 \item{X}{Either a \link{SummarizedExperiment}\link{SummarizedExperiment} object
 or a matrix containing data to be subject to ICA. \code{X} should have rows as
-features and columns as samples. If a
-\link{SummarizedExperiment}\link{SummarizedExperiment} is passed, it is assumed
-that there is an assay named "normal" that contains the input data.}
+features and columns as samples.}
 
 \item{min_components}{The minimum number of components to estimate the
 stability for.}
@@ -50,6 +49,10 @@ to have a mean of 0) prior to ICA. Generally recommended.}
 
 \item{scale_X}{If TRUE, X is scaled (i.e., features / rows are transformed
 to have a standard deviation of 1) before ICA.}
+
+\item{assay_name}{If \code{X} is a
+\link{SummarizedExperiment}\link{SummarizedExperiment}, then this should be the
+name of the assay to be subject to ICA.}
 
 \item{BPPARAM}{A class containing parameters for parallel evaluation. Uses
 \link[BiocParallel]{SerialParam} by default, running only a single

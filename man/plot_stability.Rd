@@ -6,7 +6,7 @@
 \usage{
 plot_stability(
   stability,
-  plot_path,
+  plot_path = NULL,
   stability_threshold = NULL,
   mean_stability_threshold = NULL,
   height = 4,
