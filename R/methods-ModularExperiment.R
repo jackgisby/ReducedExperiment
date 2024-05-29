@@ -507,8 +507,8 @@ setMethod("getCentrality", c("ModularExperiment"), function(object, assay_name =
         )
 
         module_kme$rsq <- module_kme$r ** 2
-        module_kme$rank_r <- rank(1 / module_kme$r)
-        module_kme$rank_rsq <- rank(1 / module_kme$rsq)
+        module_kme$rank_r <- rank(1 - module_kme$r)
+        module_kme$rank_rsq <- rank(1 - module_kme$rsq)
 
         module_features <- rbind(module_features, module_kme)
     }
