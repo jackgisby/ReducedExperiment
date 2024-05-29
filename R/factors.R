@@ -334,9 +334,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #'
 #' @param X Either a \link{SummarizedExperiment}[SummarizedExperiment] object
 #' or a matrix containing data to be subject to ICA. `X` should have rows as
-#' features and columns as samples. If a
-#' \link{SummarizedExperiment}[SummarizedExperiment] is passed, it is assumed
-#' that there is an assay named "normal" that contains the input data.
+#' features and columns as samples.
 #'
 #' @param min_components The minimum number of components to estimate the
 #' stability for.
@@ -362,6 +360,10 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #'
 #' @param scale_X If TRUE, X is scaled (i.e., features / rows are transformed
 #' to have a standard deviation of 1) before ICA.
+#'
+#' @param assay_name If `X` is a
+#' \link{SummarizedExperiment}[SummarizedExperiment], then this should be the
+#' name of the assay to be subject to ICA.
 #'
 #' @param BPPARAM A class containing parameters for parallel evaluation. Uses
 #' \link[BiocParallel]{SerialParam} by default, running only a single
@@ -403,10 +405,15 @@ estimate_stability <- function(X, min_components=10, max_components=60,
                                     by=2, n_runs = 30, resample = FALSE,
                                     mean_stability_threshold = NULL,
                                     center_X=TRUE, scale_X=FALSE,
+                                    assay_name = "normal",
                                     BPPARAM = BiocParallel::SerialParam(),
                                     verbose = TRUE, ...) {
     if (inherits(X, "SummarizedExperiment")) {
         X <- assay(X, "normal")
+    }
+
+    if (assay_name != "normal") {
+        assay(X, "normal") <- assay(X, assay_name)
     }
 
     stabilities <- data.frame()
