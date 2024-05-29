@@ -416,7 +416,7 @@ estimate_stability <- function(X, min_components=10, max_components=60,
         assay(X, "normal") <- assay(X, assay_name)
     }
 
-    if (dim(X)[2] > max_components) stop("Number of samples must be greater than max_components")
+    if (dim(X)[2] < max_components) stop("Number of samples must be greater than max_components")
 
     stabilities <- data.frame()
 
@@ -477,7 +477,7 @@ estimate_stability <- function(X, min_components=10, max_components=60,
 #' @import patchwork
 #'
 #' @export
-plot_stability <- function(stability, plot_path,
+plot_stability <- function(stability, plot_path = NULL,
                            stability_threshold=NULL, mean_stability_threshold=NULL,
                            height = 4, width = 10, ...) {
 

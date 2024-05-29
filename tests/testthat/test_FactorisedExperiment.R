@@ -15,6 +15,8 @@ test_that("Build and subset", {
 
     expect_equal(colnames(assay(rrs, "normal")), sampleNames(rrs))
     expect_equal(rownames(reduced(rrs)), sampleNames(rrs))
+    expect_equal(rownames(rowData(rrs)), rownames(rrs))
+    show(rrs)
 
     # Do the same after slicing
     rrs_subset <- rrs[5:10, 50:90, 1:2]
@@ -24,6 +26,9 @@ test_that("Build and subset", {
     expect_equal(rownames(reduced(rrs_subset)), sampleNames(rrs_subset))
     expect_equal(featureNames(rrs_subset), paste0("gene_", 5:10))
     expect_equal(rownames(loadings(rrs_subset)), featureNames(rrs_subset))
+
+    rownames(rrs_subset) <- paste0("123_", rownames(rrs_subset))
+    expect_equal(rownames(rrs_subset)[1], "123_gene_5")
 
     # Do the same with an empty experiment
     rrs_empy <- FactorisedExperiment()

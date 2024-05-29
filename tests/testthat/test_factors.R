@@ -58,5 +58,7 @@ test_that("Estimate stability", {
 
     expect_equal(colnames(stability_res$stability), c("nc", "component_name", "component_number", "stability"))
     expect_equal(colnames(stability_res_bootstrap$stability), colnames(stability_res$stability))
+
+    plot_stability(stability_res)
 })
 

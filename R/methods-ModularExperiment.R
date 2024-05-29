@@ -220,7 +220,7 @@ setMethod("dendrogram", "ModularExperiment", function(object) {
 })
 
 setReplaceMethod("dendrogram", "ModularExperiment", function(object, value) {
-    dendrogram(object) <- value
+    object@dendrogram <- value
     return(object)
 })
 
@@ -486,8 +486,8 @@ setMethod("getCentrality", c("ModularExperiment"), function(object, assay_name =
 
     # Get module membership (correlation with eigengene)
     signed_kme <- WGCNA::signedKME(
-        t(assay(rrs, assay_name)),
-        reduced(rrs)
+        t(assay(object, assay_name)),
+        reduced(object)
     )
 
     stopifnot(all(rownames(signed_kme) == rownames(object)))
@@ -515,8 +515,6 @@ setMethod("getCentrality", c("ModularExperiment"), function(object, assay_name =
 
     module_features <- module_features[order(module_features$rsq, decreasing = TRUE) ,]
     module_features <- module_features[order(module_features$module) ,]
-
-    rownames(module_features) <- module_features$feature
 
     return(module_features)
 })
