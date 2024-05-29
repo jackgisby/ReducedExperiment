@@ -268,9 +268,6 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
     BiocGenerics:::replaceSlots(out, reduced=red, center=center, scale=scale, check=FALSE)
 })
 
-# Row bind operations do not make sense following dimensionality reduction
-removeMethod("rbind", "ReducedExperiment")
-
 #' Combine ReducedExperiment objects by columns
 #'
 #' Comnbines \link[ReducedExperiment]{ReducedExperiment} objects by columns
