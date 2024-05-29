@@ -320,24 +320,21 @@ setMethod("runEnrich", c("ModularExperiment"),
 #'
 #' @param guideHang See \link[WGCNA]{plotDendroAndColors}.
 #'
-#' @param color_func Function for converting module names to colors.
+#' @param color_func Function for converting module names to colors. Only used
+#' if `modules_are_colors` is FALSE
+#'
+#' @param modules_are_colors If TRUE, expects the module names to be colors.
+#' Else, assumes that module names are are numbers that can be converted into
+#' colours by `color_func.`
 #'
 #' @export
 setMethod("plotDendro", c("ModularExperiment"),
           function(object, groupLabels = "Module colors", dendroLabels = FALSE,
                        hang = 0.03, addGuide = TRUE, guideHang = 0.05,
-                       color_func = WGCNA::labels2colors) {
+                       color_func = WGCNA::labels2colors, modules_are_colors = FALSE) {
 
-    colors <- gsub("module_", "", names(assignments(object)))
-
-    is_color <- function(object) {
-        sapply(object, function(object) {
-            tryCatch(is.matrix(grDevices::col2rgb(object)),
-                     error = function(e) FALSE)
-        })
-    }
-
-    if (!is.null(color_func) & !all(is_color(colors))) {
+    if (!modules_are_colors) {
+        colors <- as.numeric(gsub("module_", "", names(assignments(object))))
         colors <- color_func(colors)
     }
 
