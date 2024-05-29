@@ -12,19 +12,7 @@ vignette: >
     %\VignetteEncoding{UTF-8} 
 ---
 
-```{r setup, include = FALSE}
-
-BiocStyle::markdown()
-
-library(ReducedExperiment)
-library(ggplot2)
-
-theme_set(theme_bw())
-
-dir.create("tempOutput")
-```
-
-# Introduction
+# Installation
 
 Install the package - currently only available on GitHub. 
 
@@ -40,6 +28,20 @@ Install the package - currently only available on GitHub.
 
 devtools::install_github("jackgisby/ReducedExperiment")
 ```
+
+```{r setup, include = FALSE}
+
+BiocStyle::markdown()
+
+library(ReducedExperiment)
+library(ggplot2)
+
+theme_set(theme_bw())
+
+dir.create("tempOutput")
+```
+
+# Introduction
 
 For the purposes of this vignette, we will be working with some RNA sequencing
 data generated for patients with COVID-19. The data were published in the 
