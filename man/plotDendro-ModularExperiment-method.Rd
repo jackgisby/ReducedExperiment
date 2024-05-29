@@ -11,7 +11,8 @@
   hang = 0.03,
   addGuide = TRUE,
   guideHang = 0.05,
-  color_func = WGCNA::labels2colors
+  color_func = WGCNA::labels2colors,
+  modules_are_colors = FALSE
 )
 }
 \arguments{
@@ -26,7 +27,12 @@ See \link[WGCNA]{plotDendroAndColors}.}
 
 \item{guideHang}{See \link[WGCNA]{plotDendroAndColors}.}
 
-\item{color_func}{Function for converting module names to colors.}
+\item{color_func}{Function for converting module names to colors. Only used
+if \code{modules_are_colors} is FALSE}
+
+\item{modules_are_colors}{If TRUE, expects the module names to be colors.
+Else, assumes that module names are are numbers that can be converted into
+colours by \code{color_func}.}
 
 \item{If}{TRUE, shows feature names in the dendrogram.
 See \link[WGCNA]{plotDendroAndColors}.}

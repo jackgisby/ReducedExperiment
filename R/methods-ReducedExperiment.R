@@ -364,6 +364,7 @@ setMethod("nFeatures", "ReducedExperiment", function(object) {dim(object)[1]})
 #'  the `rowData` slot.
 #'
 #' @import biomaRt
+#' @export
 setMethod("getGeneIDs", "ReducedExperiment", function(
     object,
     gene_id_col="rownames",
