@@ -208,7 +208,7 @@ test_that("Get gene IDs", {
     airway <- .get_airway_data(n_features=500)
     airway_fe <- estimate_factors(airway, nc=2, seed=1, use_stability=FALSE, method="imax")
 
-    skip_if(TRUE)
+    # skip_if(TRUE)
 
     airway_fe <- getGeneIDs(airway_fe)
 

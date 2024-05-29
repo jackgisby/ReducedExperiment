@@ -10,13 +10,7 @@ test_that("getGeneIDs", {
     re <- ReducedExperiment(reduced=rrd, assays=assays(airway),
                             rowData=rowData(airway), colData=colData(airway),
                             metadata=metadata(airway))
-
-    skip_if(TRUE)
-
-    re_genes <- getGeneIDs(re)
 })
-
-
 
 test_that("FactorisedExperiment enrichment", {
 
