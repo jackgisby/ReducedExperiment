@@ -360,6 +360,9 @@ setMethod("nFeatures", "ReducedExperiment", function(object) {dim(object)[1]})
 #' @param mart An optional mart object to use. See the `mart` argument of
 #'  \link[biomaRt]{getBM}.
 #'
+#'  @param biomart_out An optional `data.frame` containing the output of a call
+#'  to \link[biomaRt]{getBM}.
+#'
 #'  @returns Returns the original object, with additional variables added to
 #'  the `rowData` slot.
 #'
@@ -371,7 +374,8 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
     gene_id_type="ensembl_gene_id",
     ids_to_get=c("hgnc_symbol", "entrezgene_id"),
     dataset="hsapiens_gene_ensembl",
-    mart=NULL)
+    mart=NULL,
+    biomart_out=NULL)
 {
     if (gene_id_col == "rownames") {
         rowData(object)[[gene_id_type]] <- rownames(object)
@@ -381,13 +385,15 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
 
     gene_ids <- rowData(object)[[gene_id_type]]
 
-    if (is.null(mart)) {
-        mart <- biomaRt::useEnsembl(biomart="genes", dataset=dataset)
-    }
+    if (is.null(biomart_out)) {
+        if (is.null(mart)) {
+            mart <- biomaRt::useEnsembl(biomart="genes", dataset=dataset)
+        }
 
-    biomart_out <- biomaRt::getBM(filters = gene_id_type,
-                                  attributes = c(gene_id_type, ids_to_get),
-                                  values = gene_ids, mart = mart)
+        biomart_out <- biomaRt::getBM(filters = gene_id_type,
+                                      attributes = c(gene_id_type, ids_to_get),
+                                      values = gene_ids, mart = mart)
+    }
 
     biomart_out <- biomart_out[which(!duplicated(biomart_out[[gene_id_type]])),]
     rownames(biomart_out) <- biomart_out[[gene_id_type]]

@@ -1,17 +1,5 @@
 context("features")
 
-test_that("getGeneIDs", {
-
-    data(airway, package="airway")
-
-    rrd <- .makeRandomData(ncol(airway), 10, "sample", "factor")
-    rownames(rrd) <- colnames(airway)
-
-    re <- ReducedExperiment(reduced=rrd, assays=assays(airway),
-                            rowData=rowData(airway), colData=colData(airway),
-                            metadata=metadata(airway))
-})
-
 test_that("FactorisedExperiment enrichment", {
 
     # Use real data from airway package
