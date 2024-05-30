@@ -494,7 +494,7 @@ plot_stability <- function(stability, plot_path = NULL,
             geom_hline(yintercept = stability_threshold)
     }
 
-    mean_stab_plot <- ggplot(stats::aggregate(stability, list(stability$nc), mean), aes(nc, stability, group = 1)) +
+    mean_stab_plot <- ggplot(stats::aggregate(stability[, c("nc", "stability")], list(stability$nc), mean), aes(nc, stability, group = 1)) +
         geom_line() +
         ylim(c(0,1)) +
         ylab("Mean component stability") +
