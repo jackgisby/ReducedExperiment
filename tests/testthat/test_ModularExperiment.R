@@ -180,6 +180,10 @@ test_that("Get module hub genes", {
 
     centrality <- getCentrality(rrs)
 
+    for (m in componentNames(rrs)) {
+        expect_equal(setdiff(centrality$feature[centrality$module == m], assignments(rrs)[names(assignments(rrs))  == m]), character())
+    }
+
     for (i in 1:nrow(centrality)) {
 
         expect_equal(

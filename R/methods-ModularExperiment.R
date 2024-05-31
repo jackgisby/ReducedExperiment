@@ -489,10 +489,10 @@ setMethod("getCentrality", c("ModularExperiment"), function(object, assay_name =
         t(assay(object, assay_name)),
         reduced(object)
     )
+    colnames(signed_kme) <- componentNames(object)
 
     stopifnot(all(rownames(signed_kme) == rownames(object)))
     if (feature_id_col != "rownames") rownames(signed_kme) <- rowData(object)[[feature_id_col]]
-    colnames(signed_kme) <- gsub("kME", "mo", colnames(signed_kme))
 
     # Transform into a dataframe with relevant statistics
     module_features <- data.frame()
