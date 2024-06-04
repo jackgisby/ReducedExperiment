@@ -242,6 +242,7 @@ plot_common_features <- function(common_features, filename=NA,
     return(common_hmap)
 }
 
+
 #' Get module preservation statistics
 #'
 #' Tests whether a set of modules defined in the reference dataset are
@@ -271,6 +272,9 @@ plot_common_features <- function(common_features, filename=NA,
 #' @param module_assignments If the reference dataset is not a
 #' \link[ReducedExperiment]{ModularExperiment} object, this argument is
 #' necessary to specify the module assignments.
+#' 
+#' @param greyName The name of the "module" of unassigned genes. Usually
+#' "module_0" (ReducedExperiment) or "grey" (WGCNA).
 #'
 #' @returns A `data.frame` containing preservation statistics, as described
 #' by \link[WGCNA]{modulePreservation}.
@@ -280,39 +284,42 @@ module_preservation <- function(reference_dataset, test_dataset,
                                 reference_assay_name = "normal",
                                 test_assay_name = "normal",
                                 module_assignments = NULL,
+                                greyName = "module_0",
+                                goldName = "random",
                                 networkType = "signed",
                                 corFnc = "cor",
                                 ...) {
-
+    
     if (inherits(reference_dataset, "ModularExperiment")) {
         module_assignments <- assignments(reference_dataset)
     } else if (is.null(module_assignments)) {
         stop("If reference_dataset is not a ModularExperiment, module_assignments must not be NULL")
     }
-
+    
     if (inherits(reference_dataset, "SummarizedExperiment")) {
         reference_dataset <- assay(reference_dataset, reference_assay_name)
     }
-
+    
     if (inherits(test_dataset, "SummarizedExperiment")) {
         test_dataset <- assay(test_dataset, test_assay_name)
     }
-
+    
     if (!identical(rownames(reference_dataset), rownames(test_dataset)))
         stop("Rownames of reference_dataset do not match those of test_dataset")
-
+    
     multi_data <- list(
         "reference" = list("data" = t(reference_dataset)),
         "test" = list("data" = t(test_dataset))
     )
-
+    
     return(WGCNA::modulePreservation(
         multi_data,
         list("reference" = setNames(names(module_assignments), module_assignments)),
         dataIsExpr = TRUE,
         networkType = networkType,
         corFnc = corFnc,
-        goldName = "random",
+        goldName = goldName,
+        greyName = greyName,
         ...
     ))
 }
