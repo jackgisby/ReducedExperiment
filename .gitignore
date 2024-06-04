@@ -56,3 +56,4 @@ import_scripts.R
 # Test outputs
 tests/testthat/testthat-problems.rds
 tests/testthat/Rplots.pdf
+permutedStats-actualModules.RData
