@@ -10,7 +10,8 @@
   gene_id_type = "ensembl_gene_id",
   ids_to_get = c("hgnc_symbol", "entrezgene_id"),
   dataset = "hsapiens_gene_ensembl",
-  mart = NULL
+  mart = NULL,
+  biomart_out = NULL
 )
 }
 \arguments{
@@ -32,6 +33,9 @@ ignored.}
 
 \item{mart}{An optional mart object to use. See the \code{mart} argument of
 \link[biomaRt]{getBM}.
+
+@param biomart_out An optional \code{data.frame} containing the output of a call
+to \link[biomaRt]{getBM}.
 
 @returns Returns the original object, with additional variables added to
 the \code{rowData} slot.}

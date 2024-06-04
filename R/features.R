@@ -241,3 +241,120 @@ plot_common_features <- function(common_features, filename=NA,
 
     return(common_hmap)
 }
+
+#' Get module preservation statistics
+#'
+#' Tests whether a set of modules defined in the reference dataset are
+#' preserved in the test dataset.
+#'
+#' @param reference_dataset The dataset that was used to define the modules.
+#' Must be a `data.frame` or `matrix` with features as rows and samples as
+#' columns, or a \link[ReducedExperiment]{ModularExperiment} or
+#' \link[SummarizedExperiment]{SummarizedExperiment} object.
+#'
+#' @param test_dataset The dataset that will be used to test for module
+#' preservation. Must be a `data.frame` or `matrix` with features as rows and
+#' samples as columns, or a link[SummarizedExperiment]{SummarizedExperiment}
+#' object. The features of `test_dataset` should be the same as
+#' `reference_dataset`.
+#'
+#' @param reference_assay_name If the reference dataset is a
+#' \link[ReducedExperiment]{ModularExperiment} or
+#' \link[SummarizedExperiment]{SummarizedExperiment} object, this argument
+#' specifies which assay slot was used to define the modules.
+#'
+#' @param test_assay_name If the reference dataset is a
+#' \link[ReducedExperiment]{ModularExperiment} or
+#' \link[SummarizedExperiment]{SummarizedExperiment} object, this argument
+#' specifies which assay slot is to be used in preservation tests.
+#'
+#' @param module_assignments If the reference dataset is not a
+#' \link[ReducedExperiment]{ModularExperiment} object, this argument is
+#' necessary to specify the module assignments.
+#'
+#' @returns A `data.frame` containing preservation statistics, as described
+#' by \link[WGCNA]{modulePreservation}.
+#'
+#' @export
+module_preservation <- function(reference_dataset, test_dataset,
+                                reference_assay_name = "normal",
+                                test_assay_name = "normal",
+                                module_assignments = NULL,
+                                networkType = "signed",
+                                corFnc = "cor",
+                                ...) {
+
+    if (inherits(reference_dataset, "ModularExperiment")) {
+        module_assignments <- assignments(reference_dataset)
+    } else if (is.null(module_assignments)) {
+        stop("If reference_dataset is not a ModularExperiment, module_assignments must not be NULL")
+    }
+
+    if (inherits(reference_dataset, "SummarizedExperiment")) {
+        reference_dataset <- assay(reference_dataset, reference_assay_name)
+    }
+
+    if (inherits(test_dataset, "SummarizedExperiment")) {
+        test_dataset <- assay(test_dataset, test_assay_name)
+    }
+
+    if (!identical(rownames(reference_dataset), rownames(test_dataset)))
+        stop("Rownames of reference_dataset do not match those of test_dataset")
+
+    multi_data <- list(
+        "reference" = list("data" = t(reference_dataset)),
+        "test" = list("data" = t(test_dataset))
+    )
+
+    return(WGCNA::modulePreservation(
+        multi_data,
+        list("reference" = setNames(names(module_assignments), module_assignments)),
+        dataIsExpr = TRUE,
+        networkType = networkType,
+        corFnc = corFnc,
+        goldName = "random",
+        ...
+    ))
+}
+
+#' Plot module preservation statistics
+#'
+#' @param module_preservation_results The output of
+#' \link[ReducedExperiment]{module_preservation}
+#'
+#' @import ggplot2
+#' @import patchwork
+#' @export
+plot_module_preservation <- function(module_preservation_results) {
+
+    mr_df <- module_preservation_results$preservation$observed$ref.reference$inColumnsAlsoPresentIn.test
+    zs_df <- module_preservation_results$preservation$Z$ref.reference$inColumnsAlsoPresentIn.test
+
+    mr_df$module <- rownames(mr_df)
+    zs_df$module <- rownames(zs_df)
+
+    mr_gold <- mr_df$medianRank.pres[mr_df$module == "random"]
+    zs_gold <- zs_df$Zsummary.pres[zs_df$module == "random"]
+
+    max_module_size <- max(mr_df$moduleSize)
+    nudge_mr <- 0.14
+    nudge_zs <- 0.4
+
+    medianrank_plot <- ggplot(mr_df, aes(moduleSize, medianRank.pres, col = module)) +
+        geom_point(size = 3) +
+        geom_text(aes(label = module), col = "black", nudge_y = nudge_mr, hjust = 0) +
+        theme(legend.position = "none") +
+        xlim(c(0, max_module_size * 1.3)) + expand_limits(y = 0) +
+        geom_hline(yintercept = mr_gold, col = "gold", linetype = "dashed")
+
+    zsummary_plot <- ggplot(zs_df, aes(moduleSize, Zsummary.pres, col = module)) +
+        geom_point(size = 3) +
+        geom_text(aes(label = module), col = "black", nudge_y = nudge_zs, hjust = 0) +
+        theme(legend.position = "none") +
+        xlim(c(0, max_module_size * 1.3)) + expand_limits(y = 0) +
+        geom_hline(yintercept = zs_gold, col = "gold", linetype = "dashed") +
+        geom_hline(yintercept = 10, col = "green", linetype = "dashed") +
+        geom_hline(yintercept = 2, col = "blue", linetype = "dashed")
+
+    return(medianrank_plot + zsummary_plot)
+}
