@@ -329,10 +329,14 @@ module_preservation <- function(reference_dataset, test_dataset,
 #' @param module_preservation_results The output of
 #' \link[ReducedExperiment]{module_preservation}
 #'
+#' @param show_random If TRUE, shows the random module in the plots.
+#'
+#' @param remove_module The name of a module to be hidden from the plots.
+#'
 #' @import ggplot2
 #' @import patchwork
 #' @export
-plot_module_preservation <- function(module_preservation_results, show_random=TRUE) {
+plot_module_preservation <- function(module_preservation_results, show_random = TRUE, remove_module = NULL) {
 
     mr_df <- module_preservation_results$preservation$observed$ref.reference$inColumnsAlsoPresentIn.test
     zs_df <- module_preservation_results$preservation$Z$ref.reference$inColumnsAlsoPresentIn.test
@@ -344,8 +348,13 @@ plot_module_preservation <- function(module_preservation_results, show_random=TR
         mr_gold <- mr_df$medianRank.pres[mr_df$module == "random"]
         zs_gold <- zs_df$Zsummary.pres[zs_df$module == "random"]
     } else {
-        mr_df <- mr_df[which(mr_df$module) != "random", ]
-        zs_df <- zs_df[which(zs_df$module) != "random", ]
+        mr_df <- mr_df[which(mr_df$module != "random"), ]
+        zs_df <- zs_df[which(zs_df$module != "random"), ]
+    }
+
+    if (!is.null(remove_module)) {
+        mr_df <- mr_df[which(mr_df$module != remove_module), ]
+        zs_df <- zs_df[which(zs_df$module != remove_module), ]
     }
 
     max_module_size <- max(mr_df$moduleSize)
