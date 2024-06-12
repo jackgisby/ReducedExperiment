@@ -32,6 +32,6 @@ setClassUnion("logical_OR_numeric", c("logical", "numeric"))
 .ModularExperiment <- setClass(
     "ModularExperiment",
     contains="ReducedExperiment",
-    representation=representation(loadings="numeric", assignments="character", dendrogram="ANY", threshold="data.frame_OR_NULL"),
+    representation=representation(loadings="numeric_OR_NULL", assignments="character", dendrogram="ANY", threshold="data.frame_OR_NULL"),
     prototype=prototype(loadings=numeric(), assignments=character())
 )
