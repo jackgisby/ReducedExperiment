@@ -272,7 +272,7 @@ plot_common_features <- function(common_features, filename=NA,
 #' @param module_assignments If the reference dataset is not a
 #' \link[ReducedExperiment]{ModularExperiment} object, this argument is
 #' necessary to specify the module assignments.
-#' 
+#'
 #' @param greyName The name of the "module" of unassigned genes. Usually
 #' "module_0" (ReducedExperiment) or "grey" (WGCNA).
 #'
@@ -289,29 +289,29 @@ module_preservation <- function(reference_dataset, test_dataset,
                                 networkType = "signed",
                                 corFnc = "cor",
                                 ...) {
-    
+
     if (inherits(reference_dataset, "ModularExperiment")) {
         module_assignments <- assignments(reference_dataset)
     } else if (is.null(module_assignments)) {
         stop("If reference_dataset is not a ModularExperiment, module_assignments must not be NULL")
     }
-    
+
     if (inherits(reference_dataset, "SummarizedExperiment")) {
         reference_dataset <- assay(reference_dataset, reference_assay_name)
     }
-    
+
     if (inherits(test_dataset, "SummarizedExperiment")) {
         test_dataset <- assay(test_dataset, test_assay_name)
     }
-    
+
     if (!identical(rownames(reference_dataset), rownames(test_dataset)))
         stop("Rownames of reference_dataset do not match those of test_dataset")
-    
+
     multi_data <- list(
         "reference" = list("data" = t(reference_dataset)),
         "test" = list("data" = t(test_dataset))
     )
-    
+
     return(WGCNA::modulePreservation(
         multi_data,
         list("reference" = setNames(names(module_assignments), module_assignments)),
@@ -332,7 +332,7 @@ module_preservation <- function(reference_dataset, test_dataset,
 #' @import ggplot2
 #' @import patchwork
 #' @export
-plot_module_preservation <- function(module_preservation_results) {
+plot_module_preservation <- function(module_preservation_results, show_random=TRUE) {
 
     mr_df <- module_preservation_results$preservation$observed$ref.reference$inColumnsAlsoPresentIn.test
     zs_df <- module_preservation_results$preservation$Z$ref.reference$inColumnsAlsoPresentIn.test
@@ -340,8 +340,13 @@ plot_module_preservation <- function(module_preservation_results) {
     mr_df$module <- rownames(mr_df)
     zs_df$module <- rownames(zs_df)
 
-    mr_gold <- mr_df$medianRank.pres[mr_df$module == "random"]
-    zs_gold <- zs_df$Zsummary.pres[zs_df$module == "random"]
+    if (show_random) {
+        mr_gold <- mr_df$medianRank.pres[mr_df$module == "random"]
+        zs_gold <- zs_df$Zsummary.pres[zs_df$module == "random"]
+    } else {
+        mr_df <- mr_df[which(mr_df$module) != "random", ]
+        zs_df <- zs_df[which(zs_df$module) != "random", ]
+    }
 
     max_module_size <- max(mr_df$moduleSize)
     nudge_mr <- 0.14
@@ -351,17 +356,20 @@ plot_module_preservation <- function(module_preservation_results) {
         geom_point(size = 3) +
         geom_text(aes(label = module), col = "black", nudge_y = nudge_mr, hjust = 0) +
         theme(legend.position = "none") +
-        xlim(c(0, max_module_size * 1.3)) + expand_limits(y = 0) +
-        geom_hline(yintercept = mr_gold, col = "gold", linetype = "dashed")
+        xlim(c(0, max_module_size * 1.3)) + expand_limits(y = 0)
 
     zsummary_plot <- ggplot(zs_df, aes(moduleSize, Zsummary.pres, col = module)) +
         geom_point(size = 3) +
         geom_text(aes(label = module), col = "black", nudge_y = nudge_zs, hjust = 0) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) + expand_limits(y = 0) +
-        geom_hline(yintercept = zs_gold, col = "gold", linetype = "dashed") +
         geom_hline(yintercept = 10, col = "green", linetype = "dashed") +
         geom_hline(yintercept = 2, col = "blue", linetype = "dashed")
+
+    if (show_random) {
+        medianrank_plot <- medianrank_plot + geom_hline(yintercept = mr_gold, col = "gold", linetype = "dashed")
+        zsummary_plot <- zsummary_plot + geom_hline(yintercept = zs_gold, col = "gold", linetype = "dashed")
+    }
 
     return(medianrank_plot + zsummary_plot)
 }
