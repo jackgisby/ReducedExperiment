@@ -5,3 +5,4 @@
 import_scripts.R
 vignettes/tempOutput
 tests/testthat/testthat-problems.rds
+codecov.yml
