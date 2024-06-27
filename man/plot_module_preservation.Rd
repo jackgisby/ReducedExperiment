@@ -4,11 +4,19 @@
 \alias{plot_module_preservation}
 \title{Plot module preservation statistics}
 \usage{
-plot_module_preservation(module_preservation_results)
+plot_module_preservation(
+  module_preservation_results,
+  show_random = TRUE,
+  remove_module = NULL
+)
 }
 \arguments{
 \item{module_preservation_results}{The output of
 \link[ReducedExperiment]{module_preservation}}
+
+\item{show_random}{If TRUE, shows the random module in the plots.}
+
+\item{remove_module}{The name of a module to be hidden from the plots.}
 }
 \description{
 Plot module preservation statistics

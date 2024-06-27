@@ -10,6 +10,8 @@ module_preservation(
   reference_assay_name = "normal",
   test_assay_name = "normal",
   module_assignments = NULL,
+  greyName = "module_0",
+  goldName = "random",
   networkType = "signed",
   corFnc = "cor",
   ...
@@ -40,6 +42,9 @@ specifies which assay slot is to be used in preservation tests.}
 \item{module_assignments}{If the reference dataset is not a
 \link[ReducedExperiment]{ModularExperiment} object, this argument is
 necessary to specify the module assignments.}
+
+\item{greyName}{The name of the "module" of unassigned genes. Usually
+"module_0" (ReducedExperiment) or "grey" (WGCNA).}
 }
 \value{
 A \code{data.frame} containing preservation statistics, as described
