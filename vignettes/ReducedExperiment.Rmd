@@ -63,8 +63,8 @@ will be used as a validation set.
 ```{r load_data}
 
 # TODO: Implement data loading best practices and document
-wave1_se <- readRDS("../data/wave1.rds")
-wave2_se <- readRDS("../data/wave2.rds")
+wave1_se <- readRDS("../inst/extdata/wave1.rds")
+wave2_se <- readRDS("../inst/extdata/wave2.rds")
 
 assay(wave1_se, "normal") <- assay(wave1_se, "cpm")
 assay(wave2_se, "normal") <- assay(wave2_se, "cpm")
