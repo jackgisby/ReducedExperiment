@@ -10,8 +10,6 @@ Description: A toolbox for reducing the dimensionality of expression data and
     analysis (ICA) and weighted gene correlation network analysis (WGCNA).
 License: GPL (>= 3)
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
 Depends:
     R (>= 3.5.0),
     SummarizedExperiment,
@@ -42,5 +40,8 @@ Suggests:
     BiocCheck,
     BiocStyle,
     airway
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+VignetteBuilder: knitr
 URL: https://github.com/jackgisby/ReducedExperiment
 BugReports: https://github.com/jackgisby/ReducedExperiment/issues
