@@ -12,7 +12,10 @@
 #' @param cname Name of columns (will be appended to the column number)
 #'
 #' @param seed Random seed that will be set before call to rnorm
-.makeRandomData <- function(r, c, rname, cname, seed=1) {
+#'
+#' @noRd
+#' @keywords internal
+.makeRandomData <- function(r, c, rname, cname, seed = 1) {
     set.seed(seed)
 
     m <- matrix(stats::rnorm(n = r * c), nrow = r, ncol = c)
@@ -35,10 +38,13 @@
 #' @param k Number of dimensionally-reduced components
 #'
 #' @param seed Random seed that will be set before call to rnorm
-.createRandomisedReducedExperiment <- function(i, j, k, seed=1) {
+#'
+#' @noRd
+#' @keywords internal
+.createRandomisedReducedExperiment <- function(i, j, k, seed = 1) {
     return(ReducedExperiment(
-        assays = list("normal"=.makeRandomData(i, j, "gene", "sample", seed=seed)),
-        reduced = .makeRandomData(j, k, "sample", "factor", seed=seed)
+        assays = list("normal" = .makeRandomData(i, j, "gene", "sample", seed = seed)),
+        reduced = .makeRandomData(j, k, "sample", "factor", seed = seed)
     ))
 }
 
@@ -54,11 +60,14 @@
 #' @param k Number of factors
 #'
 #' @param seed Random seed that will be set before call to rnorm
-.createRandomisedFactorisedExperiment <- function(i, j, k, seed=1) {
+#'
+#' @noRd
+#' @keywords internal
+.createRandomisedFactorisedExperiment <- function(i, j, k, seed = 1) {
     return(FactorisedExperiment(
-        assays = list("normal"=.makeRandomData(i, j, "gene", "sample", seed=seed)),
-        reduced = .makeRandomData(j, k, "sample", "factor", seed=seed),
-        loadings = .makeRandomData(i, k, "gene", "factor", seed=seed)
+        assays = list("normal" = .makeRandomData(i, j, "gene", "sample", seed = seed)),
+        reduced = .makeRandomData(j, k, "sample", "factor", seed = seed),
+        loadings = .makeRandomData(i, k, "gene", "factor", seed = seed)
     ))
 }
 
@@ -74,16 +83,18 @@
 #' @param k Number of modules
 #'
 #' @param seed Random seed that will be set before call to rnorm
-.createRandomisedModularExperiment <- function(i, j, k, seed=1) {
-
+#'
+#' @noRd
+#' @keywords internal
+.createRandomisedModularExperiment <- function(i, j, k, seed = 1) {
     assignments <- paste0("gene_", 1:i)
     names(assignments) <- paste0("module_", round(stats::runif(i, 1, k), 0))
 
     return(ModularExperiment(
-        assays = list("normal" = .makeRandomData(i, j, "gene", "sample", seed=seed)),
-        reduced = .makeRandomData(j, k, "sample", "module", seed=seed),
+        assays = list("normal" = .makeRandomData(i, j, "gene", "sample", seed = seed)),
+        reduced = .makeRandomData(j, k, "sample", "module", seed = seed),
         assignments = assignments,
-        loadings = .makeRandomData(i, 1, "gene", "gene", seed=seed)[,1]
+        loadings = .makeRandomData(i, 1, "gene", "gene", seed = seed)[, 1]
     ))
 }
 
@@ -96,18 +107,22 @@
 #' @param n_features If not NULL, the number of features (genes) to be randomly
 #' selected from the original airway data. Can provide a smaller dataset for
 #' testing
-.get_airway_data <- function(n_features=NULL) {
-
+#'
+#' @noRd
+#' @keywords internal
+.get_airway_data <- function(n_features = NULL) {
     # Get data
-    utils::data("airway", package="airway", envir = environment())
+    utils::data("airway", package = "airway", envir = environment())
 
     # Remove genes that aren't expressed
-    airway <- airway[apply(assay(airway, "counts"), 1, function(x) {all(x != 0)}) ,]
+    airway <- airway[apply(assay(airway, "counts"), 1, function(x) {
+        all(x != 0)
+    }), ]
 
     # Remove genes at random for faster tests
     if (!is.null(n_features)) {
         set.seed(2)
-        airway <- airway[sample(nrow(airway), n_features) ,]
+        airway <- airway[sample(nrow(airway), n_features), ]
     }
 
     # Do basic log transformation

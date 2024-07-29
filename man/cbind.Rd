@@ -15,6 +15,9 @@
 }
 \arguments{
 \item{...}{\link[ReducedExperiment]{ReducedExperiment} objects.}
+
+\item{deparse.level}{Integer, included for consistency with
+\link[base]{cbind}.}
 }
 \description{
 Comnbines \link[ReducedExperiment]{ReducedExperiment} objects by columns

@@ -1,12 +1,11 @@
 context("ReducedExperiment")
 
 test_that("Build and subset", {
-
     i <- 300
     j <- 100
     k <- 10
 
-    rrs <- .createRandomisedReducedExperiment(i=i, j=j, k=k)
+    rrs <- .createRandomisedReducedExperiment(i = i, j = j, k = k)
 
     # Test reduced experiment
     expect_equal(dim(rrs), c("Features" = i, "Samples" = j, "Components" = k))
@@ -45,7 +44,6 @@ test_that("Build and subset", {
 })
 
 test_that("Access and replace reduced data", {
-
     i <- 300
     j <- 100
     k <- 10
@@ -54,12 +52,12 @@ test_that("Access and replace reduced data", {
 
     # Make a ReducedExperiment and save original reduced data to an object
     rrs <- ReducedExperiment(
-        assays = list("normal"=.makeRandomData(i, j, "gene", "sample")),
+        assays = list("normal" = .makeRandomData(i, j, "gene", "sample")),
         reduced = reduced_data
     )
 
     # Expect that the reduced method returns the original data
-    expect_equal(reduced(rrs, scale_reduced=TRUE, center_reduced=TRUE), scale(reduced_data))
+    expect_equal(reduced(rrs, scale_reduced = TRUE, center_reduced = TRUE), scale(reduced_data))
     expect_equal(reduced(rrs), reduced_data)
 
     # Replacing a value should work
@@ -73,12 +71,13 @@ test_that("Access and replace reduced data", {
     reduced(rrs) <- reduced_data[, 1:5]
 
     # This should not work (validity should fail because different number of samples)
-    expect_error((function() {reduced(rrs) <- reduced_data[1:5 ,]})())
+    expect_error((function() {
+        reduced(rrs) <- reduced_data[1:5, ]
+    })())
 })
 
 test_that("Access and replace component names", {
-
-    rrs <- .createRandomisedReducedExperiment(i=300, j=100, k=10)
+    rrs <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(componentNames(rrs), paste0("factor_", 1:10))
     expect_equal(colnames(reduced(rrs)), paste0("factor_", 1:10))
@@ -89,8 +88,7 @@ test_that("Access and replace component names", {
 })
 
 test_that("Access and replace sample names", {
-
-    rrs <- .createRandomisedReducedExperiment(i=300, j=100, k=10)
+    rrs <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(sampleNames(rrs), paste0("sample_", 1:100))
     expect_equal(rownames(colData(rrs)), paste0("sample_", 1:100))
@@ -105,8 +103,7 @@ test_that("Access and replace sample names", {
 })
 
 test_that("Access and replace feature names", {
-
-    rrs <- .createRandomisedReducedExperiment(i=300, j=100, k=10)
+    rrs <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 
     rrs@scale <- setNames(1:300, featureNames(rrs))
     rrs@center <- setNames(1:300, featureNames(rrs))
@@ -124,8 +121,7 @@ test_that("Access and replace feature names", {
 })
 
 test_that("Access and replace scale/center", {
-
-    rrs <- .createRandomisedReducedExperiment(i=300, j=100, k=10)
+    rrs <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 
     # This should work
     rrs@scale <- setNames(1:300, featureNames(rrs))
@@ -159,9 +155,8 @@ test_that("Access and replace scale/center", {
 })
 
 test_that("Combine ReducedExperiments with cbind", {
-
-    rrs_a <- .createRandomisedReducedExperiment(i=300, j=100, k=10, seed=1)
-    rrs_b <- .createRandomisedReducedExperiment(i=300, j=100, k=10, seed=2)
+    rrs_a <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10, seed = 1)
+    rrs_b <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10, seed = 2)
 
     # Objects should be cbind-able due to matching names
     rrs_a_a <- cbind(rrs_a, rrs_a)

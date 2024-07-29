@@ -8,6 +8,8 @@
 \alias{names<-,ModularExperiment-method}
 \alias{featureNames<-,ModularExperiment-method}
 \alias{rownames<-,ModularExperiment-method}
+\alias{featureNames}
+\alias{featureNames<-}
 \alias{featureNames,ReducedExperiment-method}
 \alias{names<-,ReducedExperiment-method}
 \alias{rownames<-,ReducedExperiment-method}

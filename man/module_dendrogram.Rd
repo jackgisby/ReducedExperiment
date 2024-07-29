@@ -2,6 +2,7 @@
 % Please edit documentation in R/methods-ModularExperiment.R
 \name{dendrogram}
 \alias{dendrogram}
+\alias{dendrogram<-}
 \alias{dendrogram,ModularExperiment-method}
 \alias{dendrogram<-,ModularExperiment-method}
 \title{Get the dendrogram stored in a ModularExperiment}

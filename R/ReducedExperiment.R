@@ -6,10 +6,7 @@
 #' analysing the decomposed data. Provides utilities for independent component
 #' analysis (ICA) and weighted gene correlation network analysis (WGCNA).
 #'
-#' @name
-#' ReducedExperiment
+#' @name ReducedExperiment-package
 #'
-#' @author
-#' Jack Gisby
-
+#' @author Jack Gisby
 NULL

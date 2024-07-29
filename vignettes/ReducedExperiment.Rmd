@@ -20,17 +20,16 @@ Install the package - currently only available on GitHub.
 # if (!requireNamespace("BiocManager", quietly = TRUE))  {
 #     install.packages("BiocManager")
 # }
-# 
+#
 # The following initializes usage of Bioc devel
 # BiocManager::install(version='devel')
-# 
+#
 # BiocManager::install("ReducedExperiment")
 
 devtools::install_github("jackgisby/ReducedExperiment")
 ```
 
 ```{r setup, include = FALSE}
-
 BiocStyle::markdown()
 
 library(ReducedExperiment)
@@ -107,7 +106,6 @@ vignette, we will mainly use the first cohort, whereas the second cohort
 will be used as a validation set.
 
 ```{r load_data}
-
 # TODO: Implement data loading best practices and document
 wave1_se <- readRDS(system.file("extdata", "wave1.rds", package = "ReducedExperiment"))
 wave2_se <- readRDS(system.file("extdata", "wave2.rds", package = "ReducedExperiment"))
@@ -138,13 +136,12 @@ acceptable stability. There is an apparent elbow in the first curve between
 30-40 components, so we move forward with 35 components.
 
 ```{r estimate_stability, eval=FALSE}
-
 stability_res <- estimate_stability(
-    wave1_se, 
-    seed=1, 
-    n_runs=30, 
-    min_components=10, max_components=60, by=2, 
-    mean_stability_threshold=0.85
+    wave1_se,
+    seed = 1,
+    n_runs = 30,
+    min_components = 10, max_components = 60, by = 2,
+    mean_stability_threshold = 0.85
 )
 
 plot_stability(stability_res, plot_path = "tempOutput/stability.png")
@@ -155,14 +152,13 @@ stability threshold of 0.25 to remove components with low stability. This
 results in the identification of 34 factors.
 
 ```{r run_factor_analysis}
-
 wave1_fe <- estimate_factors(
-    wave1_se, 
-    nc=35, 
-    seed=1, 
-    use_stability=TRUE, 
-    n_runs=30, 
-    stability_threshold=0.25
+    wave1_se,
+    nc = 35,
+    seed = 1,
+    use_stability = TRUE,
+    n_runs = 30,
+    stability_threshold = 0.25
 )
 
 wave1_fe
@@ -176,14 +172,12 @@ loadings (i.e., genes vs. factors).
 
 We can get the reduced data as so:
 ```{r get_factor_reduced}
-
 # get reduced data for first 5 samples and factors
 reduced(wave1_fe)[1:5, 1:5]
 ```
 
 And we get the factor loadings below:
 ```{r get_factor_loadings}
-
 # get loadings for first 5 genes and factors
 loadings(wave1_fe)[1:5, 1:5]
 ```
@@ -211,7 +205,7 @@ The dendrogram is also stored in this object, allowing us to plot the clusters
 of genes that are identified.
 
 ```{r}
-wave1_me <- identify_modules(wave1_se, verbose=0, powers=1:30)
+wave1_me <- identify_modules(wave1_se, verbose = 0, powers = 1:30)
 
 plotDendro(wave1_me)
 ```
@@ -237,21 +231,18 @@ assignments.
 
 We can get the reduced data as so:
 ```{r get_module_reduced}
-
 # get reduced data for first 5 samples and factors
 reduced(wave1_me)[1:5, 1:5]
 ```
 
 The module assignments:
 ```{r get_module_assignments}
-
 # get assignments for first 5 genes
 assignments(wave1_me)[1:5]
 ```
 
 And the loadings:
 ```{r get_module_loadings}
-
 # get loadings for first 5 genes
 loadings(wave1_me)[1:5]
 ```
@@ -273,7 +264,6 @@ we use the "lmer" method (i.e., a linear mixed model) and include a random
 intercept for the individual in the model formula.
 
 ```{r associate_components}
-
 f <- "~ case_control + sex + calc_age + ethnicity + (1|individual_id)"
 
 associations_me <- associate_components(wave1_me, method = "lmer", formula = f)
@@ -284,7 +274,7 @@ Below is a table for the associations of factors with our `case_control`
 variable, encoding COVID-19 infection status.
 
 ```{r associate_table}
-associations_fe$summaries[associations_fe$summaries$term == "case_controlPOSITIVE" ,]
+associations_fe$summaries[associations_fe$summaries$term == "case_controlPOSITIVE", ]
 ```
 
 We can plot out these results. In the plot below, factors that are "upregulated"
@@ -297,7 +287,7 @@ patients. Factor 7, on the other hand, is up-regulated in COVID-19.
 
 ```{r plot_factor_associations}
 ggplot(
-    associations_fe$summaries[associations_fe$summaries$term == "case_controlPOSITIVE" ,],
+    associations_fe$summaries[associations_fe$summaries$term == "case_controlPOSITIVE", ],
     aes(-log10(adj_pvalue), reorder(component, -log10(adj_pvalue)), fill = estimate)
 ) +
     geom_point(pch = 21, size = 3) +
@@ -312,7 +302,7 @@ A similar plot for our modules shows significant upregulation of modules 1,
 
 ```{r plot_module_associations}
 ggplot(
-    associations_me$summaries[associations_me$summaries$term == "case_controlPOSITIVE" ,],
+    associations_me$summaries[associations_me$summaries$term == "case_controlPOSITIVE", ],
     aes(-log10(adj_pvalue), reorder(component, -log10(adj_pvalue)), fill = estimate)
 ) +
     geom_point(pch = 21, size = 3) +
@@ -356,7 +346,7 @@ pathways related to IL4, -13 and -18 signaling and platelet activation..
 
 ```{r example_factor_enrichment}
 ggplot(
-    factor_enrich[factor_enrich$component == "factor_2" & factor_enrich$p.adjust < 0.05 ,],
+    factor_enrich[factor_enrich$component == "factor_2" & factor_enrich$p.adjust < 0.05, ],
     aes(-log10(p.adjust), reorder(substr(ID, 1, 45), -log10(p.adjust)), fill = enrichmentScore)
 ) +
     geom_point(pch = 21, size = 3) +
@@ -373,7 +363,7 @@ to cell replication.
 
 ```{r example_module_enrichment}
 ggplot(
-    module_enrich[module_enrich$component == "module_2" & module_enrich$p.adjust < 0.05 ,][1:15, ],
+    module_enrich[module_enrich$component == "module_2" & module_enrich$p.adjust < 0.05, ][1:15, ],
     aes(-log10(p.adjust), reorder(substr(ID, 1, 45), -log10(p.adjust)))
 ) +
     geom_point(pch = 21, size = 3) +
@@ -441,7 +431,7 @@ rather represents all of the unclustered genes.
 
 ```{r plotting_replicated_associations}
 ggplot(
-    replication_me$summaries[replication_me$summaries$term == "case_controlPOSITIVE" ,],
+    replication_me$summaries[replication_me$summaries$term == "case_controlPOSITIVE", ],
     aes(-log10(adj_pvalue), reorder(component, -log10(adj_pvalue)), fill = estimate)
 ) +
     geom_point(pch = 21, size = 3) +
@@ -462,7 +452,7 @@ there were more treatments available for the 2021 (wave 2) cohort.
 
 ```{r correlation_with_projection}
 original_estimates <- associations_me$summaries$estimate[associations_me$summaries$term == "case_controlPOSITIVE"]
-replication_estimates <- replication_me$summaries$estimate[replication_me$summaries$term == "case_controlPOSITIVE"] 
+replication_estimates <- replication_me$summaries$estimate[replication_me$summaries$term == "case_controlPOSITIVE"]
 
 cor.test(original_estimates, replication_estimates)
 ```

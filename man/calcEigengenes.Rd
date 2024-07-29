@@ -65,6 +65,9 @@ scratch in the new data (i.e., performing PCA for each module in \code{newdata})
 \item{scale_reduced}{Whether or not the reduced data should be scaled
 after calculation.}
 
+\item{return_loadings}{If True, additionally returns the feature loadings for
+the eigengenes.}
+
 \item{scale_newdata}{Controls whether the \code{newdata} are scaled. If NULL,
 performs scaling based on the \link[ReducedExperiment]{ModularExperiment}
 object's \code{scale} slot. The value of this argument will be passed to the
@@ -89,7 +92,11 @@ object is passed as new data, this argument indicates which assay should be
 used for projection.}
 }
 \value{
-Calculates a matrix with samples as rows and modules as columns. If
+If return_loadings is True, returns a list with the "reduced" matrix
+and "loadings" vector (one value per feature). If False, returns only the
+reduced matrix.
+
+The reduced matrix has samples as rows and modules as columns. If
 \code{newdata} was a \code{matrix} or \code{data.frame}, this will be returned as a matrix.
 If a \link[SummarizedExperiment]{SummarizedExperiment} object was passed
 instead, then a If a \link[ReducedExperiment]{ModularExperiment}

@@ -2,6 +2,7 @@
 % Please edit documentation in R/methods-ModularExperiment.R
 \name{plotDendro}
 \alias{plotDendro}
+\alias{plotDendro,ModularExperiment-method}
 \title{Plot a dendrogram stored in a ModularExperiment}
 \usage{
 \S4method{plotDendro}{ModularExperiment}(

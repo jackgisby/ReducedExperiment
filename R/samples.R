@@ -2,6 +2,9 @@
 #'
 #' @importFrom lmerTest lmer
 #' @importFrom lme4 lmerControl
+#'
+#' @noRd
+#' @keywords internal
 .single_lmer <- function(data, formula_string, REML = TRUE, ...) {
     out_model <- tryCatch(
         lmerTest::lmer(
@@ -30,31 +33,30 @@
 }
 
 #' Helper function to run a linear model
-.run_linear_model <- function(X, pheno, formula, method="lm", type="II", ...) {
-
+#'
+#' @noRd
+#' @keywords internal
+.run_linear_model <- function(X, pheno, formula, method = "lm", type = "II", ...) {
     pheno$component <- X
 
     formula <- stats::as.formula(paste0("component", formula))
 
     if (method == "lmer") {
-
         linear_model <- .single_lmer(pheno, formula, ...)
 
-        anova_res <- data.frame(stats::anova(linear_model, type=type))
+        anova_res <- data.frame(stats::anova(linear_model, type = type))
         summary_res <- data.frame(summary(linear_model)$coefficients)
-
     } else if (method == "lm") {
-
         linear_model <- stats::lm(formula, pheno)
 
-        anova_res <- data.frame(car::Anova(linear_model, type=type))
+        anova_res <- data.frame(car::Anova(linear_model, type = type))
         summary_res <- data.frame(summary(linear_model)$coefficients)
     }
 
     anova_res$term <- rownames(anova_res)
     summary_res$term <- rownames(summary_res)
 
-    return(list("model"=linear_model, "anova"=anova_res, "summary"=summary_res))
+    return(list("model" = linear_model, "anova" = anova_res, "summary" = summary_res))
 }
 
 #' Runs linear models for components and sample-level data
@@ -94,22 +96,20 @@
 #' and "summaries" containing the results of running `summary` on the models.
 #'
 #' @export
-associate_components <- function(re, formula, method="lm",
-                              scale_reduced=TRUE, center_reduced=TRUE,
-                              type="II", adj_method="BH", ...) {
-
+associate_components <- function(re, formula, method = "lm",
+    scale_reduced = TRUE, center_reduced = TRUE,
+    type = "II", adj_method = "BH", ...) {
     models <- list()
     summaries <- anovas <- data.frame()
-    red <- reduced(re, scale_reduced=scale_reduced, center_reduced=center_reduced)
+    red <- reduced(re, scale_reduced = scale_reduced, center_reduced = center_reduced)
 
     for (comp in componentNames(re)) {
-
         linear_model <- .run_linear_model(
-            X=red[, comp],
-            pheno=data.frame(colData(re)),
-            formula=formula,
-            method=method,
-            type=type,
+            X = red[, comp],
+            pheno = data.frame(colData(re)),
+            formula = formula,
+            method = method,
+            type = type,
             ...
         )
 
@@ -123,28 +123,33 @@ associate_components <- function(re, formula, method="lm",
     colnames(anovas) <- .rename_results_table(colnames(anovas))
     colnames(summaries) <- .rename_results_table(colnames(summaries))
 
-    rownames(anovas) <- paste(anovas$component, anovas$term, sep="_")
-    rownames(summaries) <- paste(summaries$component, summaries$term, sep="_")
+    rownames(anovas) <- paste(anovas$component, anovas$term, sep = "_")
+    rownames(summaries) <- paste(summaries$component, summaries$term, sep = "_")
 
-    anovas$adj_pvalue <- .adjust_by_term(anovas, method=adj_method)
-    summaries$adj_pvalue <- .adjust_by_term(summaries, method=adj_method)
+    anovas$adj_pvalue <- .adjust_by_term(anovas, method = adj_method)
+    summaries$adj_pvalue <- .adjust_by_term(summaries, method = adj_method)
 
-    return(list("models"=models, "anovas"=anovas, "summaries"=summaries))
+    return(list("models" = models, "anovas" = anovas, "summaries" = summaries))
 }
 
 #' Adjusts the p-values of model results for multiple testing on a per-term basis
-.adjust_by_term <- function(res, method="BH") {
-
+#'
+#' @noRd
+#' @keywords internal
+.adjust_by_term <- function(res, method = "BH") {
     res$adj_pvalue <- NA
 
     for (term in unique(res$term)) {
-        res$adj_pvalue[which(res$term == term)] <- stats::p.adjust(res$pvalue[which(res$term == term)], method=method)
+        res$adj_pvalue[which(res$term == term)] <- stats::p.adjust(res$pvalue[which(res$term == term)], method = method)
     }
 
     return(res$adj_pvalue)
 }
 
 #' Renames linear model result table column names
+#'
+#' @noRd
+#' @keywords internal
 .rename_results_table <- function(cnames) {
     cname_conversions <- list(
         "Sum.Sq" = "sum_sq",
@@ -159,9 +164,11 @@ associate_components <- function(re, formula, method="lm",
         "Pr...t.." = "pvalue"
     )
 
-    for (i in seq_along(cnames))
-        if (cnames[i] %in% names(cname_conversions))
+    for (i in seq_along(cnames)) {
+        if (cnames[i] %in% names(cname_conversions)) {
             cnames[i] <- cname_conversions[[cnames[i]]]
+        }
+    }
 
     return(cnames)
 }

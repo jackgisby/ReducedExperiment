@@ -2,6 +2,7 @@
 % Please edit documentation in R/methods-ModularExperiment.R
 \name{assignments}
 \alias{assignments}
+\alias{assignments<-}
 \alias{assignments,ModularExperiment-method}
 \alias{assignments<-,ModularExperiment-method}
 \title{Get and set module feature assignments}
@@ -15,6 +16,8 @@
 
 \item{as_list}{If \code{TRUE}, the results are returned as a list, with an entry
 for each module containing a list of features.}
+
+\item{value}{New value to replace existing assignments.}
 }
 \description{
 Retrieves a vector of features (usually genes) named by the modules

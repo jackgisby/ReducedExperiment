@@ -11,7 +11,7 @@
 #' features.
 #'
 #' The methods available for \link[SummarizedExperiment]{SummarizedExperiment}
-#' objects are also available for `ReducedExperiment` and its children, including
+#' objects are also available for `ReducedExperiment` and its children, which include
 #' \link[ReducedExperiment]{FactorisedExperiment} and \link[ReducedExperiment]{ModularExperiment}
 #'
 #' Typically, `ReducedExperiment` objects contain two main assays. The first is,
@@ -34,17 +34,27 @@
 #' means of the original features (as produced by
 #' \link[base]{scale}.)
 #'
+#' @param ... Additional arguments to be passed to
+#' \link[SummarizedExperiment]{SummarizedExperiment}.
+#'
 #' @import SummarizedExperiment
 #'
+#' @rdname reduced_experiment
 #' @export
 ReducedExperiment <- function(
-        reduced = new("matrix"),
-        scale = TRUE,
-        center = TRUE,
-        ...)
-{
+    reduced = new("matrix"),
+    scale = TRUE,
+    center = TRUE,
+    ...
+) {
     se <- SummarizedExperiment::SummarizedExperiment(...)
-    return(.ReducedExperiment(se, reduced=reduced, scale=scale, center=center))
+
+    return(.ReducedExperiment(
+        se,
+        reduced = reduced,
+        scale = scale,
+        center = center
+    ))
 }
 
 S4Vectors::setValidity2("ReducedExperiment", function(object) {
@@ -53,31 +63,38 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
     obj_dims <- dim(object)
 
     # Check sampleNames method matches with other methods
-    if (!identical(sampleNames(object), colnames(object)))
+    if (!identical(sampleNames(object), colnames(object))) {
         msg <- c(msg, "Reduced data have invalid row names")
+    }
 
     # Check featureNames matches with other methods
-    if (!identical(featureNames(object), names(object)))
+    if (!identical(featureNames(object), names(object))) {
         msg <- c(msg, "Feature names do not match with names")
-    if (!identical(featureNames(object), rownames(object)))
+    }
+    if (!identical(featureNames(object), rownames(object))) {
         msg <- c(msg, "Feature names do not match with rownames")
+    }
 
     # Center / Scale - check names matches feature names
     if (!is.logical(object@scale)) {
-        if (!identical(rownames(object), names(object@scale)))
+        if (!identical(rownames(object), names(object@scale))) {
             msg <- c(msg, "Scaling vector has invalid names")
+        }
     }
     if (!is.logical(object@center)) {
-        if (!identical(rownames(object), names(object@center)))
+        if (!identical(rownames(object), names(object@center))) {
             msg <- c(msg, "Centering vector has invalid names")
+        }
     }
 
     # Check reduced matrix
-    if (obj_dims[2] != dim(reduced(object))[1])
+    if (obj_dims[2] != dim(reduced(object))[1]) {
         msg <- c(msg, "Reduced data have invalid row dimensions")
+    }
 
-    if (!identical(sampleNames(object), rownames(reduced(object))))
+    if (!identical(sampleNames(object), rownames(reduced(object)))) {
         msg <- c(msg, "Reduced data have invalid row names")
+    }
 
     return(if (is.null(msg)) TRUE else msg)
 })
@@ -99,13 +116,14 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
 #'
 #' @rdname reduced
 #' @name reduced
+#' @aliases reduced<-
 #' @export reduced
 NULL
 
 #' @rdname reduced
 #' @export
-setMethod("reduced", "ReducedExperiment", function(object, scale_reduced=FALSE, center_reduced=FALSE) {
-    return(scale(object@reduced, scale=scale_reduced, center=center_reduced))
+setMethod("reduced", "ReducedExperiment", function(object, scale_reduced = FALSE, center_reduced = FALSE) {
+    return(scale(object@reduced, scale = scale_reduced, center = center_reduced))
 })
 
 #' @rdname reduced
@@ -122,16 +140,21 @@ setReplaceMethod("reduced", "ReducedExperiment", function(object, value) {
 #' module analysis, these are the names of the gene modules; in the case of
 #' factor analysis, these are the names of the factors.
 #'
-#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#' @param object A \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @param value New value to replace existing names.
 #'
 #' @rdname component_names
 #' @name componentNames
+#' @aliases componentNames<- moduleNames moduleNames<-
 #' @export componentNames
 NULL
 
 #' @rdname component_names
 #' @export
-setMethod("componentNames", "ReducedExperiment", function(object) {return(colnames(object@reduced))})
+setMethod("componentNames", "ReducedExperiment", function(object) {
+    return(colnames(object@reduced))
+})
 
 #' @rdname component_names
 #' @export
@@ -150,8 +173,16 @@ setReplaceMethod("componentNames", "ReducedExperiment", function(object, value) 
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @rdname feature_names
+#' @name featureNames
+#' @aliases featureNames<-
+#' @export featureNames
+NULL
+
+#' @rdname feature_names
 #' @export
-setMethod("featureNames", "ReducedExperiment", function(object) {return(names(object))})
+setMethod("featureNames", "ReducedExperiment", function(object) {
+    return(names(object))
+})
 
 #' @rdname feature_names
 #' @export
@@ -187,8 +218,16 @@ setReplaceMethod("featureNames", "ReducedExperiment", function(object, value) {
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @rdname sample_names
+#' @name sampleNames
+#' @aliases sampleNames<-
+#' @export sampleNames
+NULL
+
+#' @rdname sample_names
 #' @export
-setMethod("sampleNames", "ReducedExperiment", function(object) {return(colnames(object))})
+setMethod("sampleNames", "ReducedExperiment", function(object) {
+    return(colnames(object))
+})
 
 #' @rdname sample_names
 #' @export
@@ -203,15 +242,18 @@ setReplaceMethod("sampleNames", "ReducedExperiment", function(object, value) {
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @export
-setMethod("show", "ReducedExperiment" ,
-          function(object) {
-              callNextMethod()
-              cat(nComponents(object), "components\n")
-          })
+setMethod(
+    "show", "ReducedExperiment",
+    function(object) {
+        callNextMethod()
+        cat(nComponents(object), "components\n")
+    }
+)
 
-#' Required for dollarsign autocomplete of colData columns
-.DollarNames.ReducedExperiment <- function(x, pattern = "")
-    grep(pattern, colnames(colData(x)), value=TRUE)
+# Required for dollarsign autocomplete of colData columns
+.DollarNames.ReducedExperiment <- function(x, pattern = "") {
+    grep(pattern, colnames(colData(x)), value = TRUE)
+}
 
 #' Extract and replace parts of ReducedExperiment objects
 #'
@@ -225,56 +267,58 @@ setMethod("show", "ReducedExperiment" ,
 #'
 #' @rdname slice
 #' @export
-setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
-          function(x, i, j, k, ..., drop=FALSE)
-{
-    object <- x
+setMethod(
+    "[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
+    function(x, i, j, k, ..., drop = FALSE) {
+        object <- x
 
-    if (1L != length(drop) || (!missing(drop) && drop))
-        warning("'drop' ignored '[,", class(object), ",ANY,ANY-method'")
-
-    red <- object@reduced
-    center <- object@center
-    scale <- object@scale
-
-    if (!missing(i)) {
-        if (is.character(i)) {
-            fmt <- paste0("<", class(object), ">[i,] index out of bounds: %s")
-            i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-                i, rownames(object), fmt
-            )
-        }
-        i <- as.vector(i)
-        if (!is.logical(center)) center <- center[i,drop=FALSE]
-        if (!is.logical(scale)) scale <- scale[i,drop=FALSE]
-    }
-
-    if (!missing(j)) {
-        if (is.character(j)) {
-            fmt <- paste0("<", class(object), ">[,j] index out of bounds: %s")
-            j <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-                j, colnames(object), fmt
-            )
-        }
-        j <- as.vector(j)
-        red <- red[j,,drop=FALSE]
-    }
-
-    if (!missing(k)) {
-        if (is.character(k)) {
-            fmt <- paste0("<", class(object), ">[k,] index out of bounds: %s")
-            k <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-                k, componentNames(object), fmt
-            )
+        if (1L != length(drop) || (!missing(drop) && drop)) {
+            warning("'drop' ignored '[,", class(object), ",ANY,ANY-method'")
         }
 
-        k <- as.vector(k)
-        red <- red[,k,drop=FALSE]
-    }
+        red <- object@reduced
+        center <- object@center
+        scale <- object@scale
 
-    out <- callNextMethod(object, i, j, ...)
-    BiocGenerics:::replaceSlots(out, reduced=red, center=center, scale=scale, check=FALSE)
-})
+        if (!missing(i)) {
+            if (is.character(i)) {
+                fmt <- paste0("<", class(object), ">[i,] index out of bounds: %s")
+                i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+                    i, rownames(object), fmt
+                )
+            }
+            i <- as.vector(i)
+            if (!is.logical(center)) center <- center[i, drop = FALSE]
+            if (!is.logical(scale)) scale <- scale[i, drop = FALSE]
+        }
+
+        if (!missing(j)) {
+            if (is.character(j)) {
+                fmt <- paste0("<", class(object), ">[,j] index out of bounds: %s")
+                j <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+                    j, colnames(object), fmt
+                )
+            }
+            j <- as.vector(j)
+            red <- red[j, , drop = FALSE]
+        }
+
+        if (!missing(k)) {
+            if (is.character(k)) {
+                fmt <- paste0("<", class(object), ">[k,] index out of bounds: %s")
+                k <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+                    k, componentNames(object), fmt
+                )
+            }
+
+            k <- as.vector(k)
+            red <- red[, k, drop = FALSE]
+        }
+
+        out <- callNextMethod(object, i, j, ...)
+        BiocGenerics:::replaceSlots(out, reduced = red, center = center, scale = scale, check = FALSE)
+    }
+)
 
 #' Combine ReducedExperiment objects by columns
 #'
@@ -283,12 +327,14 @@ setMethod("[", c("ReducedExperiment", "ANY", "ANY", "ANY"),
 #' slots (e.g., loadings, module membership) are the same for all objects to
 #' be concatenated. If they are not, an error is returned.
 #'
+#' @param deparse.level Integer, included for consistency with
+#' \link[base]{cbind}.
+#'
 #' @param ... \link[ReducedExperiment]{ReducedExperiment} objects.
 #'
 #' @rdname cbind
 #' @export
-setMethod("cbind", "ReducedExperiment", function(..., deparse.level=1) {
-
+setMethod("cbind", "ReducedExperiment", function(..., deparse.level = 1) {
     args <- list(...)
 
     reduced <- do.call(rbind, lapply(args, reduced))
@@ -298,7 +344,7 @@ setMethod("cbind", "ReducedExperiment", function(..., deparse.level=1) {
     })
 
     if (all(std_slots_equal)) {
-        args[[1]] <- BiocGenerics:::replaceSlots(args[[1]], reduced=reduced, check=FALSE)
+        args[[1]] <- BiocGenerics:::replaceSlots(args[[1]], reduced = reduced, check = FALSE)
     } else {
         stop("Row bind expects scale and center slots are equal")
     }
@@ -332,16 +378,27 @@ setMethod("dim", "ReducedExperiment", function(x) {
 #' and dimensionally-reduced components (`nComponents`) are returned.
 #'
 #' @rdname individual_dims
-#' @export
-setMethod("nComponents", "ReducedExperiment", function(object) {dim(object)[3]})
+#' @name individual_dim
+#' @aliases nComponents nFeatures nModules nSamples
+NULL
 
 #' @rdname individual_dims
 #' @export
-setMethod("nSamples", "ReducedExperiment", function(object) {dim(object)[2]})
+setMethod("nComponents", "ReducedExperiment", function(object) {
+    dim(object)[3]
+})
 
 #' @rdname individual_dims
 #' @export
-setMethod("nFeatures", "ReducedExperiment", function(object) {dim(object)[1]})
+setMethod("nSamples", "ReducedExperiment", function(object) {
+    dim(object)[2]
+})
+
+#' @rdname individual_dims
+#' @export
+setMethod("nFeatures", "ReducedExperiment", function(object) {
+    dim(object)[1]
+})
 
 #' Gets alternative gene annotations from biomaRt
 #'
@@ -375,17 +432,22 @@ setMethod("nFeatures", "ReducedExperiment", function(object) {dim(object)[1]})
 #'  the `rowData` slot.
 #'
 #' @import biomaRt
+#'
+#' @rdname get_gene_ids
 #' @name getGeneIDs
 #' @export getGeneIDs
+NULL
+
+#' @rdname get_gene_ids
+#' @export
 setMethod("getGeneIDs", "ReducedExperiment", function(
-    object,
-    gene_id_col="rownames",
-    gene_id_type="ensembl_gene_id",
-    ids_to_get=c("hgnc_symbol", "entrezgene_id"),
-    dataset="hsapiens_gene_ensembl",
-    mart=NULL,
-    biomart_out=NULL)
-{
+        object,
+        gene_id_col = "rownames",
+        gene_id_type = "ensembl_gene_id",
+        ids_to_get = c("hgnc_symbol", "entrezgene_id"),
+        dataset = "hsapiens_gene_ensembl",
+        mart = NULL,
+        biomart_out = NULL) {
     if (gene_id_col == "rownames") {
         rowData(object)[[gene_id_type]] <- rownames(object)
     } else {
@@ -396,21 +458,23 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
 
     if (is.null(biomart_out)) {
         if (is.null(mart)) {
-            mart <- biomaRt::useEnsembl(biomart="genes", dataset=dataset)
+            mart <- biomaRt::useEnsembl(biomart = "genes", dataset = dataset)
         }
 
-        biomart_out <- biomaRt::getBM(filters = gene_id_type,
-                                      attributes = c(gene_id_type, ids_to_get),
-                                      values = gene_ids, mart = mart)
+        biomart_out <- biomaRt::getBM(
+            filters = gene_id_type,
+            attributes = c(gene_id_type, ids_to_get),
+            values = gene_ids, mart = mart
+        )
     }
 
-    biomart_out <- biomart_out[which(!duplicated(biomart_out[[gene_id_type]])),]
+    biomart_out <- biomart_out[which(!duplicated(biomart_out[[gene_id_type]])), ]
     rownames(biomart_out) <- biomart_out[[gene_id_type]]
 
     # TODO: This approach can probably be improved
-    row_data_merged <- merge(rowData(object), biomart_out, by=gene_id_type, all.x=TRUE)
+    row_data_merged <- merge(rowData(object), biomart_out, by = gene_id_type, all.x = TRUE)
     rownames(row_data_merged) <- row_data_merged[[gene_id_type]]
-    row_data_merged <- row_data_merged[match(rowData(object)[[gene_id_type]], row_data_merged[[gene_id_type]]) ,]
+    row_data_merged <- row_data_merged[match(rowData(object)[[gene_id_type]], row_data_merged[[gene_id_type]]), ]
 
     stopifnot(identical(row_data_merged[[gene_id_type]], rownames(row_data_merged)))
     stopifnot(identical(rownames(object), rownames(row_data_merged)))

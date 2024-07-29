@@ -2,6 +2,7 @@
 % Please edit documentation in R/methods-FactorisedExperiment.R
 \name{stability}
 \alias{stability}
+\alias{stability<-}
 \alias{stability,FactorisedExperiment-method}
 \alias{stability<-,FactorisedExperiment-method}
 \title{Gets the stability values for factors}

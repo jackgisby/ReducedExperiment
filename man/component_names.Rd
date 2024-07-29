@@ -7,6 +7,9 @@
 \alias{moduleNames,ModularExperiment-method}
 \alias{moduleNames<-,ModularExperiment-method}
 \alias{componentNames}
+\alias{componentNames<-}
+\alias{moduleNames}
+\alias{moduleNames<-}
 \alias{componentNames,ReducedExperiment-method}
 \alias{componentNames<-,ReducedExperiment-method}
 \title{Get names of reduced components}
@@ -24,7 +27,9 @@
 \S4method{componentNames}{ReducedExperiment}(object) <- value
 }
 \arguments{
-\item{object}{\link[ReducedExperiment]{ReducedExperiment} object.}
+\item{object}{A \link[ReducedExperiment]{ReducedExperiment} object.}
+
+\item{value}{New value to replace existing names.}
 }
 \description{
 Retrieves the feature names post-dimensionality reduction In the case of

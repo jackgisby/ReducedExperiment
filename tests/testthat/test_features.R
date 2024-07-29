@@ -1,14 +1,13 @@
 context("features")
 
 test_that("FactorisedExperiment enrichment", {
-
     # Use real data from airway package
-    airway <- .get_airway_data(n_features=2000)
-    airway_fe <- estimate_factors(airway, nc=2, seed=1, use_stability=FALSE, method="imax")
+    airway <- .get_airway_data(n_features = 2000)
+    airway_fe <- estimate_factors(airway, nc = 2, seed = 1, use_stability = FALSE, method = "imax")
 
     # Run overrepresentation analysis
-    overrep_res <- runEnrich(airway_fe, method="overrepresentation", feature_id_col="rownames", as_dataframe=TRUE, p_cutoff=0.1, universe=rownames(airway_fe))
-    gsea_res <- runEnrich(airway_fe, method="gsea", feature_id_col="rownames", as_dataframe=TRUE, p_cutoff=0.1)
+    overrep_res <- runEnrich(airway_fe, method = "overrepresentation", feature_id_col = "rownames", as_dataframe = TRUE, p_cutoff = 0.1, universe = rownames(airway_fe))
+    gsea_res <- runEnrich(airway_fe, method = "gsea", feature_id_col = "rownames", as_dataframe = TRUE, p_cutoff = 0.1)
 
     expect_true("factor_1" %in% overrep_res$component & "factor_2" %in% overrep_res$component)
     expect_true("factor_2" %in% gsea_res$component)
@@ -17,20 +16,18 @@ test_that("FactorisedExperiment enrichment", {
 })
 
 test_that("ModularExperiment enrichment", {
-
     # Use real data from airway package
-    airway <- .get_airway_data(n_features=500)
-    airway_me <- identify_modules(airway, verbose=0, powers=21)
+    airway <- .get_airway_data(n_features = 500)
+    airway_me <- identify_modules(airway, verbose = 0, powers = 21)
 
     # Run overrepresentation analysis
-    enrich_res <- runEnrich(airway_me, method="overrepresentation", as_dataframe=TRUE, p_cutoff=0.1)
+    enrich_res <- runEnrich(airway_me, method = "overrepresentation", as_dataframe = TRUE, p_cutoff = 0.1)
 
     expect_true(all(paste0("module_", c(1, 2, 4, 5)) %in% enrich_res$component))
     expect_true(all(enrich_res$p.adjust < 0.1))
 })
 
 test_that("Get MSGIDB data", {
-
     t2g <- get_msigdb_t2g()
 
     expect_equal(ncol(t2g), 2)
@@ -40,11 +37,10 @@ test_that("Get MSGIDB data", {
 })
 
 test_that("Get common features", {
-
     airway <- .get_airway_data()
-    airway_fe <- estimate_factors(airway, nc=2, seed=1)
+    airway_fe <- estimate_factors(airway, nc = 2, seed = 1)
 
-    cf <- get_common_features(getAlignedFeatures(airway_fe, format="data.frame"))
+    cf <- get_common_features(getAlignedFeatures(airway_fe, format = "data.frame"))
 
     expect_equal(dim(cf), c(4, 7))
     expect_equal(cf$intersect, c(NA, 8, 8, NA))
@@ -52,9 +48,8 @@ test_that("Get common features", {
 })
 
 test_that("Module preservation", {
-
-    airway <- .get_airway_data(n_features=500)
-    airway_me <- identify_modules(airway, verbose=0, powers=21)
+    airway <- .get_airway_data(n_features = 500)
+    airway_me <- identify_modules(airway, verbose = 0, powers = 21)
 
     assay(airway_me, "noised") <- assay(airway_me, "transformed") + matrix(rnorm(nrow(airway_me) * ncol(airway_me), mean = 0, sd = 0.3), nrow = nrow(airway_me), ncol = ncol(airway_me))
 

@@ -2,6 +2,7 @@
 % Please edit documentation in R/methods-ReducedExperiment.R
 \name{getGeneIDs}
 \alias{getGeneIDs}
+\alias{getGeneIDs,ReducedExperiment-method}
 \title{Gets alternative gene annotations from biomaRt}
 \usage{
 \S4method{getGeneIDs}{ReducedExperiment}(

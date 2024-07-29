@@ -3,6 +3,11 @@
 %   R/methods-ReducedExperiment.R
 \name{nModules,ModularExperiment-method}
 \alias{nModules,ModularExperiment-method}
+\alias{individual_dim}
+\alias{nComponents}
+\alias{nFeatures}
+\alias{nModules}
+\alias{nSamples}
 \alias{nComponents,ReducedExperiment-method}
 \alias{nSamples,ReducedExperiment-method}
 \alias{nFeatures,ReducedExperiment-method}

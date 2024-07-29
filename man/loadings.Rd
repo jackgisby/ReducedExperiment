@@ -5,6 +5,7 @@
 \alias{loadings,FactorisedExperiment-method}
 \alias{loadings<-,FactorisedExperiment-method}
 \alias{loadings}
+\alias{loadings<-}
 \alias{loadings,ModularExperiment-method}
 \alias{loadings<-,ModularExperiment-method}
 \title{Get and set loadings}

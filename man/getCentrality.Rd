@@ -2,6 +2,7 @@
 % Please edit documentation in R/methods-ModularExperiment.R
 \name{getCentrality}
 \alias{getCentrality}
+\alias{getCentrality,ModularExperiment-method}
 \title{Get correlation of features with module eigengenes}
 \usage{
 \S4method{getCentrality}{ModularExperiment}(object, assay_name = "normal", feature_id_col = "rownames")

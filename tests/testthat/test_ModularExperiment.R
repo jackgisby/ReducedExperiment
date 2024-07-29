@@ -1,12 +1,11 @@
 context("ModularExperiment")
 
 test_that("Build and subset", {
-
     i <- 300
     j <- 100
     k <- 10
 
-    rrs <- .createRandomisedModularExperiment(i=i, j=j, k=k)
+    rrs <- .createRandomisedModularExperiment(i = i, j = j, k = k)
 
     expect_equal(dim(rrs), c("Features" = i, "Samples" = j, "Components" = k))
     expect_equal(dim(rrs), c(nFeatures(rrs), nSamples(rrs), nComponents(rrs)))
@@ -35,8 +34,7 @@ test_that("Build and subset", {
 })
 
 test_that("Access and replace assignments", {
-
-    rrs <- .createRandomisedModularExperiment(i=300, j=100, k=10)
+    rrs <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 
     expect_true(all(assignments(rrs) == paste0("gene_", 1:300)))
 
@@ -44,14 +42,19 @@ test_that("Access and replace assignments", {
     assignments(rrs) <- setNames(paste0("gene_", 1:300), as.character(1:300))
 
     # Should not be able to create vector with non-matching length/names
-    expect_error((function() {assignments(rrs) <- setNames(paste0("notgene_", 1:300), as.character(1:300))})())
-    expect_error((function() {assignments(rrs) <- setNames(paste0("gene_", 1:5), as.character(1:5))})())
-    expect_error((function() {assignments(rrs) <- 1:300})())
+    expect_error((function() {
+        assignments(rrs) <- setNames(paste0("notgene_", 1:300), as.character(1:300))
+    })())
+    expect_error((function() {
+        assignments(rrs) <- setNames(paste0("gene_", 1:5), as.character(1:5))
+    })())
+    expect_error((function() {
+        assignments(rrs) <- 1:300
+    })())
 })
 
 test_that("Access and replace component/module names", {
-
-    rrs <- .createRandomisedModularExperiment(i=300, j=100, k=10)
+    rrs <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(componentNames(rrs), paste0("module_", 1:10))
     expect_equal(componentNames(rrs), moduleNames(rrs))
@@ -71,8 +74,7 @@ test_that("Access and replace component/module names", {
 })
 
 test_that("Access and replace feature names", {
-
-    rrs <- .createRandomisedModularExperiment(i=300, j=100, k=10)
+    rrs <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(featureNames(rrs), paste0("gene_", 1:300))
     expect_equal(rownames(assay(rrs, 1)), paste0("gene_", 1:300))
@@ -85,12 +87,11 @@ test_that("Access and replace feature names", {
 })
 
 test_that("Access and replace loadings", {
-
     i <- 300
     j <- 100
     k <- 10
 
-    loadings_data <- .makeRandomData(1, i, "gene", "gene")[1,]
+    loadings_data <- .makeRandomData(1, i, "gene", "gene")[1, ]
     assignments_data <- paste0("gene_", 1:i)
     names(assignments_data) <- paste0("module_", round(runif(i, 1, k), 0))
 
@@ -113,17 +114,20 @@ test_that("Access and replace loadings", {
     expect_equal(loadings(rrs), loadings_data)
 
     # This should not work (validity should fail because there are a different number of factors in loadings vs. reduced slots)
-    expect_error((function() {loadings(rrs) <- loadings_data[, 1:5]})())
+    expect_error((function() {
+        loadings(rrs) <- loadings_data[, 1:5]
+    })())
 
     # Neither should this (validity should fail because different number of samples)
-    expect_error((function() {loadings(rrs) <- loadings_data[1:5 ,]})())
+    expect_error((function() {
+        loadings(rrs) <- loadings_data[1:5, ]
+    })())
 })
 
 test_that("Eigengene calculation / projection / prediction", {
-
     # Use real data from airway package
-    airway <- .get_airway_data(n_features=500)
-    airway_me <- identify_modules(airway, verbose=0, powers=21)  # , return_full_output=TRUE
+    airway <- .get_airway_data(n_features = 500)
+    airway_me <- identify_modules(airway, verbose = 0, powers = 21) # , return_full_output=TRUE
 
     # Recalculate eigengenes using WGCNA::moduleEigengenes
     eig <- WGCNA::moduleEigengenes(t(assay(airway_me, "transformed")), setNames(names(assignments(airway_me)), assignments(airway_me)))
@@ -134,7 +138,6 @@ test_that("Eigengene calculation / projection / prediction", {
 
     # Check that projecting the data reproduces the original results
     for (input_type in c("se", "matrix", "data.frame")) {
-
         if (input_type == "se") {
             newdata <- airway_me
         } else if (input_type == "matrix") {
@@ -145,8 +148,7 @@ test_that("Eigengene calculation / projection / prediction", {
 
         for (projection_function in c(calcEigengenes, predict)) {
             for (project in c(FALSE, TRUE)) {
-
-                res <- projection_function(airway_me, newdata, project=project)
+                res <- projection_function(airway_me, newdata, project = project)
 
                 if (input_type == "se") res <- reduced(res)
 
@@ -157,9 +159,8 @@ test_that("Eigengene calculation / projection / prediction", {
 })
 
 test_that("Combine ModularExperiments with cbind", {
-
-    rrs_a <- .createRandomisedModularExperiment(i=300, j=100, k=10, seed=1)
-    rrs_b <- .createRandomisedModularExperiment(i=300, j=100, k=10, seed=2)
+    rrs_a <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10, seed = 1)
+    rrs_b <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10, seed = 2)
 
     # Objects should be cbind-able due to matching names
     rrs_a_a <- cbind(rrs_a, rrs_a)
@@ -175,29 +176,26 @@ test_that("Combine ModularExperiments with cbind", {
 })
 
 test_that("Get module hub genes", {
-
-    rrs <- .createRandomisedModularExperiment(i=300, j=100, k=10)
+    rrs <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 
     centrality <- getCentrality(rrs)
 
     for (m in componentNames(rrs)) {
-        expect_equal(setdiff(centrality$feature[centrality$module == m], assignments(rrs)[names(assignments(rrs))  == m]), character())
+        expect_equal(setdiff(centrality$feature[centrality$module == m], assignments(rrs)[names(assignments(rrs)) == m]), character())
     }
 
     for (i in 1:nrow(centrality)) {
-
         expect_equal(
             centrality$r[i],
-            cor(assay(rrs)[centrality$feature[i] ,], data.frame(reduced(rrs))[[centrality$module[i]]])
+            cor(assay(rrs)[centrality$feature[i], ], data.frame(reduced(rrs))[[centrality$module[i]]])
         )
     }
 })
 
 test_that("Plot and access dendrogram", {
-
     # Use real data from airway package
-    airway <- .get_airway_data(n_features=500)
-    airway_me <- identify_modules(airway, verbose=0, powers=21)  # , return_full_output=TRUE
+    airway <- .get_airway_data(n_features = 500)
+    airway_me <- identify_modules(airway, verbose = 0, powers = 21) # , return_full_output=TRUE
 
     expect_true(dim(airway_me)[1] == length(dendrogram(airway_me)$order))
 

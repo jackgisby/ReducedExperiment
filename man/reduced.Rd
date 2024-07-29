@@ -2,6 +2,7 @@
 % Please edit documentation in R/methods-ReducedExperiment.R
 \name{reduced}
 \alias{reduced}
+\alias{reduced<-}
 \alias{reduced,ReducedExperiment-method}
 \alias{reduced<-,ReducedExperiment-method}
 \title{Get and set reduced data}

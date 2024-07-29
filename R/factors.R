@@ -25,8 +25,7 @@
 #' \link{ReducedExperiment}[run_ica].
 #'
 #' @export
-estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, assay_name="normal", ...)
-{
+estimate_factors <- function(X, nc, center_X = TRUE, scale_X = FALSE, assay_name = "normal", ...) {
     if (!inherits(X, "SummarizedExperiment")) {
         X <- SummarizedExperiment(assays = list("normal" = X))
     }
@@ -36,16 +35,18 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, assay_name="no
     }
 
     if ("transformed" %in% assayNames(X)) warning("Overwriting 'transformed' assay slot in X")
-    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center=center_X, scale=scale_X))
+    assay(X, "transformed") <- t(scale(t(assay(X, "normal")), center = center_X, scale = scale_X))
 
     # print(assay(X, "transformed"))
     if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
     if (scale_X) scale_X <- attr(assay(X, "transformed"), "scaled:scale")
 
-    ica_res <- run_ica(assay(X, "transformed"), nc=nc,
-                       center_X=FALSE, scale_X=FALSE, ...)
+    ica_res <- run_ica(assay(X, "transformed"),
+        nc = nc,
+        center_X = FALSE, scale_X = FALSE, ...
+    )
 
-    return(.se_to_fe(X, reduced=ica_res$M, loadings=ica_res$S, stability=ica_res$stab, center_X=center_X, scale_X=scale_X))
+    return(.se_to_fe(X, reduced = ica_res$M, loadings = ica_res$S, stability = ica_res$stab, center_X = center_X, scale_X = scale_X))
 }
 
 #' Creates a FactorisedExperiment from a SummarizedExperiment
@@ -65,11 +66,16 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, assay_name="no
 #' @param center_X Data to be passed to the `center_X` slot.
 #'
 #' @param scale_X Data to be passed to the `scale_X` slot.
+#'
+#' @noRd
+#' @keywords internal
 .se_to_fe <- function(se, reduced, loadings, stability, center_X, scale_X) {
-    return(FactorisedExperiment(loadings=loadings, stability=stability,
-                                center=center_X, scale=scale_X, reduced=reduced,
-                                assays=assays(se), rowData=rowData(se),
-                                colData=colData(se), metadata=S4Vectors::metadata(se)))
+    return(FactorisedExperiment(
+        loadings = loadings, stability = stability,
+        center = center_X, scale = scale_X, reduced = reduced,
+        assays = assays(se), rowData = rowData(se),
+        colData = colData(se), metadata = S4Vectors::metadata(se)
+    ))
 }
 
 #' Run ICA for a data matrix
@@ -177,26 +183,27 @@ estimate_factors <- function(X, nc, center_X=TRUE, scale_X=FALSE, assay_name="no
 #'
 #' @import ica
 #' @export
-run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
-                    method="fast", stability_threshold=NULL,
-                    center_X=TRUE, scale_X=FALSE,
-                    reorient_skewed=TRUE, seed=1,
-                    scale_components=TRUE, scale_reduced=TRUE,
-                    n_runs=30,
-                    BPPARAM = BiocParallel::SerialParam(),
-                    ...) {
+run_ica <- function(X, nc, use_stability = FALSE, resample = FALSE,
+    method = "fast", stability_threshold = NULL,
+    center_X = TRUE, scale_X = FALSE,
+    reorient_skewed = TRUE, seed = 1,
+    scale_components = TRUE, scale_reduced = TRUE,
+    n_runs = 30,
+    BPPARAM = BiocParallel::SerialParam(),
+    ...) {
     set.seed(seed)
 
-    if (center_X | scale_X)
-        {X <- t(scale(t(X), center=center_X, scale=scale_X))}
+    if (center_X | scale_X) {
+        X <- t(scale(t(X), center = center_X, scale = scale_X))
+    }
 
     if (use_stability) {
-        ica_res <- .stability_ica(X, nc=nc, resample=resample, method=method, stability_threshold=stability_threshold, n_runs=n_runs, BPPARAM=BPPARAM, ...)
+        ica_res <- .stability_ica(X, nc = nc, resample = resample, method = method, stability_threshold = stability_threshold, n_runs = n_runs, BPPARAM = BPPARAM, ...)
     } else {
         if (resample) stop("Cannot use resampling approach when `use_stability` is FALSE")
         if (!is.null(stability_threshold)) stop("Cannot apply `stability_threshold` when `use_stability` is FALSE")
 
-        ica_res <- list(S = ica::ica(X, nc=nc, method=method, center=FALSE, ...)$S)
+        ica_res <- list(S = ica::ica(X, nc = nc, method = method, center = FALSE, ...)$S)
     }
 
     # Reorient and scale factors before recalculating M
@@ -220,14 +227,15 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #'
 #' @import ica
 #' @import BiocParallel
+#'
+#' @noRd
+#' @keywords internal
 .stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM, stability_threshold,
-                           BPOPTIONS = bpoptions(), return_centrotypes = TRUE, ...) {
-
+    BPOPTIONS = bpoptions(), return_centrotypes = TRUE, ...) {
     .ica_random <- function(i, nc, method, resample) {
-
         # Randomly initialises ICA
         set.seed(i)
-        Rmat = matrix(stats::rnorm(nc ** 2), nrow = nc, ncol = nc)
+        Rmat <- matrix(stats::rnorm(nc**2), nrow = nc, ncol = nc)
 
         if (resample) {
             X_bs <- X[, sample(ncol(X), replace = TRUE)]
@@ -236,7 +244,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
         }
 
         # Get ICA loadings for given initialisation (and possibly bootstrap resample)
-        S <- ica::ica(X_bs, nc=nc, method=method, center=FALSE, Rmat = Rmat, ...)$S
+        S <- ica::ica(X_bs, nc = nc, method = method, center = FALSE, Rmat = Rmat, ...)$S
         colnames(S) <- paste0("seed_", i, "_", 1:ncol(S))
 
         if (ncol(S) != nc) warning("ICA did not return expected number of factors, potentially indicating a rank deficiency in the input")
@@ -244,7 +252,7 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
         return(S)
     }
 
-    S_all <- BiocParallel::bplapply(1:n_runs, .ica_random, BPPARAM = BPPARAM, nc=nc, method=method, resample=resample)
+    S_all <- BiocParallel::bplapply(1:n_runs, .ica_random, BPPARAM = BPPARAM, nc = nc, method = method, resample = resample)
     S_all <- do.call(cbind, S_all)
 
     # Get correlations between factors and resulting clusters
@@ -256,15 +264,14 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
     centrotypes <- data.frame(matrix(nrow = nrow(S_all), ncol = nc, dimnames = list(rownames(S_all), 1:nc)))
 
     for (comp in 1:nc) {
-
         cluster_labels <- names(S_clust)[S_clust == comp]
         non_cluster_labels <- names(S_clust)[!names(S_clust) %in% cluster_labels]
 
         # Average intra-cluster similarity
-        aics = mean(S_cor[cluster_labels, cluster_labels])
+        aics <- mean(S_cor[cluster_labels, cluster_labels])
 
         # Average extra-cluster similarity
-        aecs = mean(S_cor[cluster_labels, non_cluster_labels])
+        aecs <- mean(S_cor[cluster_labels, non_cluster_labels])
 
         stabilities <- c(stabilities, aics - aecs)
 
@@ -295,10 +302,13 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #' aligned genes are positively associated with the factor.
 #'
 #' @import moments
+#'
+#' @noRd
+#' @keywords internal
 .reorient_factors <- function(S) {
     skew <- ifelse(apply(S, 2, moments::skewness) >= 0, 1, -1)
     for (i in 1:ncol(S)) {
-        S[,i] <- S[,i] * skew[i]
+        S[, i] <- S[, i] * skew[i]
     }
     return(S)
 }
@@ -317,8 +327,10 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #'
 #' Now instead does the following:
 #' M = X * S
+#'
+#' @noRd
+#' @keywords internal
 .project_ica <- function(newdata, S) {
-
     # M <- t(newdata) %*% t(MASS::ginv(S))
     M <- t(newdata) %*% S
 
@@ -401,13 +413,13 @@ run_ica <- function(X, nc, use_stability=FALSE, resample=FALSE,
 #' on the `mean_stability_threshold`.
 #'
 #' @export
-estimate_stability <- function(X, min_components=10, max_components=60,
-                                    by=2, n_runs = 30, resample = FALSE,
-                                    mean_stability_threshold = NULL,
-                                    center_X=TRUE, scale_X=FALSE,
-                                    assay_name = "normal",
-                                    BPPARAM = BiocParallel::SerialParam(),
-                                    verbose = TRUE, ...) {
+estimate_stability <- function(X, min_components = 10, max_components = 60,
+    by = 2, n_runs = 30, resample = FALSE,
+    mean_stability_threshold = NULL,
+    center_X = TRUE, scale_X = FALSE,
+    assay_name = "normal",
+    BPPARAM = BiocParallel::SerialParam(),
+    verbose = TRUE, ...) {
     if (inherits(X, "SummarizedExperiment")) {
         X <- assay(X, "normal")
     }
@@ -423,8 +435,7 @@ estimate_stability <- function(X, min_components=10, max_components=60,
     if (verbose) tpb <- utils::txtProgressBar(min = min_components, max = max_components, initial = min_components, style = 3)
 
     for (nc in seq(from = min_components, to = max_components, by = by)) {
-
-        ica_res <- run_ica(X, nc=nc, center_X=center_X, scale_X=scale_X, use_stability=TRUE, resample=resample, BPPARAM=BPPARAM, method="fast", n_runs=n_runs, ...)
+        ica_res <- run_ica(X, nc = nc, center_X = center_X, scale_X = scale_X, use_stability = TRUE, resample = resample, BPPARAM = BPPARAM, method = "fast", n_runs = n_runs, ...)
 
         stabilities <- rbind(stabilities, data.frame(
             nc = nc,
@@ -478,14 +489,13 @@ estimate_stability <- function(X, min_components=10, max_components=60,
 #'
 #' @export
 plot_stability <- function(stability, plot_path = NULL,
-                           stability_threshold=NULL, mean_stability_threshold=NULL,
-                           height = 4, width = 10, ...) {
-
+    stability_threshold = NULL, mean_stability_threshold = NULL,
+    height = 4, width = 10, ...) {
     if (is.list(stability)) stability <- stability[["stability"]]
 
     stab_plot <- ggplot(stability, aes_string("component_number", "stability", group = "nc")) +
         geom_line() +
-        ylim(c(0,1)) +
+        ylim(c(0, 1)) +
         ylab("Component stability") +
         xlab("Component number")
 
@@ -496,7 +506,7 @@ plot_stability <- function(stability, plot_path = NULL,
 
     mean_stab_plot <- ggplot(stats::aggregate(stability[, c("nc", "stability")], list(stability$nc), mean), aes_string("nc", "stability", group = "1")) +
         geom_line() +
-        ylim(c(0,1)) +
+        ylim(c(0, 1)) +
         ylab("Mean component stability") +
         xlab("Number of components")
 
@@ -507,7 +517,7 @@ plot_stability <- function(stability, plot_path = NULL,
 
     combined_plot <- stab_plot + mean_stab_plot
 
-    if (!is.null(plot_path)) ggsave(plot_path, combined_plot, height=height, width=width, ...)
+    if (!is.null(plot_path)) ggsave(plot_path, combined_plot, height = height, width = width, ...)
 
     return(list(
         "combined_plot" = combined_plot,
