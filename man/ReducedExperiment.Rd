@@ -30,7 +30,7 @@ analysis (ICA) and weighted gene correlation network analysis (WGCNA).
 Inherits from \link[SummarizedExperiment]{SummarizedExperiment}, a
 container for one or more matrices with features as rows (e.g., genes) and
 columns as samples. Additional information on features and samples are
-contained in \link[SummarizedExperiment]{DataFrame} tables. The
+contained in \link[S4Vectors]{DataFrame} tables. The
 \code{ReducedExperiment} extends \link[SummarizedExperiment]{SummarizedExperiment}
 by additionally providing access to a "reduced" data matrix, in which rows
 represent samples and columns represent a second set of dimensionally-reduced

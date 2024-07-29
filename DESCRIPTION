@@ -31,7 +31,8 @@ Imports:
     BiocParallel,
     ggplot2,
     patchwork,
-    BiocGenerics
+    BiocGenerics,
+    S4Vectors
 Suggests:
     knitr,
     rmarkdown,

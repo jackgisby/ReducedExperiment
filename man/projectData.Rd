@@ -76,5 +76,5 @@ similar fashion to the \code{predict} method of \link[stats]{prcomp}. The transp
 \code{newdata} are multiplied by the original loadings matrix.
 }
 \seealso{
-\code{\link[=calcEigengenes]{calcEigengenes()}}
+\code{\link[ReducedExperiment]{calcEigengenes}}
 }

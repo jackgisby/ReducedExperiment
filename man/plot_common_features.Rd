@@ -13,7 +13,7 @@ plot_common_features(
 }
 \arguments{
 \item{common_features}{The output of
-\link[SummarizedExperiment]{get_common_features}.}
+\link[ReducedExperiment]{get_common_features}.}
 
 \item{filename}{The path at which to save the plot.}
 

@@ -8,7 +8,7 @@ get_common_features(factor_features)
 }
 \arguments{
 \item{factor_features}{The result of
-\link[SummarizedExperiment]{getAlignedFeatures}.}
+\link[ReducedExperiment]{getAlignedFeatures}.}
 }
 \value{
 A data.frame for each factor pair with the numbers and proportions

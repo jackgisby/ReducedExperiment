@@ -167,7 +167,7 @@ get_msigdb_t2g <- function(species="Homo sapiens", category="C2", subcategory=NU
 #' Function to count how many genes are aligned with multiple factors.
 #'
 #' @param factor_features The result of
-#' \link[SummarizedExperiment]{getAlignedFeatures}.
+#' \link[ReducedExperiment]{getAlignedFeatures}.
 #'
 #' @returns A data.frame for each factor pair with the numbers and proportions
 #' of the genes in the input that overlap.
@@ -211,7 +211,7 @@ get_common_features <- function(factor_features) {
 #' Heatmap comparing commonality across factors
 #'
 #' @param common_features The output of
-#' \link[SummarizedExperiment]{get_common_features}.
+#' \link[ReducedExperiment]{get_common_features}.
 #'
 #' @param filename The path at which to save the plot.
 #'
@@ -363,13 +363,13 @@ plot_module_preservation <- function(module_preservation_results, show_random = 
 
     medianrank_plot <- ggplot(mr_df, aes_string("moduleSize", "medianRank.pres", col = "module")) +
         geom_point(size = 3) +
-        geom_text(aes(label = module), col = "black", nudge_y = nudge_mr, hjust = 0) +
+        geom_text(aes_string(label = "module"), col = "black", nudge_y = nudge_mr, hjust = 0) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) + expand_limits(y = 0)
 
     zsummary_plot <- ggplot(zs_df, aes_string("moduleSize", "Zsummary.pres", col = "module")) +
         geom_point(size = 3) +
-        geom_text(aes(label = module), col = "black", nudge_y = nudge_zs, hjust = 0) +
+        geom_text(aes_string(label = "module"), col = "black", nudge_y = nudge_zs, hjust = 0) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) + expand_limits(y = 0) +
         geom_hline(yintercept = 10, col = "green", linetype = "dashed") +

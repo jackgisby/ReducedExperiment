@@ -101,5 +101,5 @@ eigengenes are calculated from scratch using PCA, in a similar manner to the
 \link[WGCNA]{moduleEigengenes} function.
 }
 \seealso{
-\code{\link[=projectData]{projectData()}}, \code{\link[WGCNA:moduleEigengenes]{WGCNA::moduleEigengenes()}}
+\code{\link[ReducedExperiment]{projectData}}, \code{\link[WGCNA]{moduleEigengenes}}
 }
