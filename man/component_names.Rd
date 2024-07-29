@@ -6,6 +6,7 @@
 \alias{componentNames<-,ModularExperiment-method}
 \alias{moduleNames,ModularExperiment-method}
 \alias{moduleNames<-,ModularExperiment-method}
+\alias{componentNames}
 \alias{componentNames,ReducedExperiment-method}
 \alias{componentNames<-,ReducedExperiment-method}
 \title{Get names of reduced components}
@@ -29,7 +30,4 @@
 Retrieves the feature names post-dimensionality reduction In the case of
 module analysis, these are the names of the gene modules; in the case of
 factor analysis, these are the names of the factors.
-}
-\details{
-Component names can be updated with \verb{<-}.
 }

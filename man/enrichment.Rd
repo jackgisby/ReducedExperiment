@@ -3,8 +3,8 @@
 %   R/methods-ModularExperiment.R
 \name{runEnrich}
 \alias{runEnrich}
-\alias{runEnrich.FactorisedExperiment}
-\alias{runEnrich.ModularExperiment}
+\alias{runEnrich,FactorisedExperiment-method}
+\alias{runEnrich,ModularExperiment-method}
 \title{Functional enrichment analyses for dimensionally-reduced data}
 \usage{
 \S4method{runEnrich}{FactorisedExperiment}(

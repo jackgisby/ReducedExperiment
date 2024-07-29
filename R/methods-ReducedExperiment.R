@@ -98,6 +98,11 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
 #' of 0.
 #'
 #' @rdname reduced
+#' @name reduced
+#' @export reduced
+NULL
+
+#' @rdname reduced
 #' @export
 setMethod("reduced", "ReducedExperiment", function(object, scale_reduced=FALSE, center_reduced=FALSE) {
     return(scale(object@reduced, scale=scale_reduced, center=center_reduced))
@@ -117,10 +122,13 @@ setReplaceMethod("reduced", "ReducedExperiment", function(object, value) {
 #' module analysis, these are the names of the gene modules; in the case of
 #' factor analysis, these are the names of the factors.
 #'
-#' Component names can be updated with `<-`.
-#'
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
 #'
+#' @rdname component_names
+#' @name componentNames
+#' @export componentNames
+NULL
+
 #' @rdname component_names
 #' @export
 setMethod("componentNames", "ReducedExperiment", function(object) {return(colnames(object@reduced))})
@@ -203,7 +211,7 @@ setMethod("show", "ReducedExperiment" ,
 
 #' Required for dollarsign autocomplete of colData columns
 .DollarNames.ReducedExperiment <- function(x, pattern = "")
-    grep(pattern, names(colData(x)), value=TRUE)
+    grep(pattern, colnames(colData(x)), value=TRUE)
 
 #' Extract and replace parts of ReducedExperiment objects
 #'
@@ -367,7 +375,8 @@ setMethod("nFeatures", "ReducedExperiment", function(object) {dim(object)[1]})
 #'  the `rowData` slot.
 #'
 #' @import biomaRt
-#' @export
+#' @name getGeneIDs
+#' @export getGeneIDs
 setMethod("getGeneIDs", "ReducedExperiment", function(
     object,
     gene_id_col="rownames",

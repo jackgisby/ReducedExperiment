@@ -73,25 +73,7 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
     return(if (is.null(msg)) TRUE else msg)
 })
 
-#' Get and set factor loadings
-#'
-#' Retrieves the loadings matrix, with features as rows and reduced
-#' components as columns.
-#'
-#' The loadings can be modified with `<-`.
-#'
-#' @param object \link[ReducedExperiment]{FactorisedExperiment} object.
-#'
-#' @param scale_loadings If `TRUE`, loadings will be scaled column-wise to have a
-#' standard deviation of 0.
-#'
-#' @param center_loadings If `TRUE`, loadings will be centered column-wise to have a mean
-#' of 0.
-#'
-#' @param abs_loadings If `TRUE`, the absolute values of the loadings will be
-#' returned.
-#'
-#' @rdname factor_loadings
+#' @rdname loadings
 #' @export
 setMethod("loadings", "FactorisedExperiment", function(object, scale_loadings=FALSE, center_loadings=FALSE, abs_loadings=FALSE) {
     l <- scale(object@loadings, scale=scale_loadings, center=center_loadings)
@@ -99,7 +81,7 @@ setMethod("loadings", "FactorisedExperiment", function(object, scale_loadings=FA
     return(l)
 })
 
-#' @rdname factor_loadings
+#' @rdname loadings
 #' @export
 setReplaceMethod("loadings", "FactorisedExperiment", function(object, value) {
     object@loadings <- value
@@ -119,7 +101,6 @@ setReplaceMethod("names", "FactorisedExperiment", function(x, value) {
 })
 
 #' @rdname feature_names
-#' @export
 setReplaceMethod("featureNames", "FactorisedExperiment", function(object, value) {
     names(object) <- value
     return(object)
@@ -140,6 +121,11 @@ setReplaceMethod("rownames", "FactorisedExperiment", function(x, value) {
 #'
 #' @param object \link[ReducedExperiment]{FactorisedExperiment} object.
 #'
+#' @rdname stability
+#' @name stability
+#' @export stability
+NULL
+
 #' @rdname stability
 #' @export
 setMethod("stability", "FactorisedExperiment", function(object) {return(object@stability)})
@@ -164,7 +150,7 @@ setReplaceMethod("componentNames", "FactorisedExperiment", function(object, valu
 
 #' Required for dollarsign autocomplete of colData columns
 .DollarNames.FactorisedExperiment <- function(x, pattern = "")
-    grep(pattern, names(colData(x)), value=TRUE)
+    grep(pattern, colnames(colData(x)), value=TRUE)
 
 #' @rdname slice
 #' @export
@@ -267,8 +253,13 @@ setMethod("cbind", "FactorisedExperiment", function(..., deparse.level=1) {
 #' instead, then a If a \link[ReducedExperiment]{FactorisedExperiment}
 #' object will be created containing this matrix in its `reduced` slot.
 #'
-#' @seealso [ReducedExperiment::calcEigengenes()]
+#' @seealso \code{\link[ReducedExperiment]{calcEigengenes}}
 #'
+#' @rdname projectData
+#' @name projectData
+#' @export projectData
+NULL
+
 #' @rdname projectData
 #' @export
 setMethod("projectData", c("FactorisedExperiment", "matrix"), function(object, newdata, scale_reduced=TRUE, scale_newdata=NULL, center_newdata=NULL) {
@@ -309,7 +300,6 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
     return(projectData(object, newdata, ...))
 })
 
-
 #' Get feature alignments with factors
 #'
 #' Retrieves features (usually genes) and their alignment (`loadings`) with the
@@ -346,6 +336,12 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
 #' @param center_loadings If `TRUE`, loadings will be centered column-wise to have a mean
 #' of 0.
 #'
+#' @rdname getAlignedFeatures
+#' @name getAlignedFeatures
+#' @export getAlignedFeatures
+NULL
+
+#' @rdname getAlignedFeatures
 #' @export
 setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, loading_threshold=0.5, proportional_threshold=0.01,
                                                                     feature_id_col="rownames", format="list",
@@ -428,11 +424,11 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, load
 #' analysis will be based on absolute loadings.
 #'
 #' @param loading_threshold Factors only: See
-#' \link[ReducedExperiment]{getAlignedGenes}. Only relevant for overresentation
+#' \link[ReducedExperiment]{getAlignedFeatures}. Only relevant for overresentation
 #' analysis.
 #'
 #' @param proportional_threshold Factors only: See
-#' \link[ReducedExperiment]{getAlignedGenes}. Only relevant for overresentation
+#' \link[ReducedExperiment]{getAlignedFeatures}. Only relevant for overresentation
 #' analysis.
 #'
 #' @details
@@ -441,11 +437,16 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, load
 #'
 #' For factor analysis, the overrepresentation method first identifies the genes
 #' most highly aligned with each factor
-#' (using \link[ReducedExperiment]{getAlignedGenes}), then uses
+#' (using \link[ReducedExperiment]{getAlignedFeatures}), then uses
 #' the resulting gene lists to perform overrepresentation analysis. The GSEA
 #' method instead uses the entire set of factor loadings, and identifies pathways
 #' that are overrepresented in the tails of this distribution.
 #'
+#' @rdname enrichment
+#' @name runEnrich
+#' @export runEnrich
+NULL
+
 #' @rdname enrichment
 #' @export
 setMethod("runEnrich", c("FactorisedExperiment"),
