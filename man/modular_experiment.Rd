@@ -41,11 +41,11 @@ rotation matrix produced by \link[stats]{prcomp}, which is used to identify
 the first principal component of each module. The vector names represent
 features.}
 
-\item{assignments}{A vector of features, named according to the module to which the
-feature belongs.}
+\item{assignments}{A vector of features, named according to the module to
+which the feature belongs.}
 
-\item{dendrogram}{Either NULL, or the dendrogram used to identify modules from the
-original data.}
+\item{dendrogram}{Either NULL, or the dendrogram used to identify modules
+from the original data.}
 
 \item{threshold}{Either NULL, or a matrix produced by
 \link[WGCNA]{pickSoftThreshold} indicating the parameters used for network

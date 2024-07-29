@@ -5,6 +5,7 @@ test_that("Build and subset", {
     j <- 100
     k <- 10
 
+    set.seed(1)
     rrs <- .createRandomisedReducedExperiment(i = i, j = j, k = k)
 
     # Test reduced experiment
@@ -48,9 +49,11 @@ test_that("Access and replace reduced data", {
     j <- 100
     k <- 10
 
+    set.seed(1)
     reduced_data <- .makeRandomData(j, k, "sample", "factor")
 
     # Make a ReducedExperiment and save original reduced data to an object
+    set.seed(1)
     rrs <- ReducedExperiment(
         assays = list("normal" = .makeRandomData(i, j, "gene", "sample")),
         reduced = reduced_data
@@ -77,6 +80,7 @@ test_that("Access and replace reduced data", {
 })
 
 test_that("Access and replace component names", {
+    set.seed(1)
     rrs <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(componentNames(rrs), paste0("factor_", 1:10))
@@ -88,6 +92,7 @@ test_that("Access and replace component names", {
 })
 
 test_that("Access and replace sample names", {
+    set.seed(1)
     rrs <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(sampleNames(rrs), paste0("sample_", 1:100))
@@ -103,6 +108,7 @@ test_that("Access and replace sample names", {
 })
 
 test_that("Access and replace feature names", {
+    set.seed(1)
     rrs <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 
     rrs@scale <- setNames(1:300, featureNames(rrs))
@@ -121,6 +127,7 @@ test_that("Access and replace feature names", {
 })
 
 test_that("Access and replace scale/center", {
+    set.seed(1)
     rrs <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 
     # This should work
@@ -155,8 +162,12 @@ test_that("Access and replace scale/center", {
 })
 
 test_that("Combine ReducedExperiments with cbind", {
-    rrs_a <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10, seed = 1)
-    rrs_b <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10, seed = 2)
+
+    set.seed(1)
+    rrs_a <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
+
+    set.seed(2)
+    rrs_b <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 
     # Objects should be cbind-able due to matching names
     rrs_a_a <- cbind(rrs_a, rrs_a)

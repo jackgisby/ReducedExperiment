@@ -5,9 +5,10 @@
 #'
 #' @noRd
 #' @keywords internal
-reduced_oa <- function(component_features, database = "msigdb_c2_cp",
-    TERM2GENE = NULL, p_cutoff = 1, adj_method = "BH",
-    min_genes = 3, universe = NULL, ...) {
+reduced_oa <- function(
+        component_features, database = "msigdb_c2_cp",
+        TERM2GENE = NULL, p_cutoff = 1, adj_method = "BH",
+        min_genes = 3, universe = NULL, ...) {
     TERM2GENE <- .get_t2g(database, TERM2GENE)
     enrich_res <- list()
 
@@ -69,11 +70,10 @@ reduced_oa <- function(component_features, database = "msigdb_c2_cp",
 #' @noRd
 #' @keywords internal
 .format_enrich_res <- function(
-    enrich_res_single,
-    adj_method,
-    p_cutoff,
-    min_genes = NULL
-) {
+        enrich_res_single,
+        adj_method,
+        p_cutoff,
+        min_genes = NULL) {
     if (is.null(enrich_res_single)) {
         return(NULL)
     }
@@ -81,7 +81,7 @@ reduced_oa <- function(component_features, database = "msigdb_c2_cp",
     if (!is.null(min_genes)) {
         enrich_res_single@result <-
             enrich_res_single@result[which(enrich_res_single@result$Count
-                                           >= min_genes), ]
+            >= min_genes), ]
     }
 
     enrich_res_single@result$p.adjust <-
@@ -89,7 +89,7 @@ reduced_oa <- function(component_features, database = "msigdb_c2_cp",
 
     enrich_res_single@result <-
         enrich_res_single@result[which(enrich_res_single@result$p.adjust
-                                       <= p_cutoff), ]
+        <= p_cutoff), ]
 
     if (nrow(enrich_res_single@result) >= 1) {
         enrich_res_single@result$adj_method <- adj_method
@@ -111,8 +111,9 @@ reduced_oa <- function(component_features, database = "msigdb_c2_cp",
 #'
 #' @noRd
 #' @keywords internal
-reduced_gsea <- function(S, database = "msigdb_c2_cp", TERM2GENE = NULL,
-    p_cutoff = 1, adj_method = "BH", nPermSimple = 1000, eps = 1e-10, ...) {
+reduced_gsea <- function(
+        S, database = "msigdb_c2_cp", TERM2GENE = NULL,
+        p_cutoff = 1, adj_method = "BH", nPermSimple = 1000, eps = 1e-10, ...) {
     TERM2GENE <- .get_t2g(database, TERM2GENE)
     enrich_res <- list()
 
@@ -177,12 +178,11 @@ reduced_gsea <- function(S, database = "msigdb_c2_cp", TERM2GENE = NULL,
 #'
 #' @export
 get_msigdb_t2g <- function(
-    species = "Homo sapiens",
-    category = "C2",
-    subcategory = NULL,
-    subcategory_to_remove = "CGP",
-    gene_id = "ensembl_gene"
-) {
+        species = "Homo sapiens",
+        category = "C2",
+        subcategory = NULL,
+        subcategory_to_remove = "CGP",
+        gene_id = "ensembl_gene") {
     t2g <- data.frame(msigdbr::msigdbr(
         species = species,
         category = category,
@@ -244,12 +244,14 @@ get_common_features <- function(factor_features) {
             )
 
             common_features_single$smaller_total <-
-                min(common_features_single$total_feat_1,
-                    common_features_single$total_feat_2)
+                min(
+                    common_features_single$total_feat_1,
+                    common_features_single$total_feat_2
+                )
 
             common_features_single$intersect_prop <-
                 common_features_single$intersect /
-                common_features_single$smaller_total
+                    common_features_single$smaller_total
 
             common_features <- rbind(common_features, common_features_single)
         }
@@ -271,15 +273,15 @@ get_common_features <- function(factor_features) {
 #'
 #' @export
 plot_common_features <- function(
-    common_features,
-    filename = NA,
-    color = grDevices::colorRampPalette(RColorBrewer::brewer.pal(
-        n = 7,
-        name = "YlOrRd")
-    )(100)
-) {
+        common_features,
+        filename = NA,
+        color = grDevices::colorRampPalette(RColorBrewer::brewer.pal(
+            n = 7,
+            name = "YlOrRd"
+        ))(100)) {
     common_features <- subset(common_features,
-                              select = c("c_1", "c_2", "intersect_prop"))
+        select = c("c_1", "c_2", "intersect_prop")
+    )
 
     prop_mat <- stats::reshape(
         common_features,
@@ -360,15 +362,16 @@ plot_common_features <- function(
 #' by \link[WGCNA]{modulePreservation}.
 #'
 #' @export
-module_preservation <- function(reference_dataset, test_dataset,
-    reference_assay_name = "normal",
-    test_assay_name = "normal",
-    module_assignments = NULL,
-    greyName = "module_0",
-    goldName = "random",
-    networkType = "signed",
-    corFnc = "cor",
-    ...) {
+module_preservation <- function(
+        reference_dataset, test_dataset,
+        reference_assay_name = "normal",
+        test_assay_name = "normal",
+        module_assignments = NULL,
+        greyName = "module_0",
+        goldName = "random",
+        networkType = "signed",
+        corFnc = "cor",
+        ...) {
     if (inherits(reference_dataset, "ModularExperiment")) {
         module_assignments <- assignments(reference_dataset)
     } else if (is.null(module_assignments)) {
@@ -395,8 +398,10 @@ module_preservation <- function(reference_dataset, test_dataset,
 
     return(WGCNA::modulePreservation(
         multi_data,
-        list("reference" = stats::setNames(names(module_assignments),
-                                           module_assignments)),
+        list("reference" = stats::setNames(
+            names(module_assignments),
+            module_assignments
+        )),
         dataIsExpr = TRUE,
         networkType = networkType,
         corFnc = corFnc,
@@ -419,10 +424,9 @@ module_preservation <- function(reference_dataset, test_dataset,
 #' @import patchwork
 #' @export
 plot_module_preservation <- function(
-    module_preservation_results,
-    show_random = TRUE,
-    remove_module = NULL
-) {
+        module_preservation_results,
+        show_random = TRUE,
+        remove_module = NULL) {
     mr_df <- module_preservation_results$preservation$observed$ref.reference$
         inColumnsAlsoPresentIn.test
     zs_df <- module_preservation_results$preservation$Z$ref.reference$
@@ -449,19 +453,25 @@ plot_module_preservation <- function(
     nudge_zs <- 0.4
 
     medianrank_plot <- ggplot(mr_df, aes_string("moduleSize", "medianRank.pres",
-                                                col = "module")) +
+        col = "module"
+    )) +
         geom_point(size = 3) +
-        geom_text(aes_string(label = "module"), col = "black",
-                  nudge_y = nudge_mr, hjust = 0) +
+        geom_text(aes_string(label = "module"),
+            col = "black",
+            nudge_y = nudge_mr, hjust = 0
+        ) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) +
         expand_limits(y = 0)
 
     zsummary_plot <- ggplot(zs_df, aes_string("moduleSize", "Zsummary.pres",
-                                              col = "module")) +
+        col = "module"
+    )) +
         geom_point(size = 3) +
-        geom_text(aes_string(label = "module"), col = "black",
-                  nudge_y = nudge_zs, hjust = 0) +
+        geom_text(aes_string(label = "module"),
+            col = "black",
+            nudge_y = nudge_zs, hjust = 0
+        ) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) +
         expand_limits(y = 0) +
@@ -469,12 +479,16 @@ plot_module_preservation <- function(
         geom_hline(yintercept = 2, col = "blue", linetype = "dashed")
 
     if (show_random) {
-        medianrank_plot <- medianrank_plot + geom_hline(yintercept = mr_gold,
-                                                        col = "gold",
-                                                        linetype = "dashed")
-        zsummary_plot <- zsummary_plot + geom_hline(yintercept = zs_gold,
-                                                    col = "gold",
-                                                    linetype = "dashed")
+        medianrank_plot <- medianrank_plot + geom_hline(
+            yintercept = mr_gold,
+            col = "gold",
+            linetype = "dashed"
+        )
+        zsummary_plot <- zsummary_plot + geom_hline(
+            yintercept = zs_gold,
+            col = "gold",
+            linetype = "dashed"
+        )
     }
 
     return(medianrank_plot + zsummary_plot)

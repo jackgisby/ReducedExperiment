@@ -17,8 +17,9 @@ module centrality.}
 feature ID. Setting this to "rownames" (default) instead uses
 \code{rownames(object)}.
 
-Results indicate correlation (r) and squared correlation (rsq) with the module eigengene. Feature ranks
-within each module are also returned based on these statistics.}
+Results indicate correlation (r) and squared correlation (rsq) with the
+module eigengene. Feature ranks within each module are also returned based
+on these statistics.}
 }
 \description{
 Get correlation of features with module eigengenes

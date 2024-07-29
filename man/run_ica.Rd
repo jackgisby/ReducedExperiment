@@ -14,7 +14,6 @@ run_ica(
   center_X = TRUE,
   scale_X = FALSE,
   reorient_skewed = TRUE,
-  seed = 1,
   scale_components = TRUE,
   scale_reduced = TRUE,
   n_runs = 30,
@@ -54,10 +53,8 @@ loadings of each factor (i.e., the source signal matrix) have positive skew.
 Helps ensure that the most influential features for each factor are
 positively associated with it.}
 
-\item{seed}{Random seed for stability-based approach.}
-
-\item{scale_components}{If TRUE, the loadings are standardised (to have a mean of 0
-and standard deviation of 1).}
+\item{scale_components}{If TRUE, the loadings are standardised (to have a
+mean of 0 and standard deviation of 1).}
 
 \item{scale_reduced}{If TRUE, the reduced data (mixture matrix) are
 standardised (to have a mean of 0 and standard deviation of 1).}

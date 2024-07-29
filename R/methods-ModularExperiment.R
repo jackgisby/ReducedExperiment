@@ -45,15 +45,14 @@
 #' @rdname modular_experiment
 #' @export
 ModularExperiment <- function(
-    reduced = new("matrix"),
-    scale = TRUE,
-    center = TRUE,
-    loadings = numeric(),
-    assignments = character(),
-    dendrogram = NULL,
-    threshold = NULL,
-    ...
-) {
+        reduced = new("matrix"),
+        scale = TRUE,
+        center = TRUE,
+        loadings = numeric(),
+        assignments = character(),
+        dendrogram = NULL,
+        threshold = NULL,
+        ...) {
     re <- ReducedExperiment(
         reduced = reduced,
         scale = scale,
@@ -116,8 +115,7 @@ NULL
 
 #' @rdname module_assignments
 #' @export
-setMethod("assignments", "ModularExperiment", function(object, as_list = FALSE)
-{
+setMethod("assignments", "ModularExperiment", function(object, as_list = FALSE) {
     if (as_list) {
         a <- list()
         for (comp in componentNames(object)) {
@@ -183,11 +181,10 @@ NULL
 #' @rdname loadings
 #' @export
 setMethod("loadings", "ModularExperiment", function(
-    object,
-    scale_loadings = FALSE,
-    center_loadings = FALSE,
-    abs_loadings = FALSE
-) {
+        object,
+        scale_loadings = FALSE,
+        center_loadings = FALSE,
+        abs_loadings = FALSE) {
     l <- scale(
         object@loadings,
         scale = scale_loadings,
@@ -208,7 +205,6 @@ setReplaceMethod("loadings", "ModularExperiment", function(object, value) {
 #' @rdname feature_names
 #' @export
 setReplaceMethod("names", "ModularExperiment", function(x, value) {
-
     x@assignments <- stats::setNames(value, names(x@assignments))
     x@loadings <- stats::setNames(x@loadings, value)
 
@@ -234,8 +230,7 @@ setReplaceMethod("rownames", "ModularExperiment", function(x, value) {
 
 #' @rdname component_names
 #' @export
-setReplaceMethod("componentNames", "ModularExperiment", function(object, value)
-{
+setReplaceMethod("componentNames", "ModularExperiment", function(object, value) {
     curr_names <- colnames(object@reduced)
     object <- callNextMethod(object, value)
     new_names <- colnames(object@reduced)
@@ -315,8 +310,10 @@ setMethod(
 
         if (!missing(i)) {
             if (is.character(i)) {
-                fmt <- paste0("<", class(object),
-                              ">[i,] index out of bounds: %s")
+                fmt <- paste0(
+                    "<", class(object),
+                    ">[i,] index out of bounds: %s"
+                )
                 i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
                     i, rownames(object), fmt
                 )
@@ -344,8 +341,8 @@ setMethod("cbind", "ModularExperiment", function(..., deparse.level = 1) {
     args <- list(...)
 
     loadings_assignments_equal <- sapply(args, function(re) {
-        return(identical(re@loadings, args[[1]]@loadings)
-               & identical(re@assignments, args[[1]]@assignments))
+        return(identical(re@loadings, args[[1]]@loadings) &
+            identical(re@assignments, args[[1]]@assignments))
     })
 
     if (!all(loadings_assignments_equal)) {
@@ -360,33 +357,33 @@ setMethod("cbind", "ModularExperiment", function(..., deparse.level = 1) {
 #' @rdname enrichment
 #' @export
 setMethod("runEnrich", c("ModularExperiment"), function(
-    object,
-    method = "overrepresentation",
-    feature_id_col = "rownames",
-    as_dataframe = FALSE,
-    ...
-) {
-        if (method == "overrepresentation") {
-            if (feature_id_col != "rownames") names(object) <-
-                    rowData(object)[[feature_id_col]]
-
-            modules <- assignments(object, as_list = TRUE)
-
-            enrich_res <- reduced_oa(modules, ...)
-        } else {
-            stop("Enrichment method not recognised")
+        object,
+        method = "overrepresentation",
+        feature_id_col = "rownames",
+        as_dataframe = FALSE,
+        ...) {
+    if (method == "overrepresentation") {
+        if (feature_id_col != "rownames") {
+            names(object) <-
+                rowData(object)[[feature_id_col]]
         }
 
-        if (as_dataframe) {
-            enrich_res <- lapply(enrich_res, function(object) {
-                object@result
-            })
-            enrich_res <- do.call("rbind", enrich_res)
-        }
+        modules <- assignments(object, as_list = TRUE)
 
-        return(enrich_res)
+        enrich_res <- reduced_oa(modules, ...)
+    } else {
+        stop("Enrichment method not recognised")
     }
-)
+
+    if (as_dataframe) {
+        enrich_res <- lapply(enrich_res, function(object) {
+            object@result
+        })
+        enrich_res <- do.call("rbind", enrich_res)
+    }
+
+    return(enrich_res)
+})
 
 #' Plot a dendrogram stored in a ModularExperiment
 #'
@@ -430,12 +427,15 @@ NULL
 #' @export
 setMethod(
     "plotDendro", c("ModularExperiment"),
-    function(object, groupLabels = "Module colors", dendroLabels = FALSE,
-    hang = 0.03, addGuide = TRUE, guideHang = 0.05,
-    color_func = WGCNA::labels2colors, modules_are_colors = FALSE, ...) {
+    function(
+        object, groupLabels = "Module colors", dendroLabels = FALSE,
+        hang = 0.03, addGuide = TRUE, guideHang = 0.05,
+        color_func = WGCNA::labels2colors, modules_are_colors = FALSE, ...) {
         if (!modules_are_colors) {
-            colors <- as.numeric(gsub("module_", "",
-                                      names(assignments(object))))
+            colors <- as.numeric(gsub(
+                "module_", "",
+                names(assignments(object))
+            ))
             colors <- color_func(colors)
         }
 
@@ -525,16 +525,15 @@ NULL
 #' @rdname calcEigengenes
 #' @export
 setMethod("calcEigengenes", c("ModularExperiment", "matrix"), function(
-    object,
-    newdata,
-    project = TRUE,
-    scale_reduced = TRUE,
-    return_loadings = FALSE,
-    scale_newdata = NULL,
-    center_newdata = NULL,
-    realign = TRUE,
-    min_module_genes = 10
-) {
+        object,
+        newdata,
+        project = TRUE,
+        scale_reduced = TRUE,
+        return_loadings = FALSE,
+        scale_newdata = NULL,
+        center_newdata = NULL,
+        realign = TRUE,
+        min_module_genes = 10) {
     if (!identical(rownames(object), rownames(newdata))) {
         stop("Rownames of x do not match those of newdata")
     }
@@ -581,16 +580,15 @@ setMethod("calcEigengenes", c("ModularExperiment", "matrix"), function(
 #' @rdname calcEigengenes
 #' @export
 setMethod("calcEigengenes", c("ModularExperiment", "data.frame"), function(
-    object,
-    newdata,
-    project = TRUE,
-    scale_reduced = TRUE,
-    return_loadings = FALSE,
-    scale_newdata = NULL,
-    center_newdata = NULL,
-    realign = TRUE,
-    min_module_genes = 10
-) {
+        object,
+        newdata,
+        project = TRUE,
+        scale_reduced = TRUE,
+        return_loadings = FALSE,
+        scale_newdata = NULL,
+        center_newdata = NULL,
+        realign = TRUE,
+        min_module_genes = 10) {
     return(calcEigengenes(object, as.matrix(newdata),
         project = project, return_loadings = return_loadings,
         scale_newdata = scale_newdata, center_newdata = center_newdata,
@@ -601,18 +599,18 @@ setMethod("calcEigengenes", c("ModularExperiment", "data.frame"), function(
 
 #' @rdname calcEigengenes
 #' @export
-setMethod("calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
-          function(
-    object,
-    newdata,
-    project = TRUE,
-    scale_reduced = TRUE,
-    assay_name = "normal",
-    scale_newdata = NULL,
-    center_newdata = NULL,
-    realign = TRUE,
-    min_module_genes = 10
-) {
+setMethod(
+    "calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
+    function(
+        object,
+        newdata,
+        project = TRUE,
+        scale_reduced = TRUE,
+        assay_name = "normal",
+        scale_newdata = NULL,
+        center_newdata = NULL,
+        realign = TRUE,
+        min_module_genes = 10) {
         eig <- calcEigengenes(object, assay(newdata, assay_name),
             project = project, return_loadings = FALSE,
             scale_newdata = scale_newdata, center_newdata = center_newdata,
@@ -620,10 +618,12 @@ setMethod("calcEigengenes", c("ModularExperiment", "SummarizedExperiment"),
             scale_reduced = scale_reduced, min_module_genes = min_module_genes
         )
 
-        return(.se_to_me(newdata, reduced = as.matrix(eig),
-                         loadings = loadings(object),
-                         assignments = assignments(object),
-                         center_X = object@center, scale_X = object@scale))
+        return(.se_to_me(newdata,
+            reduced = as.matrix(eig),
+            loadings = loadings(object),
+            assignments = assignments(object),
+            center_X = object@center, scale_X = object@scale
+        ))
     }
 )
 
@@ -656,10 +656,9 @@ NULL
 #' @rdname getCentrality
 #' @export
 setMethod("getCentrality", c("ModularExperiment"), function(
-    object,
-    assay_name = "normal",
-    feature_id_col = "rownames"
-) {
+        object,
+        assay_name = "normal",
+        feature_id_col = "rownames") {
     # Get module membership (correlation with eigengene)
     signed_kme <- WGCNA::signedKME(
         t(assay(object, assay_name)),
@@ -668,8 +667,10 @@ setMethod("getCentrality", c("ModularExperiment"), function(
     colnames(signed_kme) <- componentNames(object)
 
     stopifnot(all(rownames(signed_kme) == rownames(object)))
-    if (feature_id_col != "rownames") rownames(signed_kme) <-
-        rowData(object)[[feature_id_col]]
+    if (feature_id_col != "rownames") {
+        rownames(signed_kme) <-
+            rowData(object)[[feature_id_col]]
+    }
 
     # Transform into a dataframe with relevant statistics
     module_features <- data.frame()
@@ -690,7 +691,8 @@ setMethod("getCentrality", c("ModularExperiment"), function(
     }
 
     module_features <- module_features[order(module_features$rsq,
-                                             decreasing = TRUE), ]
+        decreasing = TRUE
+    ), ]
     module_features <- module_features[order(module_features$module), ]
 
     return(module_features)

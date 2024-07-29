@@ -36,16 +36,16 @@
 \S4method{predict}{FactorisedExperiment}(object, newdata, ...)
 }
 \arguments{
-\item{object}{A \link[ReducedExperiment]{FactorisedExperiment} object. The \code{loadings} slot of
-this class will be used for projection. Additionally, by default, the \code{scale}
-and \code{center} slots are used to apply the original transformation to the
-new data.}
+\item{object}{A \link[ReducedExperiment]{FactorisedExperiment} object. The
+\code{loadings} slot of this class will be used for projection. Additionally, by
+default, the \code{scale} and \code{center} slots are used to apply the original
+transformation to the new data.}
 
 \item{newdata}{New data for projection. Must be a \code{data.frame} or \code{matrix}
 with features as rows and samples as columns, or a
 \link[SummarizedExperiment]{SummarizedExperiment} object. Assumes that the
-rows of \code{newdata} match those of the \link[ReducedExperiment]{FactorisedExperiment}
-object.}
+rows of \code{newdata} match those of the
+\link[ReducedExperiment]{FactorisedExperiment} object.}
 
 \item{scale_reduced}{Whether or not the reduced data should be scaled
 after calculation.}
@@ -56,9 +56,10 @@ object's \code{scale} slot. The value of this argument will be passed to the
 \code{scale} argument of \link[base]{scale}.}
 
 \item{center_newdata}{Controls whether the \code{newdata} are centered If NULL,
-performs centering based on the \link[ReducedExperiment]{FactorisedExperiment}
-object's \code{center} slot. The value of this argument will be passed to the
-\code{center} argument of \link[base]{scale}.}
+performs centering based on the
+\link[ReducedExperiment]{FactorisedExperiment} object's \code{center} slot. The
+value of this argument will be passed to the \code{center} argument of
+\link[base]{scale}.}
 
 \item{assay_name}{If a \link[SummarizedExperiment]{SummarizedExperiment}
 object is passed as new data, this argument indicates which assay should be
@@ -76,8 +77,8 @@ object will be created containing this matrix in its \code{reduced} slot.
 }
 \description{
 Uses a projection approach to calculate factors in new data. Functions in a
-similar fashion to the \code{predict} method of \link[stats]{prcomp}. The transposed
-\code{newdata} are multiplied by the original loadings matrix.
+similar fashion to the \code{predict} method of \link[stats]{prcomp}. The
+transposed \code{newdata} are multiplied by the original loadings matrix.
 }
 \seealso{
 \code{\link[ReducedExperiment]{calcEigengenes}}

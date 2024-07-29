@@ -34,13 +34,12 @@
 #' @rdname factorised_experiment
 #' @export
 FactorisedExperiment <- function(
-    reduced = new("matrix"),
-    scale = TRUE,
-    center = TRUE,
-    loadings = new("matrix"),
-    stability = NULL,
-    ...
-) {
+        reduced = new("matrix"),
+        scale = TRUE,
+        center = TRUE,
+        loadings = new("matrix"),
+        stability = NULL,
+        ...) {
     re <- ReducedExperiment(
         reduced = reduced,
         scale = scale,
@@ -102,11 +101,10 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
 #' @rdname loadings
 #' @export
 setMethod("loadings", "FactorisedExperiment", function(
-    object,
-    scale_loadings = FALSE,
-    center_loadings = FALSE,
-    abs_loadings = FALSE
-) {
+        object,
+        scale_loadings = FALSE,
+        center_loadings = FALSE,
+        abs_loadings = FALSE) {
     l <- scale(
         object@loadings,
         scale = scale_loadings,
@@ -175,7 +173,7 @@ setReplaceMethod("stability", "FactorisedExperiment", function(object, value) {
 #' @rdname component_names
 #' @export
 setReplaceMethod("componentNames", "FactorisedExperiment", function(object,
-                                                                    value) {
+    value) {
     colnames(object@loadings) <- value
     if (!is.null(object@stability)) names(object@stability) <- value
     object <- callNextMethod(object, value)
@@ -204,8 +202,10 @@ setMethod(
 
         if (!missing(i)) {
             if (is.character(i)) {
-                fmt <- paste0("<", class(object),
-                              ">[i,] index out of bounds: %s")
+                fmt <- paste0(
+                    "<", class(object),
+                    ">[i,] index out of bounds: %s"
+                )
                 i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
                     i, rownames(object), fmt
                 )
@@ -216,8 +216,10 @@ setMethod(
 
         if (!missing(k)) {
             if (is.character(k)) {
-                fmt <- paste0("<", class(object),
-                              ">[k,] index out of bounds: %s")
+                fmt <- paste0(
+                    "<", class(object),
+                    ">[k,] index out of bounds: %s"
+                )
                 k <- SummarizedExperiment:::.SummarizedExperiment.charbound(
                     k, componentNames(object), fmt
                 )
@@ -229,8 +231,10 @@ setMethod(
         }
 
         out <- callNextMethod(object, i, j, k, ...)
-        BiocGenerics:::replaceSlots(out, loadings = lod, stability = stab,
-                                    check = FALSE)
+        BiocGenerics:::replaceSlots(out,
+            loadings = lod, stability = stab,
+            check = FALSE
+        )
     }
 )
 
@@ -241,8 +245,8 @@ setMethod("cbind", "FactorisedExperiment", function(..., deparse.level = 1) {
     args <- list(...)
 
     loadings_stability_equal <- sapply(args, function(re) {
-        return(identical(re@loadings, args[[1]]@loadings)
-               & identical(re@stability, args[[1]]@stability))
+        return(identical(re@loadings, args[[1]]@loadings) &
+            identical(re@stability, args[[1]]@stability))
     })
 
     if (!all(loadings_stability_equal)) {
@@ -310,12 +314,11 @@ NULL
 #' @rdname projectData
 #' @export
 setMethod("projectData", c("FactorisedExperiment", "matrix"), function(
-    object,
-    newdata,
-    scale_reduced = TRUE,
-    scale_newdata = NULL,
-    center_newdata = NULL
-) {
+        object,
+        newdata,
+        scale_reduced = TRUE,
+        scale_newdata = NULL,
+        center_newdata = NULL) {
     if (!identical(rownames(object), rownames(newdata))) {
         stop("Rownames of x do not match those of newdata")
     }
@@ -325,8 +328,10 @@ setMethod("projectData", c("FactorisedExperiment", "matrix"), function(
     if (is.null(scale_newdata)) scale_newdata <- object@scale
     if (is.null(center_newdata)) center_newdata <- object@center
 
-    newdata <- t(scale(t(newdata), scale = scale_newdata,
-                       center = center_newdata))
+    newdata <- t(scale(t(newdata),
+        scale = scale_newdata,
+        center = center_newdata
+    ))
     red <- .project_ica(newdata, loadings(object))
 
     if (scale_reduced) red <- scale(red)
@@ -337,12 +342,11 @@ setMethod("projectData", c("FactorisedExperiment", "matrix"), function(
 #' @rdname projectData
 #' @export
 setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(
-    object,
-    newdata,
-    scale_reduced = TRUE,
-    scale_newdata = NULL,
-    center_newdata = NULL
-) {
+        object,
+        newdata,
+        scale_reduced = TRUE,
+        scale_newdata = NULL,
+        center_newdata = NULL) {
     return(projectData(
         object,
         as.matrix(newdata),
@@ -354,32 +358,33 @@ setMethod("projectData", c("FactorisedExperiment", "data.frame"), function(
 
 #' @rdname projectData
 #' @export
-setMethod("projectData", c("FactorisedExperiment", "SummarizedExperiment"),
-          function(
-    object,
-    newdata,
-    scale_reduced = TRUE,
-    scale_newdata = NULL,
-    center_newdata = NULL,
-    assay_name = "normal"
-) {
-    projected_data <- projectData(
+setMethod(
+    "projectData", c("FactorisedExperiment", "SummarizedExperiment"),
+    function(
         object,
-        assay(newdata, assay_name),
-        scale_reduced = scale_reduced,
-        scale_newdata = scale_newdata,
-        center_newdata = center_newdata
-    )
-
-    return(.se_to_fe(
         newdata,
-        reduced = projected_data,
-        loadings = loadings(object),
-        stability = stability(object),
-        center_X = object@center,
-        scale_X = object@scale
-    ))
-})
+        scale_reduced = TRUE,
+        scale_newdata = NULL,
+        center_newdata = NULL,
+        assay_name = "normal") {
+        projected_data <- projectData(
+            object,
+            assay(newdata, assay_name),
+            scale_reduced = scale_reduced,
+            scale_newdata = scale_newdata,
+            center_newdata = center_newdata
+        )
+
+        return(.se_to_fe(
+            newdata,
+            reduced = projected_data,
+            loadings = loadings(object),
+            stability = stability(object),
+            center_X = object@center,
+            scale_X = object@scale
+        ))
+    }
+)
 
 #' @rdname projectData
 #' @export
@@ -429,13 +434,12 @@ NULL
 #' @rdname getAlignedFeatures
 #' @export
 setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(
-    object,
-    loading_threshold = 0.5,
-    proportional_threshold = 0.01,
-    feature_id_col = "rownames",
-    format = "list",
-    center_loadings = FALSE
-) {
+        object,
+        loading_threshold = 0.5,
+        proportional_threshold = 0.01,
+        feature_id_col = "rownames",
+        format = "list",
+        center_loadings = FALSE) {
     S <- loadings(object, scale_loadings = TRUE, center_loadings = center_loadings)
 
     if (feature_id_col != "rownames") rownames(S) <- rowData(object)[[feature_id_col]]
@@ -451,8 +455,8 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(
     for (f in componentNames(object)) {
         abs_loadings <- abs(S[, f])
 
-        which_features <- which(abs_loadings >= abs_thresholds[f]
-                                & abs_loadings >= perc_thresholds[f])
+        which_features <- which(abs_loadings >= abs_thresholds[f] &
+            abs_loadings >= perc_thresholds[f])
 
         if (length(which_features) > 0) {
             factor_features <- rbind(factor_features, data.frame(
@@ -468,7 +472,8 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(
     factor_features$proportional_threshold <- proportional_threshold
 
     factor_features <- factor_features[order(abs(factor_features$value),
-                                             decreasing = TRUE), ]
+        decreasing = TRUE
+    ), ]
     factor_features <- factor_features[order(factor_features$component), ]
 
     if (is.function(format)) {
@@ -546,17 +551,16 @@ NULL
 
 #' @rdname enrichment
 #' @export
-setMethod("runEnrich", c("FactorisedExperiment"), function (
-    object,
-    method = "gsea",
-    feature_id_col = "rownames",
-    center_loadings = FALSE,
-    abs_loadings = FALSE,
-    loading_threshold = 0.5,
-    proportional_threshold = 0.01,
-    as_dataframe = FALSE,
-    ...
-) {
+setMethod("runEnrich", c("FactorisedExperiment"), function(
+        object,
+        method = "gsea",
+        feature_id_col = "rownames",
+        center_loadings = FALSE,
+        abs_loadings = FALSE,
+        loading_threshold = 0.5,
+        proportional_threshold = 0.01,
+        as_dataframe = FALSE,
+        ...) {
     if (method == "gsea") {
         loading_threshold <- NULL
         proportional_threshold <- NULL
@@ -567,8 +571,10 @@ setMethod("runEnrich", c("FactorisedExperiment"), function (
             center_loadings = center_loadings,
             abs_loadings = abs_loadings
         )
-        if (feature_id_col != "rownames") rownames(S) <-
-            rowData(object)[[feature_id_col]]
+        if (feature_id_col != "rownames") {
+            rownames(S) <-
+                rowData(object)[[feature_id_col]]
+        }
 
         enrich_res <- reduced_gsea(S, ...)
     } else if (method == "overrepresentation") {

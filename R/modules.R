@@ -22,12 +22,11 @@
 #'
 #' @export
 identify_modules <- function(
-    X,
-    center_X = TRUE,
-    scale_X = TRUE,
-    assay_name = "normal",
-    ...
-) {
+        X,
+        center_X = TRUE,
+        scale_X = TRUE,
+        assay_name = "normal",
+        ...) {
     if (!inherits(X, "SummarizedExperiment")) {
         X <- SummarizedExperiment(assays = list("normal" = X))
     }
@@ -36,8 +35,9 @@ identify_modules <- function(
         assay(X, "normal") <- assay(X, assay_name)
     }
 
-    if ("transformed" %in% assayNames(X))
+    if ("transformed" %in% assayNames(X)) {
         warning("Overwriting 'transformed' assay slot in X")
+    }
     assay(X, "transformed") <-
         t(scale(t(assay(X, "normal")), center = center_X, scale = scale_X))
 
@@ -45,7 +45,8 @@ identify_modules <- function(
     if (scale_X) scale_X <- attr(assay(X, "transformed"), "scaled:scale")
 
     wgcna_res <- run_wgcna(assay(X, "transformed"),
-                           return_full_output = FALSE, ...)
+        return_full_output = FALSE, ...
+    )
     reduced_set <- .se_to_me(
         X,
         reduced = wgcna_res$E,
@@ -85,15 +86,14 @@ identify_modules <- function(
 #' @noRd
 #' @keywords internal
 .se_to_me <- function(
-    se,
-    reduced,
-    loadings,
-    assignments,
-    center_X,
-    scale_X,
-    dendrogram = NULL,
-    threshold = NULL
-) {
+        se,
+        reduced,
+        loadings,
+        assignments,
+        center_X,
+        scale_X,
+        dendrogram = NULL,
+        threshold = NULL) {
     return(ModularExperiment(
         reduced = reduced, loadings = loadings, assignments = assignments,
         center = center_X, scale = scale_X,
@@ -184,17 +184,19 @@ identify_modules <- function(
 #' }
 #'
 #' @export
-run_wgcna <- function(X, powers = 1:30,
-    min_r_squared = 0.85, max_mean_connectivity = 100,
-    corType = "pearson", networkType = "signed",
-    module_labels = "numbers", maxBlockSize = 30000,
-    seed = 1, verbose = 0, return_full_output = FALSE,
-    scale_reduced = TRUE, ...) {
+run_wgcna <- function(
+        X, powers = 1:30,
+        min_r_squared = 0.85, max_mean_connectivity = 100,
+        corType = "pearson", networkType = "signed",
+        module_labels = "numbers", maxBlockSize = 30000,
+        seed = 1, verbose = 0, return_full_output = FALSE,
+        scale_reduced = TRUE, ...) {
     set.seed(seed)
 
-    if (maxBlockSize < nrow(X))
+    if (maxBlockSize < nrow(X)) {
         warning("maxBlockSize < total features, module detection will be
                 performed in a block-wise manner")
+    }
 
     if (corType == "pearson") {
         cor <- corFnc <- WGCNA::cor
@@ -215,12 +217,14 @@ run_wgcna <- function(X, powers = 1:30,
             power <- threshold$fitIndices$powerEstimate
         } else {
             which_power <-
-                which(threshold$fitIndices$SFT.R.sq > min_r_squared
-                      & threshold$fitIndices$mean.k. < max_mean_connectivity)
+                which(threshold$fitIndices$SFT.R.sq > min_r_squared &
+                    threshold$fitIndices$mean.k. < max_mean_connectivity)
 
             if (length(which_power) == 0) {
-                stop("No power with r_squared > ", min_r_squared,
-                     " and mean connectivity < ", max_mean_connectivity)
+                stop(
+                    "No power with r_squared > ", min_r_squared,
+                    " and mean connectivity < ", max_mean_connectivity
+                )
             }
 
             power <- min(threshold$fitIndices$Power[which_power])
@@ -254,8 +258,10 @@ run_wgcna <- function(X, powers = 1:30,
             color_table <- color_table[order(color_table, decreasing = TRUE)]
             color_table <- color_table[which(names(color_table) != "grey")]
 
-            color_table <- stats::setNames(1:length(color_table),
-                                           names(color_table))
+            color_table <- stats::setNames(
+                1:length(color_table),
+                names(color_table)
+            )
             color_table <- c(color_table, "grey" = 0)
 
             return(color_table)
@@ -310,11 +316,10 @@ run_wgcna <- function(X, powers = 1:30,
 #' @noRd
 #' @keywords internal
 .calculate_eigengenes <- function(
-    newdata,
-    module_names,
-    module_assignments,
-    realign = TRUE
-) {
+        newdata,
+        module_names,
+        module_assignments,
+        realign = TRUE) {
     red <- data.frame(row.names = colnames(newdata))
     lod <- c()
 
@@ -323,7 +328,8 @@ run_wgcna <- function(X, powers = 1:30,
         module_data <- newdata[rownames(newdata) %in% module_features, ]
 
         prcomp_res <- stats::prcomp(t(module_data),
-                                    center = FALSE, scale. = FALSE, rank = 1)
+            center = FALSE, scale. = FALSE, rank = 1
+        )
 
         # Principal components may be anticorrelated, in which case change sign
         align_sign <- ifelse(
@@ -335,10 +341,12 @@ run_wgcna <- function(X, powers = 1:30,
         red[[m]] <- prcomp_res$x * align_sign
 
         stopifnot(all(t(module_data) %*% prcomp_res$rotation * align_sign
-                      == prcomp_res$x * align_sign))
+        == prcomp_res$x * align_sign))
 
-        lod <- c(lod, stats::setNames(prcomp_res$rotation * align_sign,
-                                      rownames(module_data)))
+        lod <- c(lod, stats::setNames(
+            prcomp_res$rotation * align_sign,
+            rownames(module_data)
+        ))
     }
 
     lod <- lod[match(rownames(newdata), names(lod))]
@@ -351,12 +359,11 @@ run_wgcna <- function(X, powers = 1:30,
 #' @noRd
 #' @keywords internal
 .project_eigengenes <- function(
-    newdata,
-    module_names,
-    module_assignments,
-    lod,
-    min_module_genes
-) {
+        newdata,
+        module_names,
+        module_assignments,
+        lod,
+        min_module_genes) {
     red <- data.frame(row.names = colnames(newdata))
 
     for (m in module_names) {

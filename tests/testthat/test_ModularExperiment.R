@@ -5,6 +5,7 @@ test_that("Build and subset", {
     j <- 100
     k <- 10
 
+    set.seed(1)
     rrs <- .createRandomisedModularExperiment(i = i, j = j, k = k)
 
     expect_equal(dim(rrs), c("Features" = i, "Samples" = j, "Components" = k))
@@ -34,6 +35,8 @@ test_that("Build and subset", {
 })
 
 test_that("Access and replace assignments", {
+
+    set.seed(1)
     rrs <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 
     expect_true(all(assignments(rrs) == paste0("gene_", 1:300)))
@@ -54,6 +57,7 @@ test_that("Access and replace assignments", {
 })
 
 test_that("Access and replace component/module names", {
+    set.seed(1)
     rrs <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(componentNames(rrs), paste0("module_", 1:10))
@@ -74,6 +78,7 @@ test_that("Access and replace component/module names", {
 })
 
 test_that("Access and replace feature names", {
+    set.seed(1)
     rrs <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(featureNames(rrs), paste0("gene_", 1:300))
@@ -91,11 +96,14 @@ test_that("Access and replace loadings", {
     j <- 100
     k <- 10
 
+    set.seed(1)
     loadings_data <- .makeRandomData(1, i, "gene", "gene")[1, ]
+
     assignments_data <- paste0("gene_", 1:i)
     names(assignments_data) <- paste0("module_", round(runif(i, 1, k), 0))
 
     # Make a ModularExperiment and save original loadings data to an object
+    set.seed(1)
     rrs <- ModularExperiment(
         assays = list("normal" = .makeRandomData(i, j, "gene", "sample")),
         reduced = .makeRandomData(j, k, "sample", "factor"),
@@ -126,6 +134,8 @@ test_that("Access and replace loadings", {
 
 test_that("Eigengene calculation / projection / prediction", {
     # Use real data from airway package
+
+    set.seed(2)
     airway <- .get_airway_data(n_features = 500)
     airway_me <- identify_modules(airway, verbose = 0, powers = 21) # , return_full_output=TRUE
 
@@ -159,8 +169,11 @@ test_that("Eigengene calculation / projection / prediction", {
 })
 
 test_that("Combine ModularExperiments with cbind", {
-    rrs_a <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10, seed = 1)
-    rrs_b <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10, seed = 2)
+    set.seed(1)
+    rrs_a <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
+
+    set.seed(2)
+    rrs_b <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 
     # Objects should be cbind-able due to matching names
     rrs_a_a <- cbind(rrs_a, rrs_a)
@@ -176,6 +189,7 @@ test_that("Combine ModularExperiments with cbind", {
 })
 
 test_that("Get module hub genes", {
+    set.seed(1)
     rrs <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 
     centrality <- getCentrality(rrs)
@@ -194,6 +208,8 @@ test_that("Get module hub genes", {
 
 test_that("Plot and access dendrogram", {
     # Use real data from airway package
+
+    set.seed(2)
     airway <- .get_airway_data(n_features = 500)
     airway_me <- identify_modules(airway, verbose = 0, powers = 21) # , return_full_output=TRUE
 

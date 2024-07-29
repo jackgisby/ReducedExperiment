@@ -2,8 +2,12 @@ context("features")
 
 test_that("FactorisedExperiment enrichment", {
     # Use real data from airway package
+
+    set.seed(2)
     airway <- .get_airway_data(n_features = 2000)
-    airway_fe <- estimate_factors(airway, nc = 2, seed = 1, use_stability = FALSE, method = "imax")
+
+    set.seed(1)
+    airway_fe <- estimate_factors(airway, nc = 2, use_stability = FALSE, method = "imax")
 
     # Run overrepresentation analysis
     overrep_res <- runEnrich(airway_fe, method = "overrepresentation", feature_id_col = "rownames", as_dataframe = TRUE, p_cutoff = 0.1, universe = rownames(airway_fe))
@@ -17,6 +21,8 @@ test_that("FactorisedExperiment enrichment", {
 
 test_that("ModularExperiment enrichment", {
     # Use real data from airway package
+
+    set.seed(2)
     airway <- .get_airway_data(n_features = 500)
     airway_me <- identify_modules(airway, verbose = 0, powers = 21)
 
@@ -38,7 +44,9 @@ test_that("Get MSGIDB data", {
 
 test_that("Get common features", {
     airway <- .get_airway_data()
-    airway_fe <- estimate_factors(airway, nc = 2, seed = 1)
+
+    set.seed(1)
+    airway_fe <- estimate_factors(airway, nc = 2)
 
     cf <- get_common_features(getAlignedFeatures(airway_fe, format = "data.frame"))
 
@@ -48,6 +56,8 @@ test_that("Get common features", {
 })
 
 test_that("Module preservation", {
+
+    set.seed(2)
     airway <- .get_airway_data(n_features = 500)
     airway_me <- identify_modules(airway, verbose = 0, powers = 21)
 

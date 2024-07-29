@@ -50,16 +50,16 @@ value of this term, the process used to select genes for overrepresentation
 analysis will be based on absolute loadings.}
 
 \item{loading_threshold}{Factors only: See
-\link[ReducedExperiment]{getAlignedFeatures}. Only relevant for overresentation
-analysis.}
+\link[ReducedExperiment]{getAlignedFeatures}. Only relevant for
+overresentation analysis.}
 
 \item{proportional_threshold}{Factors only: See
-\link[ReducedExperiment]{getAlignedFeatures}. Only relevant for overresentation
-analysis.}
+\link[ReducedExperiment]{getAlignedFeatures}. Only relevant for
+overrepresentation analysis.}
 
 \item{as_dataframe}{If \code{TRUE}, the results will be returned as a data.frame.
-Otherwise, the results will be returned as a list of objects created by either
-\link[clusterProfiler]{enricher}, in the case of overrepresentation
+Otherwise, the results will be returned as a list of objects created by
+either \link[clusterProfiler]{enricher}, in the case of overrepresentation
 analysis, or \link[clusterProfiler]{GSEA}, in the case of GSEA.}
 
 \item{...}{Additional arguments to be passed to
@@ -77,6 +77,6 @@ For factor analysis, the overrepresentation method first identifies the genes
 most highly aligned with each factor
 (using \link[ReducedExperiment]{getAlignedFeatures}), then uses
 the resulting gene lists to perform overrepresentation analysis. The GSEA
-method instead uses the entire set of factor loadings, and identifies pathways
-that are overrepresented in the tails of this distribution.
+method instead uses the entire set of factor loadings, and identifies
+pathways that are overrepresented in the tails of this distribution.
 }

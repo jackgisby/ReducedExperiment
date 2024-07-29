@@ -6,6 +6,7 @@ test_that("Build and subset", {
     k <- 10
 
     # Create random FactorisedExperiment
+    set.seed(1)
     rrs <- .createRandomisedFactorisedExperiment(i = i, j = j, k = k)
 
     # Check dimensions and names are as expected
@@ -38,6 +39,7 @@ test_that("Build and subset", {
 })
 
 test_that("Access and replace component names", {
+    set.seed(1)
     rrs <- .createRandomisedFactorisedExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(componentNames(rrs), paste0("factor_", 1:10))
@@ -51,6 +53,7 @@ test_that("Access and replace component names", {
 })
 
 test_that("Access and replace feature names", {
+    set.seed(1)
     rrs <- .createRandomisedFactorisedExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(featureNames(rrs), paste0("gene_", 1:300))
@@ -68,9 +71,11 @@ test_that("Access and replace loadings", {
     j <- 100
     k <- 10
 
+    set.seed(1)
     loadings_data <- .makeRandomData(i, k, "gene", "factor")
 
     # Make a FactorisedExperiment and save original loadings data to an object
+    set.seed(1)
     rrs <- FactorisedExperiment(
         assays = list("normal" = .makeRandomData(i, j, "gene", "sample")),
         reduced = .makeRandomData(j, k, "sample", "factor"),
@@ -100,6 +105,7 @@ test_that("Access and replace loadings", {
 })
 
 test_that("Access and replace stability", {
+    set.seed(1)
     rrs <- .createRandomisedFactorisedExperiment(i = 300, j = 100, k = 10)
 
     expect_equal(stability(rrs), NULL)
@@ -121,9 +127,12 @@ test_that("Access and replace stability", {
 })
 
 test_that("Predict and project", {
+
     # Use real data from airway package
     airway <- .get_airway_data()
-    airway_fe <- estimate_factors(airway, nc = 2, seed = 1, scale_components = FALSE, reorient_skewed = FALSE)
+
+    set.seed(1)
+    airway_fe <- estimate_factors(airway, nc = 2, scale_components = FALSE, reorient_skewed = FALSE)
 
     # Check that projecting the data reproduces the original results
     for (input_type in c("se", "matrix", "data.frame")) {
@@ -154,6 +163,7 @@ test_that("Predict and project", {
 })
 
 test_that("Get aligned features", {
+    set.seed(1)
     rrs <- .createRandomisedFactorisedExperiment(i = 300, j = 100, k = 10)
 
     # Selecting one feature
@@ -215,8 +225,12 @@ test_that("Get aligned features", {
 })
 
 test_that("Get gene IDs", {
+
+    set.seed(2)
     airway <- .get_airway_data(n_features = 500)
-    airway_fe <- estimate_factors(airway, nc = 2, seed = 1, use_stability = FALSE, method = "imax")
+
+    set.seed(1)
+    airway_fe <- estimate_factors(airway, nc = 2, use_stability = FALSE, method = "imax")
 
     # Test `getGeneIDs` with preloaded `biomart_out` to avoid actually querying
     # ensembl during testing
@@ -230,8 +244,10 @@ test_that("Get gene IDs", {
 })
 
 test_that("Combine FactorisedExperiments with cbind", {
-    rrs_a <- .createRandomisedFactorisedExperiment(i = 300, j = 100, k = 10, seed = 1)
-    rrs_b <- .createRandomisedFactorisedExperiment(i = 300, j = 100, k = 10, seed = 2)
+    set.seed(1)
+    rrs_a <- .createRandomisedFactorisedExperiment(i = 300, j = 100, k = 10)
+    set.seed(2)
+    rrs_b <- .createRandomisedFactorisedExperiment(i = 300, j = 100, k = 10)
 
     # Objects should be cbind-able due to matching names
     rrs_a_a <- cbind(rrs_a, rrs_a)

@@ -1,8 +1,12 @@
 context("samples")
 
 test_that("Associate components", {
+
+    set.seed(2)
     airway <- .get_airway_data(n_features = 500)
-    airway_fe <- estimate_factors(airway, nc = 2, seed = 1)
+
+    set.seed(1)
+    airway_fe <- estimate_factors(airway, nc = 2)
 
     fe_res <- associate_components(airway_fe, "~ cell + dex")
 

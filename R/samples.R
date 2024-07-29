@@ -19,8 +19,10 @@
                 stats::as.formula(formula_string),
                 data = data,
                 REML = REML,
-                control = lme4::lmerControl(optimizer = "Nelder_Mead",
-                                            check.conv.singular = "ignore"),
+                control = lme4::lmerControl(
+                    optimizer = "Nelder_Mead",
+                    check.conv.singular = "ignore"
+                ),
                 ...
             ))
         }
@@ -38,13 +40,12 @@
 #' @noRd
 #' @keywords internal
 .run_linear_model <- function(
-    X,
-    pheno,
-    formula,
-    method = "lm",
-    type = "II",
-    ...
-) {
+        X,
+        pheno,
+        formula,
+        method = "lm",
+        type = "II",
+        ...) {
     pheno$component <- X
 
     formula <- stats::as.formula(paste0("component", formula))
@@ -109,21 +110,21 @@
 #'
 #' @export
 associate_components <- function(
-    re,
-    formula,
-    method = "lm",
-    scale_reduced = TRUE,
-    center_reduced = TRUE,
-    type = "II",
-    adj_method = "BH",
-    ...
-) {
+        re,
+        formula,
+        method = "lm",
+        scale_reduced = TRUE,
+        center_reduced = TRUE,
+        type = "II",
+        adj_method = "BH",
+        ...) {
     models <- list()
     summaries <- anovas <- data.frame()
 
     red <- reduced(re,
-                   scale_reduced = scale_reduced,
-                   center_reduced = center_reduced)
+        scale_reduced = scale_reduced,
+        center_reduced = center_reduced
+    )
 
     for (comp in componentNames(re)) {
         linear_model <- .run_linear_model(
@@ -164,7 +165,8 @@ associate_components <- function(
     for (term in unique(res$term)) {
         res$adj_pvalue[which(res$term == term)] <-
             stats::p.adjust(res$pvalue[which(res$term == term)],
-                            method = method)
+                method = method
+            )
     }
 
     return(res$adj_pvalue)

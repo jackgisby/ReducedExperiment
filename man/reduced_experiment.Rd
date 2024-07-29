@@ -38,8 +38,9 @@ represent samples and columns represent a second set of dimensionally-reduced
 features.
 
 The methods available for \link[SummarizedExperiment]{SummarizedExperiment}
-objects are also available for \code{ReducedExperiment} and its children, which include
-\link[ReducedExperiment]{FactorisedExperiment} and \link[ReducedExperiment]{ModularExperiment}
+objects are also available for \code{ReducedExperiment} and its children, which
+include \link[ReducedExperiment]{FactorisedExperiment} and
+\link[ReducedExperiment]{ModularExperiment}.
 
 Typically, \code{ReducedExperiment} objects contain two main assays. The first is,
 by default, named "normal" and contains some type of normalised data,

@@ -50,9 +50,9 @@ Method for getting and setting loadings for a
 \link[ReducedExperiment]{ReducedExperiment} object.
 }
 \details{
-#' If \code{object} is a \link[ReducedExperiment]{FactorisedExperiment}, the loadings
-matrix will be returned, with features as rows and reduced components as
-columns.
+#' If \code{object} is a \link[ReducedExperiment]{FactorisedExperiment}, the
+loadings matrix will be returned, with features as rows and reduced
+components as columns.
 
 If \code{object} is a \link[ReducedExperiment]{ModularExperiment}, the loadings
 will be returned as a vector, with a value for each feature (usually genes).

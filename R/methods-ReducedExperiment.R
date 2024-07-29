@@ -43,11 +43,10 @@
 #' @rdname reduced_experiment
 #' @export
 ReducedExperiment <- function(
-    reduced = new("matrix"),
-    scale = TRUE,
-    center = TRUE,
-    ...
-) {
+        reduced = new("matrix"),
+        scale = TRUE,
+        center = TRUE,
+        ...) {
     se <- SummarizedExperiment::SummarizedExperiment(...)
 
     return(.ReducedExperiment(
@@ -126,10 +125,9 @@ NULL
 #' @rdname reduced
 #' @export
 setMethod("reduced", "ReducedExperiment", function(
-    object,
-    scale_reduced = FALSE,
-    center_reduced = FALSE
-) {
+        object,
+        scale_reduced = FALSE,
+        center_reduced = FALSE) {
     return(scale(
         object@reduced,
         scale = scale_reduced,
@@ -170,9 +168,8 @@ setMethod("componentNames", "ReducedExperiment", function(object) {
 #' @rdname component_names
 #' @export
 setReplaceMethod("componentNames", "ReducedExperiment", function(
-    object,
-    value
-) {
+        object,
+        value) {
     colnames(object@reduced) <- value
     validObject(object)
     return(object)
@@ -299,8 +296,10 @@ setMethod(
 
         if (!missing(i)) {
             if (is.character(i)) {
-                fmt <- paste0("<", class(object),
-                              ">[i,] index out of bounds: %s")
+                fmt <- paste0(
+                    "<", class(object),
+                    ">[i,] index out of bounds: %s"
+                )
                 i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
                     i, rownames(object), fmt
                 )
@@ -312,8 +311,10 @@ setMethod(
 
         if (!missing(j)) {
             if (is.character(j)) {
-                fmt <- paste0("<", class(object),
-                              ">[,j] index out of bounds: %s")
+                fmt <- paste0(
+                    "<", class(object),
+                    ">[,j] index out of bounds: %s"
+                )
                 j <- SummarizedExperiment:::.SummarizedExperiment.charbound(
                     j, colnames(object), fmt
                 )
@@ -324,8 +325,10 @@ setMethod(
 
         if (!missing(k)) {
             if (is.character(k)) {
-                fmt <- paste0("<", class(object),
-                              ">[k,] index out of bounds: %s")
+                fmt <- paste0(
+                    "<", class(object),
+                    ">[k,] index out of bounds: %s"
+                )
                 k <- SummarizedExperiment:::.SummarizedExperiment.charbound(
                     k, componentNames(object), fmt
                 )
@@ -366,8 +369,8 @@ setMethod("cbind", "ReducedExperiment", function(..., deparse.level = 1) {
     reduced <- do.call(rbind, lapply(args, reduced))
 
     std_slots_equal <- sapply(args, function(re) {
-        return(identical(re@scale, args[[1]]@scale)
-               & identical(re@center, args[[1]]@center))
+        return(identical(re@scale, args[[1]]@scale) &
+            identical(re@center, args[[1]]@center))
     })
 
     if (all(std_slots_equal)) {
@@ -475,14 +478,13 @@ NULL
 #' @rdname get_gene_ids
 #' @export
 setMethod("getGeneIDs", "ReducedExperiment", function(
-    object,
-    gene_id_col = "rownames",
-    gene_id_type = "ensembl_gene_id",
-    ids_to_get = c("hgnc_symbol", "entrezgene_id"),
-    dataset = "hsapiens_gene_ensembl",
-    mart = NULL,
-    biomart_out = NULL
-) {
+        object,
+        gene_id_col = "rownames",
+        gene_id_type = "ensembl_gene_id",
+        ids_to_get = c("hgnc_symbol", "entrezgene_id"),
+        dataset = "hsapiens_gene_ensembl",
+        mart = NULL,
+        biomart_out = NULL) {
     if (gene_id_col == "rownames") {
         rowData(object)[[gene_id_type]] <- rownames(object)
     } else {
@@ -509,13 +511,18 @@ setMethod("getGeneIDs", "ReducedExperiment", function(
 
     # TODO: This approach can probably be improved
     row_data_merged <- merge(rowData(object), biomart_out,
-                             by = gene_id_type, all.x = TRUE)
+        by = gene_id_type, all.x = TRUE
+    )
     rownames(row_data_merged) <- row_data_merged[[gene_id_type]]
-    row_data_merged <- row_data_merged[match(rowData(object)[[gene_id_type]],
-                                             row_data_merged[[gene_id_type]]), ]
+    row_data_merged <- row_data_merged[match(
+        rowData(object)[[gene_id_type]],
+        row_data_merged[[gene_id_type]]
+    ), ]
 
-    stopifnot(identical(row_data_merged[[gene_id_type]],
-                        rownames(row_data_merged)))
+    stopifnot(identical(
+        row_data_merged[[gene_id_type]],
+        rownames(row_data_merged)
+    ))
     stopifnot(identical(rownames(object), rownames(row_data_merged)))
 
     rowData(object) <- row_data_merged

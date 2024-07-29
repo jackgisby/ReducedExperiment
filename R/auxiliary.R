@@ -14,8 +14,6 @@
 #' @noRd
 #' @keywords internal
 .makeRandomData <- function(r, c, rname, cname) {
-    set.seed(seed)
-
     m <- matrix(stats::rnorm(n = r * c), nrow = r, ncol = c)
 
     rownames(m) <- as.character(paste0(rname, "_", 1:r))
@@ -113,7 +111,6 @@
 
     # Remove genes at random for faster tests
     if (!is.null(n_features)) {
-        set.seed(2)
         airway <- airway[sample(nrow(airway), n_features), ]
     }
 

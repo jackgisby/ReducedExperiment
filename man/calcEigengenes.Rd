@@ -47,16 +47,16 @@
 \S4method{predict}{ModularExperiment}(object, newdata, ...)
 }
 \arguments{
-\item{object}{A \link[ReducedExperiment]{ModularExperiment} object. The \code{loadings} slot of
-this class will be used for projection. Additionally, by default, the \code{scale}
-and \code{center} slots are used to apply the original transformation to the
-new data.}
+\item{object}{A \link[ReducedExperiment]{ModularExperiment} object. The
+\code{loadings} slot of this class will be used for projection. Additionally,
+by default, the \code{scale} and \code{center} slots are used to apply the original
+transformation to the new data.}
 
 \item{newdata}{New data for eigengenes to be calculates in. Must be a
 \code{data.frame} or \code{matrix} with features as rows and samples as columns, or a
 \link[SummarizedExperiment]{SummarizedExperiment} object. Assumes that the
-rows of \code{newdata} match those of the \link[ReducedExperiment]{ModularExperiment}
-object.}
+rows of \code{newdata} match those of the
+\link[ReducedExperiment]{ModularExperiment} object.}
 
 \item{project}{Whether to perform projection (i.e., using PCA rotation matrix
 from the original data to calculate modules) or calculate eigengenes from
@@ -79,13 +79,14 @@ object's \code{center} slot. The value of this argument will be passed to the
 \code{center} argument of \link[base]{scale}.}
 
 \item{realign}{If \code{project} is TRUE, this argument is ignored. Else, controls
-whether eigengenes are realigned after PCA is performed to ensure the resultant
-signatures are positively correlated with average expression of the module.
-Similar to the \code{align} argument of \link[WGCNA]{moduleEigengenes}.}
+whether eigengenes are realigned after PCA is performed to ensure the
+resultant signatures are positively correlated with average expression of the
+module. Similar to the \code{align} argument of \link[WGCNA]{moduleEigengenes}.}
 
-\item{min_module_genes}{If \code{project} is FALSE, this argument is ignores. Else,
-controls the minimum number of genes required in a module for projection. Projected
-eigengenes are not calculated for modules with sizes below this threshold.}
+\item{min_module_genes}{If \code{project} is FALSE, this argument is ignores.
+Else, controls the minimum number of genes required in a module for
+projection. Projected eigengenes are not calculated for modules with sizes
+below this threshold.}
 
 \item{assay_name}{If a \link[SummarizedExperiment]{SummarizedExperiment}
 object is passed as new data, this argument indicates which assay should be
@@ -106,11 +107,12 @@ instead, then a If a \link[ReducedExperiment]{ModularExperiment}
 object will be created containing this matrix in its \code{reduced} slot.
 }
 \description{
-Calculates eigengenes for modules in new data. If in \code{project} mode, functions
-in a similar fashion to the \code{predict} method of \link[stats]{prcomp}. Else,
-eigengenes are calculated from scratch using PCA, in a similar manner to the
-\link[WGCNA]{moduleEigengenes} function.
+Calculates eigengenes for modules in new data. If in \code{project} mode,
+functions in a similar fashion to the \code{predict} method of
+\link[stats]{prcomp}. Else, eigengenes are calculated from scratch using PCA,
+in a similar manner to the \link[WGCNA]{moduleEigengenes} function.
 }
 \seealso{
-\code{\link[ReducedExperiment]{projectData}}, \code{\link[WGCNA]{moduleEigengenes}}
+\code{\link[ReducedExperiment]{projectData}},
+\code{\link[WGCNA]{moduleEigengenes}}
 }
