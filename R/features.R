@@ -21,7 +21,12 @@ reduced_oa <- function(component_features, database = "msigdb_c2_cp",
             ...
         )
 
-        enrich_res_single <- .format_enrich_res(enrich_res_single, adj_method = adj_method, min_genes = min_genes, p_cutoff = p_cutoff)
+        enrich_res_single <- .format_enrich_res(
+            enrich_res_single,
+            adj_method = adj_method,
+            min_genes = min_genes,
+            p_cutoff = p_cutoff
+        )
 
         if (!is.null(enrich_res_single)) {
             if (nrow(enrich_res_single@result) >= 1) {
@@ -63,18 +68,28 @@ reduced_oa <- function(component_features, database = "msigdb_c2_cp",
 #'
 #' @noRd
 #' @keywords internal
-.format_enrich_res <- function(enrich_res_single, adj_method, p_cutoff, min_genes = NULL) {
+.format_enrich_res <- function(
+    enrich_res_single,
+    adj_method,
+    p_cutoff,
+    min_genes = NULL
+) {
     if (is.null(enrich_res_single)) {
         return(NULL)
     }
 
     if (!is.null(min_genes)) {
-        enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$Count >= min_genes), ]
+        enrich_res_single@result <-
+            enrich_res_single@result[which(enrich_res_single@result$Count
+                                           >= min_genes), ]
     }
 
-    enrich_res_single@result$p.adjust <- stats::p.adjust(enrich_res_single@result$pvalue, method = adj_method)
+    enrich_res_single@result$p.adjust <-
+        stats::p.adjust(enrich_res_single@result$pvalue, method = adj_method)
 
-    enrich_res_single@result <- enrich_res_single@result[which(enrich_res_single@result$p.adjust <= p_cutoff), ]
+    enrich_res_single@result <-
+        enrich_res_single@result[which(enrich_res_single@result$p.adjust
+                                       <= p_cutoff), ]
 
     if (nrow(enrich_res_single@result) >= 1) {
         enrich_res_single@result$adj_method <- adj_method
@@ -116,7 +131,11 @@ reduced_gsea <- function(S, database = "msigdb_c2_cp", TERM2GENE = NULL,
             ...
         )
 
-        enrich_res_single <- .format_enrich_res(enrich_res_single, adj_method = adj_method, p_cutoff = p_cutoff)
+        enrich_res_single <- .format_enrich_res(
+            enrich_res_single,
+            adj_method = adj_method,
+            p_cutoff = p_cutoff
+        )
 
         if (!is.null(enrich_res_single)) {
             if (nrow(enrich_res_single@result) >= 1) {
@@ -157,8 +176,18 @@ reduced_gsea <- function(S, database = "msigdb_c2_cp", TERM2GENE = NULL,
 #' said pathway.
 #'
 #' @export
-get_msigdb_t2g <- function(species = "Homo sapiens", category = "C2", subcategory = NULL, subcategory_to_remove = "CGP", gene_id = "ensembl_gene") {
-    t2g <- data.frame(msigdbr::msigdbr(species = species, category = category, subcategory = subcategory))
+get_msigdb_t2g <- function(
+    species = "Homo sapiens",
+    category = "C2",
+    subcategory = NULL,
+    subcategory_to_remove = "CGP",
+    gene_id = "ensembl_gene"
+) {
+    t2g <- data.frame(msigdbr::msigdbr(
+        species = species,
+        category = category,
+        subcategory = subcategory
+    ))
 
     if (!is.null(subcategory_to_remove)) {
         t2g <- t2g[which(t2g$gs_subcat != subcategory_to_remove), ]
@@ -185,26 +214,42 @@ get_common_features <- function(factor_features) {
 
     for (c_1 in unique(factor_features$component)) {
         for (c_2 in unique(factor_features$component)) {
-            total_feat_1 <- length(factor_features$feature[factor_features$component == c_1])
-            total_feat_2 <- length(factor_features$feature[factor_features$component == c_2])
+            total_feat_1 <- length(factor_features$feature[
+                factor_features$component == c_1
+            ])
+            total_feat_2 <- length(factor_features$feature[
+                factor_features$component == c_2
+            ])
             smaller_total <- min(total_feat_1, total_feat_2)
 
             if (c_1 == c_2) {
                 feat_intersect <- NA
             } else {
-                feat_intersect <- length(intersect(factor_features$feature[factor_features$component == c_1], factor_features$feature[factor_features$component == c_2]))
+                feat_intersect <- length(intersect(
+                    factor_features$feature[factor_features$component == c_1],
+                    factor_features$feature[factor_features$component == c_2]
+                ))
             }
 
             common_features_single <- data.frame(
                 c_1 = c_1,
                 c_2 = c_2,
                 intersect = feat_intersect,
-                total_feat_1 = length(factor_features$feature[factor_features$component == c_1]),
-                total_feat_2 = length(factor_features$feature[factor_features$component == c_2])
+                total_feat_1 = length(factor_features$feature[
+                    factor_features$component == c_1
+                ]),
+                total_feat_2 = length(factor_features$feature[
+                    factor_features$component == c_2
+                ])
             )
 
-            common_features_single$smaller_total <- min(common_features_single$total_feat_1, common_features_single$total_feat_2)
-            common_features_single$intersect_prop <- common_features_single$intersect / common_features_single$smaller_total
+            common_features_single$smaller_total <-
+                min(common_features_single$total_feat_1,
+                    common_features_single$total_feat_2)
+
+            common_features_single$intersect_prop <-
+                common_features_single$intersect /
+                common_features_single$smaller_total
 
             common_features <- rbind(common_features, common_features_single)
         }
@@ -225,10 +270,25 @@ get_common_features <- function(factor_features) {
 #' @returns An object generated by \link[pheatmap]{pheatmap}.
 #'
 #' @export
-plot_common_features <- function(common_features, filename = NA,
-    color = grDevices::colorRampPalette(RColorBrewer::brewer.pal(n = 7, name = "YlOrRd"))(100)) {
-    common_features <- subset(common_features, select = c("c_1", "c_2", "intersect_prop"))
-    prop_mat <- stats::reshape(common_features, idvar = "c_1", v.names = "intersect_prop", timevar = "c_2", direction = "wide", sep = "_")
+plot_common_features <- function(
+    common_features,
+    filename = NA,
+    color = grDevices::colorRampPalette(RColorBrewer::brewer.pal(
+        n = 7,
+        name = "YlOrRd")
+    )(100)
+) {
+    common_features <- subset(common_features,
+                              select = c("c_1", "c_2", "intersect_prop"))
+
+    prop_mat <- stats::reshape(
+        common_features,
+        idvar = "c_1",
+        v.names = "intersect_prop",
+        timevar = "c_2",
+        direction = "wide",
+        sep = "_"
+    )
 
     rownames(prop_mat) <- prop_mat$c_1
     prop_mat <- subset(prop_mat, select = -"c_1")
@@ -312,7 +372,8 @@ module_preservation <- function(reference_dataset, test_dataset,
     if (inherits(reference_dataset, "ModularExperiment")) {
         module_assignments <- assignments(reference_dataset)
     } else if (is.null(module_assignments)) {
-        stop("If reference_dataset is not a ModularExperiment, module_assignments must not be NULL")
+        stop("If reference_dataset is not a ModularExperiment,
+             module_assignments must not be NULL")
     }
 
     if (inherits(reference_dataset, "SummarizedExperiment")) {
@@ -334,7 +395,8 @@ module_preservation <- function(reference_dataset, test_dataset,
 
     return(WGCNA::modulePreservation(
         multi_data,
-        list("reference" = stats::setNames(names(module_assignments), module_assignments)),
+        list("reference" = stats::setNames(names(module_assignments),
+                                           module_assignments)),
         dataIsExpr = TRUE,
         networkType = networkType,
         corFnc = corFnc,
@@ -356,9 +418,15 @@ module_preservation <- function(reference_dataset, test_dataset,
 #' @import ggplot2
 #' @import patchwork
 #' @export
-plot_module_preservation <- function(module_preservation_results, show_random = TRUE, remove_module = NULL) {
-    mr_df <- module_preservation_results$preservation$observed$ref.reference$inColumnsAlsoPresentIn.test
-    zs_df <- module_preservation_results$preservation$Z$ref.reference$inColumnsAlsoPresentIn.test
+plot_module_preservation <- function(
+    module_preservation_results,
+    show_random = TRUE,
+    remove_module = NULL
+) {
+    mr_df <- module_preservation_results$preservation$observed$ref.reference$
+        inColumnsAlsoPresentIn.test
+    zs_df <- module_preservation_results$preservation$Z$ref.reference$
+        inColumnsAlsoPresentIn.test
 
     mr_df$module <- rownames(mr_df)
     zs_df$module <- rownames(zs_df)
@@ -380,16 +448,20 @@ plot_module_preservation <- function(module_preservation_results, show_random = 
     nudge_mr <- 0.14
     nudge_zs <- 0.4
 
-    medianrank_plot <- ggplot(mr_df, aes_string("moduleSize", "medianRank.pres", col = "module")) +
+    medianrank_plot <- ggplot(mr_df, aes_string("moduleSize", "medianRank.pres",
+                                                col = "module")) +
         geom_point(size = 3) +
-        geom_text(aes_string(label = "module"), col = "black", nudge_y = nudge_mr, hjust = 0) +
+        geom_text(aes_string(label = "module"), col = "black",
+                  nudge_y = nudge_mr, hjust = 0) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) +
         expand_limits(y = 0)
 
-    zsummary_plot <- ggplot(zs_df, aes_string("moduleSize", "Zsummary.pres", col = "module")) +
+    zsummary_plot <- ggplot(zs_df, aes_string("moduleSize", "Zsummary.pres",
+                                              col = "module")) +
         geom_point(size = 3) +
-        geom_text(aes_string(label = "module"), col = "black", nudge_y = nudge_zs, hjust = 0) +
+        geom_text(aes_string(label = "module"), col = "black",
+                  nudge_y = nudge_zs, hjust = 0) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) +
         expand_limits(y = 0) +
@@ -397,8 +469,12 @@ plot_module_preservation <- function(module_preservation_results, show_random = 
         geom_hline(yintercept = 2, col = "blue", linetype = "dashed")
 
     if (show_random) {
-        medianrank_plot <- medianrank_plot + geom_hline(yintercept = mr_gold, col = "gold", linetype = "dashed")
-        zsummary_plot <- zsummary_plot + geom_hline(yintercept = zs_gold, col = "gold", linetype = "dashed")
+        medianrank_plot <- medianrank_plot + geom_hline(yintercept = mr_gold,
+                                                        col = "gold",
+                                                        linetype = "dashed")
+        zsummary_plot <- zsummary_plot + geom_hline(yintercept = zs_gold,
+                                                    col = "gold",
+                                                    linetype = "dashed")
     }
 
     return(medianrank_plot + zsummary_plot)

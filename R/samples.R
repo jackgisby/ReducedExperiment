@@ -19,7 +19,8 @@
                 stats::as.formula(formula_string),
                 data = data,
                 REML = REML,
-                control = lme4::lmerControl(optimizer = "Nelder_Mead", check.conv.singular = "ignore"),
+                control = lme4::lmerControl(optimizer = "Nelder_Mead",
+                                            check.conv.singular = "ignore"),
                 ...
             ))
         }
@@ -36,7 +37,14 @@
 #'
 #' @noRd
 #' @keywords internal
-.run_linear_model <- function(X, pheno, formula, method = "lm", type = "II", ...) {
+.run_linear_model <- function(
+    X,
+    pheno,
+    formula,
+    method = "lm",
+    type = "II",
+    ...
+) {
     pheno$component <- X
 
     formula <- stats::as.formula(paste0("component", formula))
@@ -56,7 +64,11 @@
     anova_res$term <- rownames(anova_res)
     summary_res$term <- rownames(summary_res)
 
-    return(list("model" = linear_model, "anova" = anova_res, "summary" = summary_res))
+    return(list(
+        "model" = linear_model,
+        "anova" = anova_res,
+        "summary" = summary_res
+    ))
 }
 
 #' Runs linear models for components and sample-level data
@@ -96,12 +108,22 @@
 #' and "summaries" containing the results of running `summary` on the models.
 #'
 #' @export
-associate_components <- function(re, formula, method = "lm",
-    scale_reduced = TRUE, center_reduced = TRUE,
-    type = "II", adj_method = "BH", ...) {
+associate_components <- function(
+    re,
+    formula,
+    method = "lm",
+    scale_reduced = TRUE,
+    center_reduced = TRUE,
+    type = "II",
+    adj_method = "BH",
+    ...
+) {
     models <- list()
     summaries <- anovas <- data.frame()
-    red <- reduced(re, scale_reduced = scale_reduced, center_reduced = center_reduced)
+
+    red <- reduced(re,
+                   scale_reduced = scale_reduced,
+                   center_reduced = center_reduced)
 
     for (comp in componentNames(re)) {
         linear_model <- .run_linear_model(
@@ -132,7 +154,7 @@ associate_components <- function(re, formula, method = "lm",
     return(list("models" = models, "anovas" = anovas, "summaries" = summaries))
 }
 
-#' Adjusts the p-values of model results for multiple testing on a per-term basis
+#' Adjusts the p-values of model results for multiple testing per-term
 #'
 #' @noRd
 #' @keywords internal
@@ -140,7 +162,9 @@ associate_components <- function(re, formula, method = "lm",
     res$adj_pvalue <- NA
 
     for (term in unique(res$term)) {
-        res$adj_pvalue[which(res$term == term)] <- stats::p.adjust(res$pvalue[which(res$term == term)], method = method)
+        res$adj_pvalue[which(res$term == term)] <-
+            stats::p.adjust(res$pvalue[which(res$term == term)],
+                            method = method)
     }
 
     return(res$adj_pvalue)

@@ -10,8 +10,16 @@ setClassUnion("logical_OR_numeric", c("logical", "numeric"))
 .ReducedExperiment <- setClass(
     "ReducedExperiment",
     contains = "SummarizedExperiment",
-    representation = representation(reduced = "matrix", scale = "logical_OR_numeric", center = "logical_OR_numeric"),
-    prototype = prototype(reduced = matrix(), scale = TRUE, center = TRUE)
+    representation = representation(
+        reduced = "matrix",
+        scale = "logical_OR_numeric",
+        center = "logical_OR_numeric"
+    ),
+    prototype = prototype(
+        reduced = matrix(),
+        scale = TRUE,
+        center = TRUE
+    )
 )
 
 #' @import methods
@@ -22,8 +30,14 @@ setClassUnion("logical_OR_numeric", c("logical", "numeric"))
 .FactorisedExperiment <- setClass(
     "FactorisedExperiment",
     contains = "ReducedExperiment",
-    representation = representation(loadings = "matrix", stability = "numeric_OR_NULL"),
-    prototype = prototype(loadings = matrix(), stability = numeric())
+    representation = representation(
+        loadings = "matrix",
+        stability = "numeric_OR_NULL"
+    ),
+    prototype = prototype(
+        loadings = matrix(),
+        stability = numeric()
+    )
 )
 
 #' @import methods
@@ -34,6 +48,14 @@ setClassUnion("logical_OR_numeric", c("logical", "numeric"))
 .ModularExperiment <- setClass(
     "ModularExperiment",
     contains = "ReducedExperiment",
-    representation = representation(loadings = "numeric_OR_NULL", assignments = "character", dendrogram = "ANY", threshold = "data.frame_OR_NULL"),
-    prototype = prototype(loadings = numeric(), assignments = character())
+    representation = representation(
+        loadings = "numeric_OR_NULL",
+        assignments = "character",
+        dendrogram = "ANY",
+        threshold = "data.frame_OR_NULL"
+    ),
+    prototype = prototype(
+        loadings = numeric(),
+        assignments = character()
+    )
 )
