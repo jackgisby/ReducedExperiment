@@ -99,7 +99,7 @@
 .get_airway_data <- function(n_features=NULL) {
 
     # Get data
-    data(airway, package="airway")
+    utils::data("airway", package="airway", envir = environment())
 
     # Remove genes that aren't expressed
     airway <- airway[apply(assay(airway, "counts"), 1, function(x) {all(x != 0)}) ,]
