@@ -45,6 +45,22 @@ necessary to specify the module assignments.}
 
 \item{greyName}{The name of the "module" of unassigned genes. Usually
 "module_0" (ReducedExperiment) or "grey" (WGCNA).}
+
+\item{goldName}{The name to be used for the "gold" module (which is made up
+of a random sample of all network genes). Passed to
+\link[WGCNA]{modulePreservation}.}
+
+\item{networkType}{A string referring to the type of WGCNA network used for
+the reference and test datasets. One of"unsigned", "signed" or
+"signed hybrid". See \link[WGCNA]{adjacency}. Passed to
+\link[WGCNA]{modulePreservation}.}
+
+\item{corFnc}{A string referring to the function to be used to calculate
+correlation. One of "cor" or "bicor". Passed to
+\link[WGCNA]{modulePreservation}.}
+
+\item{...}{Additional arguments to be passed to
+\link[WGCNA]{modulePreservation}.}
 }
 \value{
 A \code{data.frame} containing preservation statistics, as described

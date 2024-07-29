@@ -17,8 +17,10 @@
 \item{scale_reduced}{If \code{TRUE}, data will be scaled column-wise to have a
 standard deviation of 0.}
 
-\item{center_reduced}{If \code{TRUE}, data will be center4ed column-wise to have a mean
+\item{center_reduced}{If \code{TRUE}, data will be centered column-wise to have a mean
 of 0.}
+
+\item{value}{New value to replace existing reduced data matrix.}
 }
 \description{
 Retrieves the reduced data matrix, with samples as rows and reduced

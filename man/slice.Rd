@@ -14,13 +14,17 @@
 \S4method{[}{ReducedExperiment,ANY,ANY,ANY}(x, i, j, k, ..., drop = FALSE)
 }
 \arguments{
+\item{x}{\link[ReducedExperiment]{ReducedExperiment} object.}
+
 \item{i}{Slicing by rows (features, usually genes)}
 
 \item{j}{Slicing by samples}
 
 \item{k}{Slicing by reduced dimensions}
 
-\item{object}{\link[ReducedExperiment]{ReducedExperiment} object.}
+\item{...}{Additional arguments to be passed to the parent method.}
+
+\item{drop}{Included for consistency with other slicing methods.}
 }
 \description{
 Extract and replace parts of ReducedExperiment objects

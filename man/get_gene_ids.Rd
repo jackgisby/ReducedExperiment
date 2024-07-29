@@ -33,13 +33,17 @@ of \link[biomaRt]{useEnsembl}. If \code{mart} is not NULL, this argument is
 ignored.}
 
 \item{mart}{An optional mart object to use. See the \code{mart} argument of
-\link[biomaRt]{getBM}.
+\link[biomaRt]{getBM}. If provided, this object is used to query biomart
+for the conversion of gene IDs. If \code{biomart_out} is not NULL, this argument
+is ignored.}
 
-@param biomart_out An optional \code{data.frame} containing the output of a call
-to \link[biomaRt]{getBM}.
-
-@returns Returns the original object, with additional variables added to
-the \code{rowData} slot.}
+\item{biomart_out}{An optional \code{data.frame} containing the output of a call
+to \link[biomaRt]{getBM}. If provided, this object is used for the conversion
+of gene IDs.}
+}
+\value{
+Returns the original object, with additional variables added to
+the \code{rowData} slot.
 }
 \description{
 Uses \link[biomaRt]{getBM} to get alternative gene IDs for

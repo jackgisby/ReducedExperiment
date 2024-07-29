@@ -61,6 +61,10 @@ analysis.}
 Otherwise, the results will be returned as a list of objects created by either
 \link[clusterProfiler]{enricher}, in the case of overrepresentation
 analysis, or \link[clusterProfiler]{GSEA}, in the case of GSEA.}
+
+\item{...}{Additional arguments to be passed to
+\link[clusterProfiler]{GSEA} (if \code{method == "gsea"}) or
+\link[clusterProfiler]{enricher} (if \code{method == "overrepresentation"}).}
 }
 \description{
 Functional enrichment analyses for dimensionally-reduced data

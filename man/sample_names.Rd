@@ -13,10 +13,9 @@
 }
 \arguments{
 \item{object}{\link[ReducedExperiment]{ReducedExperiment} object.}
+
+\item{value}{New value to replace existing names.}
 }
 \description{
-Retrieves sample names.
-}
-\details{
-Sample names can be modified with \verb{<-}.
+Retrieves sample names (colnames).
 }

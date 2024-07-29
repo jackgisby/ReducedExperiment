@@ -101,8 +101,6 @@ S4Vectors::setValidity2("ModularExperiment", function(object) {
 #' Retrieves a vector of features (usually genes) named by the modules
 #' they belong to.
 #'
-#' The assignments can be modified with `<-`.
-#'
 #' @param object \link[ReducedExperiment]{ModularExperiment} object.
 #'
 #' @param as_list If `TRUE`, the results are returned as a list, with an entry
@@ -141,7 +139,8 @@ setReplaceMethod("assignments", "ModularExperiment", function(object, value) {
 
 #' Get and set loadings
 #'
-#' Retrieves the loadings.
+#' Method for getting and setting loadings for a
+#' \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object or an
 #' object that inherits from this class.
@@ -156,6 +155,8 @@ setReplaceMethod("assignments", "ModularExperiment", function(object, value) {
 #'
 #' @param abs_loadings If `TRUE`, the absolute values of the loadings will be
 #' returned.
+#'
+#' @param value New value to replace existing loadings.
 #'
 #' @details
 #' #' If `object` is a \link[ReducedExperiment]{FactorisedExperiment}, the loadings
@@ -196,31 +197,28 @@ setReplaceMethod("loadings", "ModularExperiment", function(object, value) {
 #' @rdname feature_names
 #' @export
 setReplaceMethod("names", "ModularExperiment", function(x, value) {
-    object <- x
 
-    object@assignments <- stats::setNames(value, names(object@assignments))
-    object@loadings <- stats::setNames(object@loadings, value)
+    x@assignments <- stats::setNames(value, names(x@assignments))
+    x@loadings <- stats::setNames(x@loadings, value)
 
-    object <- callNextMethod(object, value)
-    validObject(object)
+    x <- callNextMethod(x, value)
+    validObject(x)
 
-    return(object)
+    return(x)
 })
 
 #' @rdname feature_names
 #' @export
-setReplaceMethod("featureNames", "ModularExperiment", function(object, value) {
-    names(object) <- value
-    return(object)
+setReplaceMethod("featureNames", "ModularExperiment", function(x, value) {
+    names(x) <- value
+    return(x)
 })
 
 #' @rdname feature_names
 #' @export
 setReplaceMethod("rownames", "ModularExperiment", function(x, value) {
-    object <- x
-
-    names(object) <- value
-    return(object)
+    names(x) <- value
+    return(x)
 })
 
 #' @rdname component_names
@@ -260,6 +258,8 @@ setMethod("nModules", "ModularExperiment", function(object) {
 #' Get the dendrogram stored in a ModularExperiment
 #'
 #' @param object \link[ReducedExperiment]{ModularExperiment} object.
+#'
+#' @param value New value to replace existing dendrogram.
 #'
 #' @rdname module_dendrogram
 #' @name dendrogram
@@ -369,17 +369,21 @@ setMethod(
 #'
 #' @param object \link[ReducedExperiment]{ModularExperiment} object.
 #'
-#' @param groupLabels Module label axis label.
-#' See \link[WGCNA]{plotDendroAndColors}.
+#' @param groupLabels Module label axis label. See
+#' \link[WGCNA]{plotDendroAndColors}.
 #'
-#' @param If TRUE, shows feature names in the dendrogram.
-#' See \link[WGCNA]{plotDendroAndColors}.
+#' @param dendroLabels If TRUE, shows feature names in the dendrogram. See
+#' \link[WGCNA]{plotDendroAndColors}.
 #'
-#' @param hang See \link[WGCNA]{plotDendroAndColors}.
+#' @param hang The fraction of the plot height by which labels should hang
+#' below the rest of the plot. See \link[stats]{plot.hclust}.
 #'
-#' @param addGuide See \link[WGCNA]{plotDendroAndColors}.
+#' @param addGuide If TRUE, adds vertical guide lines to the dendrogram. See
+#' \link[WGCNA]{plotDendroAndColors}.
 #'
-#' @param guideHang See \link[WGCNA]{plotDendroAndColors}.
+#' @param guideHang The fraction of the dendrogram's height to leave between
+#' the top end of the guide line and the dendrogram merge height. See
+#' \link[WGCNA]{plotDendroAndColors}.
 #'
 #' @param color_func Function for converting module names to colors. Only used
 #' if `modules_are_colors` is FALSE
@@ -387,6 +391,9 @@ setMethod(
 #' @param modules_are_colors If TRUE, expects the module names to be colors.
 #' Else, assumes that module names are are numbers that can be converted into
 #' colours by `color_func`.
+#'
+#' @param ... Additional arguments to be passed to
+#' \link[WGCNA]{plotDendroAndColors}.
 #'
 #' @rdname plotDendro
 #' @name plotDendro
@@ -399,7 +406,7 @@ setMethod(
     "plotDendro", c("ModularExperiment"),
     function(object, groupLabels = "Module colors", dendroLabels = FALSE,
     hang = 0.03, addGuide = TRUE, guideHang = 0.05,
-    color_func = WGCNA::labels2colors, modules_are_colors = FALSE) {
+    color_func = WGCNA::labels2colors, modules_are_colors = FALSE, ...) {
         if (!modules_are_colors) {
             colors <- as.numeric(gsub("module_", "", names(assignments(object))))
             colors <- color_func(colors)
@@ -408,7 +415,8 @@ setMethod(
         WGCNA::plotDendroAndColors(dendrogram(object), colors,
             groupLabels = groupLabels,
             dendroLabels = dendroLabels, hang = hang,
-            addGuide = addGuide, guideHang = guideHang
+            addGuide = addGuide, guideHang = guideHang,
+            ...
         )
     }
 )
@@ -464,6 +472,9 @@ setMethod(
 #'
 #' @param return_loadings If True, additionally returns the feature loadings for
 #' the eigengenes.
+#'
+#' @param ... Additional arguments to be passed to
+#' \link[ReducedExperiment]{calcEigengenes}.
 #'
 #' @returns If return_loadings is True, returns a list with the "reduced" matrix
 #' and "loadings" vector (one value per feature). If False, returns only the

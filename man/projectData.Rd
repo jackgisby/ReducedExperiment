@@ -63,6 +63,9 @@ object's \code{center} slot. The value of this argument will be passed to the
 \item{assay_name}{If a \link[SummarizedExperiment]{SummarizedExperiment}
 object is passed as new data, this argument indicates which assay should be
 used for projection.}
+
+\item{...}{Additional arguments to be passed to
+\link[ReducedExperiment]{projectData}.}
 }
 \value{
 Calculates a matrix with samples as rows and factors as columns. If

@@ -42,9 +42,12 @@ column-wise.}
 
 \item{abs_loadings}{If \code{TRUE}, the absolute values of the loadings will be
 returned.}
+
+\item{value}{New value to replace existing loadings.}
 }
 \description{
-Retrieves the loadings.
+Method for getting and setting loadings for a
+\link[ReducedExperiment]{ReducedExperiment} object.
 }
 \details{
 #' If \code{object} is a \link[ReducedExperiment]{FactorisedExperiment}, the loadings

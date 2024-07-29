@@ -23,6 +23,3 @@ for each module containing a list of features.}
 Retrieves a vector of features (usually genes) named by the modules
 they belong to.
 }
-\details{
-The assignments can be modified with \verb{<-}.
-}

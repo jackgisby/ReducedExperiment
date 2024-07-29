@@ -90,6 +90,9 @@ eigengenes are not calculated for modules with sizes below this threshold.}
 \item{assay_name}{If a \link[SummarizedExperiment]{SummarizedExperiment}
 object is passed as new data, this argument indicates which assay should be
 used for projection.}
+
+\item{...}{Additional arguments to be passed to
+\link[ReducedExperiment]{calcEigengenes}.}
 }
 \value{
 If return_loadings is True, returns a list with the "reduced" matrix

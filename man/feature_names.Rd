@@ -18,30 +18,29 @@
 \usage{
 \S4method{names}{FactorisedExperiment}(x) <- value
 
-\S4method{featureNames}{FactorisedExperiment}(object) <- value
+\S4method{featureNames}{FactorisedExperiment}(x) <- value
 
 \S4method{rownames}{FactorisedExperiment}(x) <- value
 
 \S4method{names}{ModularExperiment}(x) <- value
 
-\S4method{featureNames}{ModularExperiment}(object) <- value
+\S4method{featureNames}{ModularExperiment}(x) <- value
 
 \S4method{rownames}{ModularExperiment}(x) <- value
 
-\S4method{featureNames}{ReducedExperiment}(object)
+\S4method{featureNames}{ReducedExperiment}(x)
 
 \S4method{names}{ReducedExperiment}(x) <- value
 
 \S4method{rownames}{ReducedExperiment}(x) <- value
 
-\S4method{featureNames}{ReducedExperiment}(object) <- value
+\S4method{featureNames}{ReducedExperiment}(x) <- value
 }
 \arguments{
-\item{object}{\link[ReducedExperiment]{ReducedExperiment} object.}
+\item{x}{\link[ReducedExperiment]{ReducedExperiment} object.}
+
+\item{value}{New value to replace existing names.}
 }
 \description{
-Retrieves feature names (usually genes).
-}
-\details{
-Feature names can be modified with \verb{<-}.
+Retrieves feature names (rownames, usually genes).
 }

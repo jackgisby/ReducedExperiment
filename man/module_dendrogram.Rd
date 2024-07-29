@@ -13,6 +13,8 @@
 }
 \arguments{
 \item{object}{\link[ReducedExperiment]{ModularExperiment} object.}
+
+\item{value}{New value to replace existing dendrogram.}
 }
 \description{
 Get the dendrogram stored in a ModularExperiment

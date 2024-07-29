@@ -13,7 +13,9 @@
 }
 \arguments{
 \item{object}{\link[ReducedExperiment]{FactorisedExperiment} object.}
+
+\item{value}{New value to replace existing stability vector.}
 }
 \description{
-The stability values can be modified with \verb{<-}.
+Gets the stability values for factors
 }

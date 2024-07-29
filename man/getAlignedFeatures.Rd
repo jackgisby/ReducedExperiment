@@ -4,13 +4,6 @@
 \alias{getAlignedFeatures}
 \alias{getAlignedFeatures,FactorisedExperiment-method}
 \title{Get feature alignments with factors}
-\format{
-The format in which to return the results. If \code{list}, then a list will
-be returned with an entry for each factor, each containing a vector of input
-features. Otherwise, if \code{format} is \code{data.frame}, a data.frame is returned
-with a row for each gene-factor combination. The \code{format} argument can also be
-a function to be applied to the output data.frame before returning the results.
-}
 \usage{
 \S4method{getAlignedFeatures}{FactorisedExperiment}(
   object,
@@ -40,11 +33,14 @@ the \code{loadings}}
 feature ID. Setting this to "rownames" (default) instead uses
 \code{rownames(object)}.}
 
+\item{format}{The format in which to return the results. If \code{list}, then a list will
+be returned with an entry for each factor, each containing a vector of input
+features. Otherwise, if \code{format} is \code{data.frame}, a data.frame is returned
+with a row for each gene-factor combination. The \code{format} argument can also be
+a function to be applied to the output data.frame before returning the results.}
+
 \item{center_loadings}{If \code{TRUE}, loadings will be centered column-wise to have a mean
 of 0.}
-
-\item{scale_loadings}{If \code{TRUE}, loadings will be scaled column-wise to have a
-standard deviation of 0.}
 }
 \description{
 Retrieves features (usually genes) and their alignment (\code{loadings}) with the

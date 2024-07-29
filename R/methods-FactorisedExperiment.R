@@ -115,34 +115,30 @@ setReplaceMethod("loadings", "FactorisedExperiment", function(object, value) {
 #' @rdname feature_names
 #' @export
 setReplaceMethod("names", "FactorisedExperiment", function(x, value) {
-    object <- x
-
-    rownames(object@loadings) <- value
-    object <- callNextMethod(object, value)
-    validObject(object)
-    return(object)
+    rownames(x@loadings) <- value
+    x <- callNextMethod(x, value)
+    validObject(x)
+    return(x)
 })
 
 #' @rdname feature_names
-setReplaceMethod("featureNames", "FactorisedExperiment", function(object, value) {
-    names(object) <- value
-    return(object)
+setReplaceMethod("featureNames", "FactorisedExperiment", function(x, value) {
+    names(x) <- value
+    return(x)
 })
 
 #' @rdname feature_names
 #' @export
 setReplaceMethod("rownames", "FactorisedExperiment", function(x, value) {
-    object <- x
-
-    names(object) <- value
-    return(object)
+    names(x) <- value
+    return(x)
 })
 
 #' Gets the stability values for factors
 #'
-#' The stability values can be modified with `<-`.
-#'
 #' @param object \link[ReducedExperiment]{FactorisedExperiment} object.
+#'
+#' @param value New value to replace existing stability vector.
 #'
 #' @rdname stability
 #' @name stability
@@ -276,6 +272,9 @@ setMethod("cbind", "FactorisedExperiment", function(..., deparse.level = 1) {
 #' object is passed as new data, this argument indicates which assay should be
 #' used for projection.
 #'
+#' @param ... Additional arguments to be passed to
+#' \link[ReducedExperiment]{projectData}.
+#'
 #' @returns Calculates a matrix with samples as rows and factors as columns. If
 #' `newdata` was a `matrix` or `data.frame`, this will be returned as a matrix.
 #' If a \link[SummarizedExperiment]{SummarizedExperiment} object was passed
@@ -352,14 +351,11 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
 #' feature ID. Setting this to "rownames" (default) instead uses
 #' `rownames(object)`.
 #'
-#' @format The format in which to return the results. If `list`, then a list will
+#' @param format The format in which to return the results. If `list`, then a list will
 #' be returned with an entry for each factor, each containing a vector of input
 #' features. Otherwise, if `format` is `data.frame`, a data.frame is returned
 #' with a row for each gene-factor combination. The `format` argument can also be
 #' a function to be applied to the output data.frame before returning the results.
-#'
-#' @param scale_loadings If `TRUE`, loadings will be scaled column-wise to have a
-#' standard deviation of 0.
 #'
 #' @param center_loadings If `TRUE`, loadings will be centered column-wise to have a mean
 #' of 0.
@@ -458,6 +454,10 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object, load
 #' @param proportional_threshold Factors only: See
 #' \link[ReducedExperiment]{getAlignedFeatures}. Only relevant for overresentation
 #' analysis.
+#'
+#' @param ... Additional arguments to be passed to
+#' \link[clusterProfiler]{GSEA} (if `method == "gsea"`) or
+#' \link[clusterProfiler]{enricher} (if `method == "overrepresentation"`).
 #'
 #' @details
 #' When running module analysis, the overrepresentation method identifies

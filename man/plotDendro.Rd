@@ -13,20 +13,28 @@
   addGuide = TRUE,
   guideHang = 0.05,
   color_func = WGCNA::labels2colors,
-  modules_are_colors = FALSE
+  modules_are_colors = FALSE,
+  ...
 )
 }
 \arguments{
 \item{object}{\link[ReducedExperiment]{ModularExperiment} object.}
 
-\item{groupLabels}{Module label axis label.
-See \link[WGCNA]{plotDendroAndColors}.}
+\item{groupLabels}{Module label axis label. See
+\link[WGCNA]{plotDendroAndColors}.}
 
-\item{hang}{See \link[WGCNA]{plotDendroAndColors}.}
+\item{dendroLabels}{If TRUE, shows feature names in the dendrogram. See
+\link[WGCNA]{plotDendroAndColors}.}
 
-\item{addGuide}{See \link[WGCNA]{plotDendroAndColors}.}
+\item{hang}{The fraction of the plot height by which labels should hang
+below the rest of the plot. See \link[stats]{plot.hclust}.}
 
-\item{guideHang}{See \link[WGCNA]{plotDendroAndColors}.}
+\item{addGuide}{If TRUE, adds vertical guide lines to the dendrogram. See
+\link[WGCNA]{plotDendroAndColors}.}
+
+\item{guideHang}{The fraction of the dendrogram's height to leave between
+the top end of the guide line and the dendrogram merge height. See
+\link[WGCNA]{plotDendroAndColors}.}
 
 \item{color_func}{Function for converting module names to colors. Only used
 if \code{modules_are_colors} is FALSE}
@@ -35,8 +43,8 @@ if \code{modules_are_colors} is FALSE}
 Else, assumes that module names are are numbers that can be converted into
 colours by \code{color_func}.}
 
-\item{If}{TRUE, shows feature names in the dendrogram.
-See \link[WGCNA]{plotDendroAndColors}.}
+\item{...}{Additional arguments to be passed to
+\link[WGCNA]{plotDendroAndColors}.}
 }
 \description{
 Gets the dendrogram and plots it using

@@ -111,8 +111,10 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
 #' @param scale_reduced If `TRUE`, data will be scaled column-wise to have a
 #' standard deviation of 0.
 #'
-#' @param center_reduced If `TRUE`, data will be center4ed column-wise to have a mean
+#' @param center_reduced If `TRUE`, data will be centered column-wise to have a mean
 #' of 0.
+#'
+#' @param value New value to replace existing reduced data matrix.
 #'
 #' @rdname reduced
 #' @name reduced
@@ -166,11 +168,11 @@ setReplaceMethod("componentNames", "ReducedExperiment", function(object, value) 
 
 #' Get feature names
 #'
-#' Retrieves feature names (usually genes).
+#' Retrieves feature names (rownames, usually genes).
 #'
-#' Feature names can be modified with `<-`.
+#' @param x \link[ReducedExperiment]{ReducedExperiment} object.
 #'
-#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#' @param value New value to replace existing names.
 #'
 #' @rdname feature_names
 #' @name featureNames
@@ -180,42 +182,41 @@ NULL
 
 #' @rdname feature_names
 #' @export
-setMethod("featureNames", "ReducedExperiment", function(object) {
-    return(names(object))
+setMethod("featureNames", "ReducedExperiment", function(x) {
+    return(names(x))
 })
 
 #' @rdname feature_names
 #' @export
 setReplaceMethod("names", "ReducedExperiment", function(x, value) {
-    object <- callNextMethod(x, value)
-    if (!is.logical(object@scale)) names(object@scale) <- value
-    if (!is.logical(object@center)) names(object@center) <- value
-    validObject(object)
-    return(object)
+    x <- callNextMethod(x, value)
+    if (!is.logical(x@scale)) names(x@scale) <- value
+    if (!is.logical(x@center)) names(x@center) <- value
+    validObject(x)
+    return(x)
 })
 
 #' @rdname feature_names
 #' @export
 setReplaceMethod("rownames", "ReducedExperiment", function(x, value) {
-    object <- x
-    names(object) <- value
-    return(object)
+    names(x) <- value
+    return(x)
 })
 
 #' @rdname feature_names
 #' @export
-setReplaceMethod("featureNames", "ReducedExperiment", function(object, value) {
-    names(object) <- value
-    return(object)
+setReplaceMethod("featureNames", "ReducedExperiment", function(x, value) {
+    names(x) <- value
+    return(x)
 })
 
 #' Get sample names
 #'
-#' Retrieves sample names.
-#'
-#' Sample names can be modified with `<-`.
+#' Retrieves sample names (colnames).
 #'
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @param value New value to replace existing names.
 #'
 #' @rdname sample_names
 #' @name sampleNames
@@ -257,13 +258,17 @@ setMethod(
 
 #' Extract and replace parts of ReducedExperiment objects
 #'
-#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#' @param x \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @param i Slicing by rows (features, usually genes)
 #'
 #' @param j Slicing by samples
 #'
 #' @param k Slicing by reduced dimensions
+#'
+#' @param drop Included for consistency with other slicing methods.
+#'
+#' @param ... Additional arguments to be passed to the parent method.
 #'
 #' @rdname slice
 #' @export
@@ -423,13 +428,16 @@ setMethod("nFeatures", "ReducedExperiment", function(object) {
 #' ignored.
 #'
 #' @param mart An optional mart object to use. See the `mart` argument of
-#'  \link[biomaRt]{getBM}.
+#' \link[biomaRt]{getBM}. If provided, this object is used to query biomart
+#' for the conversion of gene IDs. If `biomart_out` is not NULL, this argument
+#' is ignored.
 #'
-#'  @param biomart_out An optional `data.frame` containing the output of a call
-#'  to \link[biomaRt]{getBM}.
+#' @param biomart_out An optional `data.frame` containing the output of a call
+#' to \link[biomaRt]{getBM}. If provided, this object is used for the conversion
+#' of gene IDs.
 #'
-#'  @returns Returns the original object, with additional variables added to
-#'  the `rowData` slot.
+#' @returns Returns the original object, with additional variables added to
+#' the `rowData` slot.
 #'
 #' @import biomaRt
 #'
@@ -441,13 +449,14 @@ NULL
 #' @rdname get_gene_ids
 #' @export
 setMethod("getGeneIDs", "ReducedExperiment", function(
-        object,
-        gene_id_col = "rownames",
-        gene_id_type = "ensembl_gene_id",
-        ids_to_get = c("hgnc_symbol", "entrezgene_id"),
-        dataset = "hsapiens_gene_ensembl",
-        mart = NULL,
-        biomart_out = NULL) {
+    object,
+    gene_id_col = "rownames",
+    gene_id_type = "ensembl_gene_id",
+    ids_to_get = c("hgnc_symbol", "entrezgene_id"),
+    dataset = "hsapiens_gene_ensembl",
+    mart = NULL,
+    biomart_out = NULL
+) {
     if (gene_id_col == "rownames") {
         rowData(object)[[gene_id_type]] <- rownames(object)
     } else {

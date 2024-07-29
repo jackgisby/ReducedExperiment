@@ -16,8 +16,8 @@ setGeneric("moduleNames<-", function(object, value) standardGeneric("moduleNames
 setGeneric("sampleNames", function(object) standardGeneric("sampleNames"))
 setGeneric("sampleNames<-", function(object, value) standardGeneric("sampleNames<-"))
 
-setGeneric("featureNames", function(object) standardGeneric("featureNames"))
-setGeneric("featureNames<-", function(object, value) standardGeneric("featureNames<-"))
+setGeneric("featureNames", function(x) standardGeneric("featureNames"))
+setGeneric("featureNames<-", function(x, value) standardGeneric("featureNames<-"))
 
 setGeneric("projectData", function(object, newdata, ...) standardGeneric("projectData"))
 setGeneric("calcEigengenes", function(object, newdata, ...) standardGeneric("calcEigengenes"))
