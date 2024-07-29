@@ -43,6 +43,52 @@ dir.create("tempOutput")
 
 # Introduction
 
+The `ReducedExperiment` package implements classes for applying dimensionality
+reduction approaches to high-dimensional datasets, such as gene expression 
+datasets produced by RNA sequencing. 
+
+These objects are derived from the `SummarizedExperiment` class available from
+Bioconductor 
+(https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html).
+
+`SummarizedExperiment` objects can store matrices, where rows represent features
+(e.g., genes) and columns represent samples. Additional information on the
+features and samples can be retrieved from the object using the `rowData` and
+`colData` functions, respectively. 
+
+The key benefit of `SummarizedExperiment` objects is that they allow for both
+assay and metadata to be kept in sync while slicing and reordering the features
+or samples of an object. The `ReducedExperiment` objects inherit methods from
+`SummarizedExperiment`, so the methods available for a `SummarizedExperiment`
+object will also work on `ReducedExperiment`s. 
+
+When applying dimensionality reduction to high-dimensional datasets, we 
+introduce additional complexity. In addition to assay, row and column data, we
+usually generate additional data matrices. For instance, methods like PCA or 
+factor analysis tend to estimate a new matrix, with samples as rows and 
+factors or components as columns. These methods also usually generate a loadings 
+or rotation matrix, with features as rows and factors/components as columns.
+
+The `ReducedExperiment` objects extend `SummarizedExperiment` by allowing for
+the storage and slicing of these additional matrices. This package implements 
+`ReducedExperiment`, a high-level class that can store an additional matrix with 
+samples as rows and reduced dimensions as columns. We also implemented two 
+additional child classes for working with common dimensionality reduction 
+methods.
+
+The results of factor analysis can be stored in the `FactorisedExperiment` 
+class, which additionally allows for the storage of a loadings matrix. The
+`ModularExperiment` class is built to store analyses based on gene modules,
+such as "Weighted Gene Correlation Network Analysis" (WGCNA), a popular method 
+used to analyse transcriptomic datasets.
+
+For convenience, functions are provided to perform these analyses on 
+high-dimensional datasets stored in `SummarizedExperiment` objects. We implement
+a method for identifying factors based on Independent Component Analysis, and
+wrappers are provided for applying WGCNA. 
+
+# Creating and using ReducedExperiment objects
+
 For the purposes of this vignette, we will be working with some RNA sequencing
 data generated for patients with COVID-19. The data were published in the 
 following paper: https://www.nature.com/articles/s41467-022-35454-4
@@ -63,8 +109,8 @@ will be used as a validation set.
 ```{r load_data}
 
 # TODO: Implement data loading best practices and document
-wave1_se <- readRDS("../inst/extdata/wave1.rds")
-wave2_se <- readRDS("../inst/extdata/wave2.rds")
+wave1_se <- readRDS(system.file("extdata", "wave1.rds", package = "ReducedExperiment"))
+wave2_se <- readRDS(system.file("extdata", "wave2.rds", package = "ReducedExperiment"))
 
 assay(wave1_se, "normal") <- assay(wave1_se, "cpm")
 assay(wave2_se, "normal") <- assay(wave2_se, "cpm")
