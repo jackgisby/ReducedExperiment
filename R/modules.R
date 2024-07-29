@@ -69,7 +69,7 @@ identify_modules <- function(X, center_X=TRUE, scale_X=TRUE, assay_name="normal"
                              center=center_X, scale=scale_X,
                              dendrogram=dendrogram, threshold=threshold,
                              assays=assays(se), rowData=rowData(se),
-                             colData=colData(se), metadata=metadata(se)))
+                             colData=colData(se), metadata=S4Vectors::metadata(se)))
 }
 
 #' Run WGCNA for a data matrix
@@ -143,7 +143,7 @@ identify_modules <- function(X, center_X=TRUE, scale_X=TRUE, assay_name="normal"
 #' then "grey" represents unclustered genes.
 #'
 #' @returns Returns a list containing:
-#' \itemize{
+#' \describe{
 #'  \item{"E"}{The reduced data (eigengenes).}
 #'  \item{"L"}{The module loadings. This represents the values of the PCA
 #'  rotation matrix for the first principal component generated for each

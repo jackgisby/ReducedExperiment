@@ -74,11 +74,11 @@ to have a mean of 0 and a standard deviation of 1.}
 \value{
 Returns a list containing:
 \itemize{
-\item{"E"}{The reduced data (eigengenes).}
-\item{"L"}{The module loadings. This represents the values of the PCA
+\describe{"E"}{The reduced data (eigengenes).}
+\describe{"L"}{The module loadings. This represents the values of the PCA
 rotation matrix for the first principal component generated for each
 module.}
-\item{"assignments"}{A named vector representing the assignments of
+\describe{"assignments"}{A named vector representing the assignments of
 genes to modules.}
 }
 }

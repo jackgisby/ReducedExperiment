@@ -152,8 +152,8 @@ setReplaceMethod("loadings", "ModularExperiment", function(object, value) {
 setReplaceMethod("names", "ModularExperiment", function(x, value) {
     object <- x
 
-    object@assignments <- setNames(value, names(object@assignments))
-    object@loadings <- setNames(object@loadings, value)
+    object@assignments <- stats::setNames(value, names(object@assignments))
+    object@loadings <- stats::setNames(object@loadings, value)
 
     object <- callNextMethod(object, value)
     validObject(object)
@@ -423,10 +423,6 @@ setMethod("calcEigengenes", c("ModularExperiment", "matrix"),
     } else {
 
         eigengenes <- .calculate_eigengenes(newdata, moduleNames(object), assignments(object), realign=realign)
-
-        # eig <- WGCNA::moduleEigengenes(t(newdata), setNames(names(assignments(object)), assignments(object)), ...)
-        # colnames(eig$eigengenes) <- gsub("ME", "", colnames(eig$eigengenes))
-        # red <- eig$eigengenes
     }
 
     if (scale_reduced) eigengenes$red <- scale(eigengenes$red)

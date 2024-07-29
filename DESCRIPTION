@@ -18,7 +18,6 @@ Imports:
     WGCNA,
     ica,
     moments,
-    MASS,
     clusterProfiler,
     msigdbr,
     RColorBrewer, 
@@ -31,7 +30,8 @@ Imports:
     grDevices,
     BiocParallel,
     ggplot2,
-    patchwork
+    patchwork,
+    BiocGenerics
 Suggests:
     knitr,
     rmarkdown,

@@ -255,7 +255,7 @@ plot_common_features <- function(common_features, filename=NA,
 #'
 #' @param test_dataset The dataset that will be used to test for module
 #' preservation. Must be a `data.frame` or `matrix` with features as rows and
-#' samples as columns, or a link[SummarizedExperiment]{SummarizedExperiment}
+#' samples as columns, or a \link[SummarizedExperiment]{SummarizedExperiment}
 #' object. The features of `test_dataset` should be the same as
 #' `reference_dataset`.
 #'
@@ -314,7 +314,7 @@ module_preservation <- function(reference_dataset, test_dataset,
 
     return(WGCNA::modulePreservation(
         multi_data,
-        list("reference" = setNames(names(module_assignments), module_assignments)),
+        list("reference" = stats::setNames(names(module_assignments), module_assignments)),
         dataIsExpr = TRUE,
         networkType = networkType,
         corFnc = corFnc,
@@ -361,13 +361,13 @@ plot_module_preservation <- function(module_preservation_results, show_random = 
     nudge_mr <- 0.14
     nudge_zs <- 0.4
 
-    medianrank_plot <- ggplot(mr_df, aes(moduleSize, medianRank.pres, col = module)) +
+    medianrank_plot <- ggplot(mr_df, aes_string("moduleSize", "medianRank.pres", col = "module")) +
         geom_point(size = 3) +
         geom_text(aes(label = module), col = "black", nudge_y = nudge_mr, hjust = 0) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) + expand_limits(y = 0)
 
-    zsummary_plot <- ggplot(zs_df, aes(moduleSize, Zsummary.pres, col = module)) +
+    zsummary_plot <- ggplot(zs_df, aes_string("moduleSize", "Zsummary.pres", col = "module")) +
         geom_point(size = 3) +
         geom_text(aes(label = module), col = "black", nudge_y = nudge_zs, hjust = 0) +
         theme(legend.position = "none") +

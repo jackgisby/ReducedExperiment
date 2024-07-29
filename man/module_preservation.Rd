@@ -25,7 +25,7 @@ columns, or a \link[ReducedExperiment]{ModularExperiment} or
 
 \item{test_dataset}{The dataset that will be used to test for module
 preservation. Must be a \code{data.frame} or \code{matrix} with features as rows and
-samples as columns, or a link[SummarizedExperiment]{SummarizedExperiment}
+samples as columns, or a \link[SummarizedExperiment]{SummarizedExperiment}
 object. The features of \code{test_dataset} should be the same as
 \code{reference_dataset}.}
 
