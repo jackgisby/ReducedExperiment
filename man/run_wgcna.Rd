@@ -13,7 +13,6 @@ run_wgcna(
   networkType = "signed",
   module_labels = "numbers",
   maxBlockSize = 30000,
-  seed = 1,
   verbose = 0,
   return_full_output = FALSE,
   scale_reduced = TRUE,
@@ -54,8 +53,6 @@ datasets in a single chunk. Results may differ if the number of features
 exceeds the chunk size. Lower values of this parameter may use less memory
 to calculate networks.}
 
-\item{seed}{The random seed.}
-
 \item{verbose}{The verbosity, passed to \link[WGCNA]{blockwiseModules}.}
 
 \item{return_full_output}{If FALSE (default), returns the results specified
@@ -70,6 +67,8 @@ to have a mean of 0 and a standard deviation of 1.}
 
 \item{...}{Additional arguments to be passed to
 \link[WGCNA]{blockwiseModules}.}
+
+\item{seed}{The random seed.}
 }
 \value{
 Returns a list containing:

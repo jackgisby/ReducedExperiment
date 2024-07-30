@@ -340,10 +340,12 @@ setMethod(
 setMethod("cbind", "ModularExperiment", function(..., deparse.level = 1) {
     args <- list(...)
 
-    loadings_assignments_equal <- sapply(args, function(re) {
-        return(identical(re@loadings, args[[1]]@loadings) &
-            identical(re@assignments, args[[1]]@assignments))
-    })
+    loadings_assignments_equal <- vapply(args, function(re) {
+        return(identical(re@loadings, args[[1]]@loadings)
+               & identical(re@assignments, args[[1]]@assignments))
+    },
+        FUN.VALUE = FALSE
+    )
 
     if (!all(loadings_assignments_equal)) {
         stop("Row bind expects loadings and assignments slots are equal")

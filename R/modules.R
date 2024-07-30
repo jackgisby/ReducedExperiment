@@ -189,9 +189,8 @@ run_wgcna <- function(
         min_r_squared = 0.85, max_mean_connectivity = 100,
         corType = "pearson", networkType = "signed",
         module_labels = "numbers", maxBlockSize = 30000,
-        seed = 1, verbose = 0, return_full_output = FALSE,
+        verbose = 0, return_full_output = FALSE,
         scale_reduced = TRUE, ...) {
-    set.seed(seed)
 
     if (maxBlockSize < nrow(X)) {
         warning("maxBlockSize < total features, module detection will be

@@ -368,10 +368,12 @@ setMethod("cbind", "ReducedExperiment", function(..., deparse.level = 1) {
 
     reduced <- do.call(rbind, lapply(args, reduced))
 
-    std_slots_equal <- sapply(args, function(re) {
-        return(identical(re@scale, args[[1]]@scale) &
-            identical(re@center, args[[1]]@center))
-    })
+    std_slots_equal <- vapply(args, function(re) {
+        return(identical(re@scale, args[[1]]@scale)
+               & identical(re@center, args[[1]]@center))
+    },
+        FUN.VALUE = FALSE
+    )
 
     if (all(std_slots_equal)) {
         args[[1]] <- BiocGenerics:::replaceSlots(

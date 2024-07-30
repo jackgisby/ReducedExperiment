@@ -244,10 +244,12 @@ setMethod(
 setMethod("cbind", "FactorisedExperiment", function(..., deparse.level = 1) {
     args <- list(...)
 
-    loadings_stability_equal <- sapply(args, function(re) {
-        return(identical(re@loadings, args[[1]]@loadings) &
-            identical(re@stability, args[[1]]@stability))
-    })
+    loadings_stability_equal <- vapply(args, function(re) {
+        return(identical(re@loadings, args[[1]]@loadings)
+               & identical(re@stability, args[[1]]@stability))
+    },
+        FUN.VALUE = FALSE
+    )
 
     if (!all(loadings_stability_equal)) {
         stop("Row bind expects loadings and stability slots are equal.
