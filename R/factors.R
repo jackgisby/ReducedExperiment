@@ -254,7 +254,7 @@ run_ica <- function(
     rownames(ica_res$M) <- colnames(X)
     rownames(ica_res$S) <- rownames(X)
     colnames(ica_res$M) <- colnames(ica_res$S) <-
-        paste0("factor_", 1:ncol(ica_res$S))
+        paste0("factor_", seq_len(ncol(ica_res$S)))
 
     if (use_stability) names(ica_res$stab) <- colnames(ica_res$S)
 
@@ -303,7 +303,7 @@ run_ica <- function(
             ...
         )$S
 
-        colnames(S) <- paste0("seed_", i, "_", 1:ncol(S))
+        colnames(S) <- paste0("seed_", i, "_", seq_len(ncol(S)))
         if (ncol(S) != nc) warning("ICA did not return expected number of
                                    factors, potentially indicating a rank
                                    deficiency in the input")
@@ -312,7 +312,7 @@ run_ica <- function(
     }
 
     S_all <- BiocParallel::bplapply(
-        1:n_runs,
+        seq_len(n_runs),
         .ica_random,
         BPPARAM = BPPARAM,
         nc = nc,
@@ -333,11 +333,11 @@ run_ica <- function(
         matrix(
             nrow = nrow(S_all),
             ncol = nc,
-            dimnames = list(rownames(S_all), 1:nc)
+            dimnames = list(rownames(S_all), seq_len(nc))
         )
     )
 
-    for (comp in 1:nc) {
+    for (comp in seq_len(nc)) {
         cluster_labels <- names(S_clust)[S_clust == comp]
         non_cluster_labels <-
             names(S_clust)[!names(S_clust) %in% cluster_labels]
@@ -388,7 +388,7 @@ run_ica <- function(
 #' @keywords internal
 .reorient_factors <- function(S) {
     skew <- ifelse(apply(S, 2, moments::skewness) >= 0, 1, -1)
-    for (i in 1:ncol(S)) {
+    for (i in seq_len(ncol(S))) {
         S[, i] <- S[, i] * skew[i]
     }
     return(S)

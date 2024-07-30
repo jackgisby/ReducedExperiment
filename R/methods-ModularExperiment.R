@@ -235,7 +235,7 @@ setReplaceMethod("componentNames", "ModularExperiment", function(object, value) 
     object <- callNextMethod(object, value)
     new_names <- colnames(object@reduced)
 
-    for (i in 1:length(curr_names)) {
+    for (i in seq_len(length(curr_names))) {
         names(object@assignments)[
             which(names(object@assignments) == curr_names[i])
         ] <- new_names[i]

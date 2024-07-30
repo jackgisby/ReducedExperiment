@@ -258,7 +258,7 @@ run_wgcna <- function(
             color_table <- color_table[which(names(color_table) != "grey")]
 
             color_table <- stats::setNames(
-                1:length(color_table),
+                seq_len(length(color_table)),
                 names(color_table)
             )
             color_table <- c(color_table, "grey" = 0)
@@ -267,11 +267,11 @@ run_wgcna <- function(
         }
 
         converter <- .colors2numbers(wgcna_res$assignments)
-        for (i in 1:length(wgcna_res$assignments)) {
+        for (i in seq_len(length(wgcna_res$assignments))) {
             wgcna_res$assignments[i] <-
                 converter[which(names(converter) == wgcna_res$assignments[i])]
         }
-        for (i in 1:length(colnames(wgcna_res$E))) {
+        for (i in seq_len(length(colnames(wgcna_res$E))) ){
             colnames(wgcna_res$E)[i] <-
                 converter[which(names(converter) == colnames(wgcna_res$E)[i])]
         }

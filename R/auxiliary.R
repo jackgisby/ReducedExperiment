@@ -16,8 +16,8 @@
 .makeRandomData <- function(r, c, rname, cname) {
     m <- matrix(stats::rnorm(n = r * c), nrow = r, ncol = c)
 
-    rownames(m) <- as.character(paste0(rname, "_", 1:r))
-    colnames(m) <- as.character(paste0(cname, "_", 1:c))
+    rownames(m) <- as.character(paste0(rname, "_", seq_len(r)))
+    colnames(m) <- as.character(paste0(cname, "_", seq_len(c)))
 
     return(m)
 }
@@ -77,7 +77,7 @@
 #' @noRd
 #' @keywords internal
 .createRandomisedModularExperiment <- function(i, j, k) {
-    assignments <- paste0("gene_", 1:i)
+    assignments <- paste0("gene_", seq_len(i))
     names(assignments) <- paste0("module_", round(stats::runif(i, 1, k), 0))
 
     return(ModularExperiment(
