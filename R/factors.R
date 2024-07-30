@@ -207,7 +207,7 @@ run_ica <- function(
         reorient_skewed = TRUE,
         scale_components = TRUE, scale_reduced = TRUE,
         n_runs = 30,
-        BPPARAM = BiocParallel::SerialParam(),
+        BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
         ...) {
 
     if (center_X | scale_X) {
@@ -282,8 +282,8 @@ run_ica <- function(
         return_centrotypes = TRUE,
         ...) {
     .ica_random <- function(i, nc, method, resample) {
+
         # Randomly initialises ICA
-        set.seed(i)
         Rmat <- matrix(stats::rnorm(nc**2), nrow = nc, ncol = nc)
 
         if (resample) {
@@ -303,7 +303,7 @@ run_ica <- function(
             ...
         )$S
 
-        colnames(S) <- paste0("seed_", i, "_", seq_len(ncol(S)))
+        colnames(S) <- paste0("iteration_", i, "_", seq_len(ncol(S)))
         if (ncol(S) != nc) warning("ICA did not return expected number of
                                    factors, potentially indicating a rank
                                    deficiency in the input")
@@ -495,13 +495,20 @@ run_ica <- function(
 #'
 #' @export
 estimate_stability <- function(
-        X, min_components = 10, max_components = 60,
-        by = 2, n_runs = 30, resample = FALSE,
-        mean_stability_threshold = NULL,
-        center_X = TRUE, scale_X = FALSE,
-        assay_name = "normal",
-        BPPARAM = BiocParallel::SerialParam(),
-        verbose = TRUE, ...) {
+    X,
+    min_components = 10,
+    max_components = 60,
+    by = 2,
+    n_runs = 30,
+    resample = FALSE,
+    mean_stability_threshold = NULL,
+    center_X = TRUE,
+    scale_X = FALSE,
+    assay_name = "normal",
+    BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
+    verbose = TRUE,
+    ...
+) {
     if (inherits(X, "SummarizedExperiment")) {
         X <- assay(X, "normal")
     }
@@ -600,9 +607,11 @@ plot_stability <- function(
         height = 4, width = 10, ...) {
     if (is.list(stability)) stability <- stability[["stability"]]
 
-    stab_plot <- ggplot(stability, aes_string("component_number", "stability",
-        group = "nc"
-    )) +
+    stab_plot <- ggplot(stability, aes(
+            !!sym("component_number"),
+            !!sym("stability"),
+            group = !!sym("nc")
+        )) +
         geom_line() +
         ylim(c(0, 1)) +
         ylab("Component stability") +
@@ -619,10 +628,8 @@ plot_stability <- function(
         mean
     )
 
-    mean_stab_plot <- ggplot(
-        stabilities_agg,
-        aes_string("nc", "stability", group = "1")
-    ) +
+    mean_stab_plot <- ggplot(stabilities_agg,
+                             aes(!!sym("nc"), !!sym("stability"), group = 1))  +
         geom_line() +
         ylim(c(0, 1)) +
         ylab("Mean component stability") +

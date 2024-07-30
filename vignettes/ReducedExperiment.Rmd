@@ -38,6 +38,8 @@ library(ggplot2)
 theme_set(theme_bw())
 
 dir.create("tempOutput")
+
+set.seed(1)
 ```
 
 # Introduction
@@ -139,7 +141,6 @@ acceptable stability. There is an apparent elbow in the first curve between
 
 ```{r estimate_stability, eval=FALSE}
 
-set.seed(1)
 stability_res <- estimate_stability(
     wave1_se,
     n_runs = 30,
@@ -156,7 +157,6 @@ results in the identification of 34 factors.
 
 ```{r run_factor_analysis}
 
-set.seed(1)
 wave1_fe <- estimate_factors(
     wave1_se,
     nc = 35,
