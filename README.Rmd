@@ -1,0 +1,89 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    fig.path = "man/figures/README-",
+    out.width = "100%"
+)
+```
+
+# ReducedExperiment
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/jackgisby/ReducedExperiment/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/jackgisby/ReducedExperiment/graph/badge.svg?token=FHNH7AA6S3)](https://codecov.io/gh/jackgisby/ReducedExperiment)
+[![GitHub issues](https://img.shields.io/github/issues/jackgisby/ReducedExperiment)](https://github.com/jackgisby/ReducedExperiment/issues)
+[![GitHub pulls](https://img.shields.io/github/issues-pr/jackgisby/ReducedExperiment)](https://github.com/jackgisby/ReducedExperiment/pulls)
+<!-- badges: end -->
+
+# ReducedExperiment <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" />
+
+ReducedExperiment provides SummarizedExperiment-like containers for storing and
+manipulating dimensionally-reduced assay data. The ReducedExperiment
+classes allow users to simultaneously manipulate their original dataset
+and their decomposed data, in addition to other method-specific outputs
+like feature loadings. Implements utilities and specialised classes for the 
+application of stabilised independent component analysis (sICA) and 
+weighted gene correlation network analysis (WGCNA).
+
+## Installation instructions
+
+Get the latest stable `R` release from [CRAN](http://cran.r-project.org/). Then install `ReducedExperiment` from [Bioconductor](http://bioconductor.org/) using the following code:
+
+```{r 'install', eval = FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+
+BiocManager::install("ReducedExperiment")
+```
+
+And the development version from [GitHub](https://github.com/jackgisby/ReducedExperiment) with:
+
+```{r 'install_dev', eval = FALSE}
+BiocManager::install("jackgisby/ReducedExperiment")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example, eval = requireNamespace('ReducedExperiment')}
+library("ReducedExperiment")
+## basic example code
+```
+
+## Citation
+
+Below is the citation output from using `citation('ReducedExperiment')` in R. Please
+run this yourself to check for any updates on how to cite __ReducedExperiment__.
+
+```{r 'citation', eval = requireNamespace('ReducedExperiment')}
+print(citation('ReducedExperiment'), bibtex = TRUE)
+```
+
+Please note that the `ReducedExperiment` was only made possible thanks to many other R and bioinformatics software authors, which are cited either in the vignette.
+
+## Code of Conduct
+
+Please note that the `ReducedExperiment` project is released with a [Contributor Code of Conduct](http://bioconductor.org/about/code-of-conduct/). By contributing to this project, you agree to abide by its terms.
+
+## Development tools
+
+* Continuous code testing is possible thanks to [GitHub actions](https://www.tidyverse.org/blog/2020/04/usethis-1-6-0/)  through `r BiocStyle::CRANpkg('usethis')`, `r BiocStyle::CRANpkg('remotes')`, and `r BiocStyle::CRANpkg('rcmdcheck')` customized to use [Bioconductor's docker containers](https://www.bioconductor.org/help/docker/) and `r BiocStyle::Biocpkg('BiocCheck')`.
+* Code coverage assessment is possible thanks to [codecov](https://codecov.io/gh) and `r BiocStyle::CRANpkg('covr')`.
+* The [documentation website](http://jackgisby.github.io/ReducedExperiment) is automatically updated thanks to `r BiocStyle::CRANpkg('pkgdown')`.
+* The code is styled automatically thanks to `r BiocStyle::CRANpkg('styler')`.
+* The documentation is formatted thanks to `r BiocStyle::CRANpkg('devtools')` and `r BiocStyle::CRANpkg('roxygen2')`.
+
+For more details, check the `dev` directory.
+
+This package was developed using `r BiocStyle::Biocpkg('biocthis')`.
+
+

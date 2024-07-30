@@ -1,0 +1,18 @@
+pkgVer <- function(pkg) {
+    if (!exists("meta") || is.null(meta)) meta <- packageDescription(pkg)
+    ver <- meta$Version
+    paste0('https://github.com/jackgisby/ReducedExperiment/', pkg, ' - R package version ', ver)
+}
+
+c(
+    bibentry(bibtype="manual",
+        title = "ReducedExperiment",
+        author = personList(
+            as.person("jackgisby")
+        ),
+        year = format(Sys.Date(), "%Y"),
+        url = "http://www.bioconductor.org/packages/ReducedExperiment",
+        note = pkgVer('ReducedExperiment'),
+        doi = '10.18129/B9.bioc.ReducedExperiment'
+    )
+)

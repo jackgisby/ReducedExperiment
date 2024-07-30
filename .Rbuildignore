@@ -5,4 +5,8 @@
 import_scripts.R
 vignettes/tempOutput
 tests/testthat/testthat-problems.rds
+tests/testthat/Rplots.pdf
+permutedStats-actualModules.RData
 codecov.yml
+^README\.Rmd$
+^dev$

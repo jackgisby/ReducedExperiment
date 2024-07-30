@@ -5,6 +5,7 @@ Version: 0.1.2
 Authors@R: 
     person("Jack", "Gisby", , "jackgisby@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-0511-8123"))
+Date: 2024-07-30
 Description: Provides SummarizedExperiment-like containers for storing and
     manipulating dimensionally-reduced assay data. The ReducedExperiment
     classes allow users to simultaneously manipulate their original dataset
