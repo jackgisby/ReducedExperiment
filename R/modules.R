@@ -151,8 +151,6 @@ identify_modules <- function(
 #' exceeds the chunk size. Lower values of this parameter may use less memory
 #' to calculate networks.
 #'
-#' @param seed The random seed.
-#'
 #' @param verbose The verbosity, passed to \link[WGCNA]{blockwiseModules}.
 #'
 #' @param return_full_output If FALSE (default), returns the results specified
@@ -205,11 +203,11 @@ run_wgcna <- function(
         stop("`corType` must be one of 'pearson', 'bicor'")
     }
 
-    threshold <- suppressWarnings(WGCNA::pickSoftThreshold(
+    threshold <- WGCNA::pickSoftThreshold(
         t(X),
         RsquaredCut = min_r_squared, powerVector = powers, corFnc = corFnc,
         networkType = networkType, blockSize = maxBlockSize, verbose = verbose
-    ))
+    )
 
     if (length(powers) > 1) {
         if (is.null(max_mean_connectivity)) {

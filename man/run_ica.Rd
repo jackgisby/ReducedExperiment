@@ -17,7 +17,7 @@ run_ica(
   scale_components = TRUE,
   scale_reduced = TRUE,
   n_runs = 30,
-  BPPARAM = BiocParallel::SerialParam(),
+  BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
   ...
 )
 }

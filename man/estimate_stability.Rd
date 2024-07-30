@@ -15,7 +15,7 @@ estimate_stability(
   center_X = TRUE,
   scale_X = FALSE,
   assay_name = "normal",
-  BPPARAM = BiocParallel::SerialParam(),
+  BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
   verbose = TRUE,
   ...
 )

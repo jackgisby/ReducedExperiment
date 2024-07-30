@@ -3,6 +3,8 @@ context("modules")
 test_that("Identify modules", {
     set.seed(2)
     airway <- .get_airway_data(n_features = 500)
+
+    WGCNA::disableWGCNAThreads()
     airway_me <- identify_modules(airway, verbose = 0, powers = 21)
 
     expect_equal(dim(airway_me), c("Features" = 500, "Samples" = 8, "Components" = 6))

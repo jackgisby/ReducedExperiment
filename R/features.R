@@ -452,11 +452,13 @@ plot_module_preservation <- function(
     nudge_mr <- 0.14
     nudge_zs <- 0.4
 
-    medianrank_plot <- ggplot(mr_df, aes_string("moduleSize", "medianRank.pres",
-        col = "module"
+    medianrank_plot <- ggplot(mr_df, aes(
+        !!sym("moduleSize"),
+        !!sym("medianRank.pres"),
+        col = !!sym("module")
     )) +
         geom_point(size = 3) +
-        geom_text(aes_string(label = "module"),
+        geom_text(aes(label = !!sym("module")),
             col = "black",
             nudge_y = nudge_mr, hjust = 0
         ) +
@@ -464,11 +466,13 @@ plot_module_preservation <- function(
         xlim(c(0, max_module_size * 1.3)) +
         expand_limits(y = 0)
 
-    zsummary_plot <- ggplot(zs_df, aes_string("moduleSize", "Zsummary.pres",
-        col = "module"
+    zsummary_plot <- ggplot(zs_df, aes(
+        !!sym("moduleSize"),
+        !!sym("Zsummary.pres"),
+        col = !!sym("module")
     )) +
         geom_point(size = 3) +
-        geom_text(aes_string(label = "module"),
+        geom_text(aes(label = !!sym("module")),
             col = "black",
             nudge_y = nudge_zs, hjust = 0
         ) +
