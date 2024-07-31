@@ -70,27 +70,38 @@ S4Vectors::setValidity2("FactorisedExperiment", function(object) {
 
     # Factors
     if (dim(loadings(object))[2] != dim(reduced(object))[2]) {
-        msg <- c(msg, "Reduced data and loadings have incompatible column
-                 dimensions")
+        msg <- c(
+            msg,
+            "Reduced data and loadings have incompatible column dimensions"
+        )
     }
 
     if (!identical(colnames(loadings(object)), colnames(reduced(object)))) {
-        msg <- c(msg, "Reduced data and loadings have incompatible column names
-                 (factor names)")
+        msg <- c(
+            msg,
+            paste0(
+                "Reduced data and loadings have incompatible column names ",
+                "(factor names)"
+            )
+        )
     }
 
     # Stability - check names/length matches
     if (!is.null(stability(object)) & length(stability(object)) > 0) {
         if (length(stability(object)) != nComponents(object)) {
-            msg <- c(msg, "Number of components do not match with component
-                     stability")
+            msg <- c(
+                msg,
+                "Number of components do not match with component stability"
+            )
         }
 
         # If stability vector has names, check they are correct
         if (!is.null(names(stability(object)))) {
             if (!identical(names(stability(object)), componentNames(object))) {
-                msg <- c(msg, "Component names do not match with component
-                         stability")
+                msg <- c(
+                    msg,
+                    "Component names do not match with component stability"
+                )
             }
         }
     }
@@ -252,8 +263,10 @@ setMethod("cbind", "FactorisedExperiment", function(..., deparse.level = 1) {
     )
 
     if (!all(loadings_stability_equal)) {
-        stop("Row bind expects loadings and stability slots are equal.
-             Set check_duplicate_slots to FALSE to ignore these slots.")
+        stop(
+            "Row bind expects loadings and stability slots are equal. ",
+            "Set check_duplicate_slots to FALSE to ignore these slots."
+        )
     }
 
     args[["deparse.level"]] <- deparse.level

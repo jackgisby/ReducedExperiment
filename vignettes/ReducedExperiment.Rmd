@@ -36,9 +36,6 @@ theme_set(theme_bw())
 #     install.packages("BiocManager")
 # }
 #
-# The following initializes usage of Bioc devel
-# BiocManager::install(version='devel')
-#
 # BiocManager::install("ReducedExperiment")
 
 devtools::install_github("jackgisby/ReducedExperiment")
@@ -69,14 +66,15 @@ When applying dimensionality reduction to high-dimensional datasets, we
 introduce additional complexity. In addition to assay, row and column data, we
 usually generate additional data matrices. For instance, methods like PCA or 
 factor analysis tend to estimate a new matrix, with samples as rows and 
-factors or components as columns. These methods also usually generate a loadings 
-or rotation matrix, with features as rows and factors/components as columns.
+factors or components as columns. These methods also usually generate a 
+loadings or rotation matrix, with features as rows and factors/components as 
+columns.
 
 The `ReducedExperiment` objects extend `SummarizedExperiment` by allowing for
 the storage and slicing of these additional matrices. This package implements 
-`ReducedExperiment`, a high-level class that can store an additional matrix with 
-samples as rows and reduced dimensions as columns. We also implemented two 
-additional child classes for working with common dimensionality reduction 
+`ReducedExperiment`, a high-level class that can store an additional matrix 
+with samples as rows and reduced dimensions as columns. We also implemented 
+two additional child classes for working with common dimensionality reduction 
 methods.
 
 The results of factor analysis can be stored in the `FactorisedExperiment` 
@@ -255,8 +253,9 @@ loadings(wave1_me)[1:5]
 
 # Identifying factor and module associations
 One thing we might be interested in doing is identifying factors that are 
-associated with disease outcomes. We can do this with the `associate_components` 
-function. First, we can look at the sample-level data available for 
+associated with disease outcomes. We can do this with the 
+`associate_components` function. First, we can look at the sample-level data 
+available in the `SummarizedExperiment` container.
 
 ```{r show_coldata}
 colData(wave1_se)

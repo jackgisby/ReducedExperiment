@@ -375,8 +375,10 @@ module_preservation <- function(
     if (inherits(reference_dataset, "ModularExperiment")) {
         module_assignments <- assignments(reference_dataset)
     } else if (is.null(module_assignments)) {
-        stop("If reference_dataset is not a ModularExperiment,
-             module_assignments must not be NULL")
+        stop(
+            "If reference_dataset is not a ModularExperiment, ",
+            "module_assignments must not be NULL"
+        )
     }
 
     if (inherits(reference_dataset, "SummarizedExperiment")) {
@@ -424,8 +426,7 @@ module_preservation <- function(
 #' @import patchwork
 #' @export
 plot_module_preservation <- function(module_preservation_results,
-    show_random = TRUE,
-    remove_module = NULL) {
+    show_random = TRUE, remove_module = NULL) {
     mr_df <- module_preservation_results$preservation$observed$ref.reference$
         inColumnsAlsoPresentIn.test
     zs_df <- module_preservation_results$preservation$Z$ref.reference$
@@ -451,48 +452,69 @@ plot_module_preservation <- function(module_preservation_results,
     nudge_mr <- 0.14
     nudge_zs <- 0.4
 
-    medianrank_plot <- ggplot(mr_df, aes(
+    medianrank_plot <- .make_medianrank_plot(mr_df, max_module_size)
+    zsummary_plot <- .make_zsummary_plot(zs_df, max_module_size)
+
+    if (show_random) {
+        medianrank_plot <- medianrank_plot + geom_hline(
+            yintercept = mr_gold,
+            col = "gold", linetype = "dashed"
+        )
+        zsummary_plot <- zsummary_plot + geom_hline(
+            yintercept = zs_gold,
+            col = "gold", linetype = "dashed"
+        )
+    }
+
+    return(medianrank_plot + zsummary_plot)
+}
+
+#' Makes a median rank plot to visualise module preservation
+#'
+#' @noRd
+#' @keywords internal
+.make_medianrank_plot <- function(mr_df, max_module_size) {
+    ggplot(mr_df, aes(
         !!sym("moduleSize"),
         !!sym("medianRank.pres"),
         col = !!sym("module")
     )) +
         geom_point(size = 3) +
-        geom_text(aes(label = !!sym("module")),
+        geom_text(
+            aes(
+                label = !!sym("module")
+            ),
             col = "black",
-            nudge_y = nudge_mr, hjust = 0
+            nudge_y = nudge_mr,
+            hjust = 0
         ) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) +
         expand_limits(y = 0)
+}
 
-    zsummary_plot <- ggplot(zs_df, aes(
+#' Makes a Zsummary plot to visualise module preservation
+#'
+#' @noRd
+#' @keywords internal
+.make_zsummary_plot <- function(zs_df, max_module_size) {
+    ggplot(zs_df, aes(
         !!sym("moduleSize"),
         !!sym("Zsummary.pres"),
         col = !!sym("module")
     )) +
         geom_point(size = 3) +
-        geom_text(aes(label = !!sym("module")),
+        geom_text(
+            aes(
+                label = !!sym("module")
+            ),
             col = "black",
-            nudge_y = nudge_zs, hjust = 0
+            nudge_y = nudge_zs,
+            hjust = 0
         ) +
         theme(legend.position = "none") +
         xlim(c(0, max_module_size * 1.3)) +
         expand_limits(y = 0) +
         geom_hline(yintercept = 10, col = "green", linetype = "dashed") +
         geom_hline(yintercept = 2, col = "blue", linetype = "dashed")
-
-    if (show_random) {
-        medianrank_plot <- medianrank_plot + geom_hline(
-            yintercept = mr_gold,
-            col = "gold",
-            linetype = "dashed"
-        )
-        zsummary_plot <- zsummary_plot + geom_hline(
-            yintercept = zs_gold,
-            col = "gold",
-            linetype = "dashed"
-        )
-    }
-
-    return(medianrank_plot + zsummary_plot)
 }

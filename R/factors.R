@@ -201,31 +201,20 @@ estimate_factors <- function(
 #' @import ica
 #' @export
 run_ica <- function(
-        X,
-        nc,
-        use_stability = FALSE,
-        resample = FALSE,
-        method = "fast", stability_threshold = NULL,
-        center_X = TRUE, scale_X = FALSE,
-        reorient_skewed = TRUE,
-        scale_components = TRUE, scale_reduced = TRUE,
-        n_runs = 30,
-        BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
-        ...) {
+        X, nc, use_stability = FALSE, resample = FALSE,
+        method = "fast", stability_threshold = NULL, center_X = TRUE,
+        scale_X = FALSE, reorient_skewed = TRUE, scale_components = TRUE,
+        scale_reduced = TRUE, n_runs = 30,
+        BPPARAM = BiocParallel::SerialParam(RNGseed = 1), ...) {
     if (center_X | scale_X) {
         X <- t(scale(t(X), center = center_X, scale = scale_X))
     }
 
     if (use_stability) {
-        ica_res <- .stability_ica(
-            X,
-            nc = nc,
-            resample = resample,
-            method = method,
-            stability_threshold = stability_threshold,
-            n_runs = n_runs,
-            BPPARAM = BPPARAM,
-            ...
+        ica_res <- .stability_ica(X,
+            nc = nc, resample = resample,
+            method = method, stability_threshold = stability_threshold,
+            n_runs = n_runs, BPPARAM = BPPARAM, ...
         )
     } else {
         if (resample) {
@@ -233,16 +222,15 @@ run_ica <- function(
         }
 
         if (!is.null(stability_threshold)) {
-            stop("Cannot apply `stability_threshold` when `use_stability` is
-                 FALSE")
+            stop(
+                "Cannot apply `stability_threshold` when `use_stability` ",
+                "is FALSE"
+            )
         }
 
-        ica_res <- list(S = ica::ica(
-            X,
-            nc = nc,
-            method = method,
-            center = FALSE,
-            ...
+        ica_res <- list(S = ica::ica(X,
+            nc = nc, method = method,
+            center = FALSE, ...
         )$S)
     }
 
@@ -259,7 +247,6 @@ run_ica <- function(
         paste0("factor_", seq_len(ncol(ica_res$S)))
 
     if (use_stability) names(ica_res$stab) <- colnames(ica_res$S)
-
     return(ica_res)
 }
 
@@ -272,82 +259,37 @@ run_ica <- function(
 #'
 #' @noRd
 #' @keywords internal
-.stability_ica <- function(X,
-    nc,
-    resample,
-    method,
-    n_runs,
-    BPPARAM,
-    stability_threshold,
-    BPOPTIONS = bpoptions(),
-    return_centrotypes = TRUE,
-    ...) {
-    .ica_random <- function(i, nc, method, resample) {
-        # Randomly initialises ICA
-        Rmat <- matrix(stats::rnorm(nc**2), nrow = nc, ncol = nc)
-
-        if (resample) {
-            X_bs <- X[, sample(ncol(X), replace = TRUE)]
-        } else {
-            X_bs <- X
-        }
-
-        # Get ICA loadings for given initialisation
-        # (and possibly bootstrap resample)
-        S <- ica::ica(
-            X_bs,
-            nc = nc,
-            method = method,
-            center = FALSE,
-            Rmat = Rmat,
-            ...
-        )$S
-
-        colnames(S) <- paste0("iteration_", i, "_", seq_len(ncol(S)))
-        if (ncol(S) != nc) warning("ICA did not return expected number of
-                                   factors, potentially indicating a rank
-                                   deficiency in the input")
-
-        return(S)
-    }
-
-    S_all <- BiocParallel::bplapply(
-        seq_len(n_runs),
-        .ica_random,
-        BPPARAM = BPPARAM,
-        nc = nc,
-        method = method,
-        resample = resample
+.stability_ica <- function(
+        X, nc, resample, method, n_runs, BPPARAM,
+        stability_threshold, BPOPTIONS = bpoptions(), return_centrotypes = TRUE,
+        ...) {
+    # Run stabilized ICA in parallel (depending on BPPARAM)
+    S_all <- BiocParallel::bplapply(seq_len(n_runs), .ica_random,
+        BPPARAM = BPPARAM, BPOPTIONS = BPOPTIONS, X_mat = X, nc = nc,
+        method = method, resample = resample, ...
     )
     S_all <- do.call(cbind, S_all)
 
     # Get correlations between factors and resulting clusters
     S_cor <- abs(stats::cor(S_all))
-    S_clust <- factor(stats::cutree(stats::hclust(stats::as.dist(1 - S_cor)),
-        k = nc
-    ))
+    S_clust <- stats::cutree(stats::hclust(stats::as.dist(1 - S_cor)), k = nc)
+    S_clust <- factor(S_clust)
     names(S_clust) <- colnames(S_all)
 
     stabilities <- c()
-    centrotypes <- data.frame(
-        matrix(
-            nrow = nrow(S_all),
-            ncol = nc,
-            dimnames = list(rownames(S_all), seq_len(nc))
-        )
-    )
+    centrotypes <- data.frame(matrix(
+        nrow = nrow(S_all), ncol = nc,
+        dimnames = list(rownames(S_all), seq_len(nc))
+    ))
 
     for (comp in seq_len(nc)) {
         cluster_labels <- names(S_clust)[S_clust == comp]
         non_cluster_labels <-
             names(S_clust)[!names(S_clust) %in% cluster_labels]
 
-        # Average intra-cluster similarity
+        # Average intra-cluster similarity - average extra-cluster similarity
         aics <- mean(S_cor[cluster_labels, cluster_labels])
-
-        # Average extra-cluster similarity
         aecs <- mean(S_cor[cluster_labels, non_cluster_labels])
-
         stabilities <- c(stabilities, aics - aecs)
 
         which_is_centrotype <-
@@ -357,10 +299,8 @@ run_ica <- function(
 
     if (!return_centrotypes) {
         return(list(
-            stab = stabilities,
-            S_all = S_all,
-            S_clust = S_clust,
-            S_cor = S_cor
+            stab = stabilities, S_all = S_all,
+            S_clust = S_clust, S_cor = S_cor
         ))
     }
 
@@ -375,6 +315,39 @@ run_ica <- function(
     }
 
     return(list(stab = stabilities, S = centrotypes))
+}
+
+#' Parallelisable function for running a stabilized ICA iteration
+#'
+#' @noRd
+#' @keywords internal
+.ica_random <- function(X_mat, i, nc, method, resample, ...) {
+    # Randomly initialises ICA
+    Rmat <- matrix(stats::rnorm(nc**2), nrow = nc, ncol = nc)
+
+    if (resample) {
+        X_mat <- X_mat[, sample(ncol(X_mat), replace = TRUE)]
+    }
+
+    # Get ICA loadings for given initialisation
+    # (and possibly bootstrap resample)
+    S <- ica::ica(
+        X_mat,
+        nc = nc,
+        method = method,
+        center = FALSE,
+        Rmat = Rmat,
+        ...
+    )$S
+
+    colnames(S) <- paste0("iteration_", i, "_", seq_len(ncol(S)))
+    if (ncol(S) != nc) {
+        warning(
+            "ICA did not return expected number of factors, potentially ",
+            "indicating a rank deficiency in the input"
+        )
+    }
+    return(S)
 }
 
 #' Ensure factors have positive skew
@@ -494,20 +467,11 @@ run_ica <- function(
 #' on the `mean_stability_threshold`.
 #'
 #' @export
-estimate_stability <- function(
-        X,
-        min_components = 10,
-        max_components = 60,
-        by = 2,
-        n_runs = 30,
-        resample = FALSE,
-        mean_stability_threshold = NULL,
-        center_X = TRUE,
-        scale_X = FALSE,
-        assay_name = "normal",
-        BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
-        verbose = TRUE,
-        ...) {
+estimate_stability <- function(X, min_components = 10,
+    max_components = 60, by = 2, n_runs = 30, resample = FALSE,
+    mean_stability_threshold = NULL, center_X = TRUE, scale_X = FALSE,
+    assay_name = "normal", BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
+    verbose = TRUE, ...) {
     if (inherits(X, "SummarizedExperiment")) {
         X <- assay(X, "normal")
     }
@@ -516,42 +480,32 @@ estimate_stability <- function(
         assay(X, "normal") <- assay(X, assay_name)
     }
 
-    if (dim(X)[2] < max_components) stop("Number of samples must be greater
-                                         than max_components")
+    if (dim(X)[2] < max_components) {
+        stop("Number of samples must be greater than max_components")
+    }
 
     stabilities <- data.frame()
 
     if (verbose) {
         tpb <- utils::txtProgressBar(
-            min = min_components,
-            max = max_components,
-            initial = min_components,
-            style = 3
+            min = min_components, max = max_components,
+            initial = min_components, style = 3
         )
     }
 
     for (nc in seq(from = min_components, to = max_components, by = by)) {
-        ica_res <- run_ica(
-            X,
-            nc = nc,
-            center_X = center_X,
-            scale_X = scale_X,
-            use_stability = TRUE,
-            resample = resample,
-            BPPARAM = BPPARAM,
-            method = "fast",
-            n_runs = n_runs,
-            ...
+        ica_res <- run_ica(X,
+            nc = nc, center_X = center_X, scale_X = scale_X,
+            use_stability = TRUE, resample = resample, BPPARAM = BPPARAM,
+            method = "fast", n_runs = n_runs, ...
         )
 
         stabilities <- rbind(stabilities, data.frame(
-            nc = nc,
-            component_name = names(ica_res$stab),
+            nc = nc, component_name = names(ica_res$stab),
             component_number = as.numeric(gsub(
                 "factor_", "",
                 names(ica_res$stab)
-            )),
-            stability = ica_res$stab
+            )), stability = ica_res$stab
         ))
 
         if (verbose) utils::setTxtProgressBar(tpb, nc)
@@ -559,6 +513,15 @@ estimate_stability <- function(
 
     if (verbose) close(tpb)
 
+    .select_nc(stabilities, mean_stability_threshold)
+    return(list("stability" = stabilities, "selected_nc" = select_nc))
+}
+
+#' Estimates an appropriate number of components
+#'
+#' @noRd
+#' @keywords internal
+.select_nc <- function(stabilities, mean_stability_threshold) {
     select_nc <- NULL
 
     if (!is.null(mean_stability_threshold)) {
@@ -571,8 +534,6 @@ estimate_stability <- function(
                 mean_stability_threshold])
         }
     }
-
-    return(list("stability" = stabilities, "selected_nc" = select_nc))
 }
 
 #' Plot component stability as a function of the number of components

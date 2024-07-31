@@ -57,10 +57,11 @@ to calculate networks.}
 
 \item{return_full_output}{If FALSE (default), returns the results specified
 below in \code{returns}. Else, returns additional information, including
-i) the results specified below in \code{returns}; ii) the original eigengene
-matrix calculated by \link[WGCNA]{blockwiseModules}; iii) the object
-returned by \link[WGCNA]{blockwiseModules}; and iv) the output of
-\link[WGCNA]{pickSoftThreshold}.}
+"run_wgcna_output") the results specified below in \code{returns}; "original_E")
+the original eigengene matrix calculated by \link[WGCNA]{blockwiseModules};
+"blockwise_modules_output") the object returned by
+\link[WGCNA]{blockwiseModules}; and "pick_soft_threshold_output") the
+output of \link[WGCNA]{pickSoftThreshold}.}
 
 \item{scale_reduced}{If TRUE, the reduced data (eigengenes) are standardised
 to have a mean of 0 and a standard deviation of 1.}
@@ -97,4 +98,10 @@ loadings can be used to transform new datasets.
 Note that if \code{module_labels} is set to "numbers", then
 "module_0" represents unclustered genes, whereas if it is set to "colours"
 then "grey" represents unclustered genes.
+
+Note that if \code{powers} is a range, the power to use will be selected
+automatically based on the output of \link[WGCNA]{pickSoftThreshold}. We
+recommend that users avoid relying on the automatic threshold detection
+and instead consider the best soft thresholding power carefully, for instance
+using the plots described in the \code{WGCNA} tutorials.
 }

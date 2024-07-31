@@ -155,10 +155,11 @@ identify_modules <- function(
 #'
 #' @param return_full_output If FALSE (default), returns the results specified
 #' below in `returns`. Else, returns additional information, including
-#' i) the results specified below in `returns`; ii) the original eigengene
-#' matrix calculated by \link[WGCNA]{blockwiseModules}; iii) the object
-#' returned by \link[WGCNA]{blockwiseModules}; and iv) the output of
-#' \link[WGCNA]{pickSoftThreshold}.
+#' "run_wgcna_output") the results specified below in `returns`; "original_E")
+#' the original eigengene matrix calculated by \link[WGCNA]{blockwiseModules};
+#' "blockwise_modules_output") the object returned by
+#' \link[WGCNA]{blockwiseModules}; and "pick_soft_threshold_output") the
+#' output of \link[WGCNA]{pickSoftThreshold}.
 #'
 #' @param scale_reduced If TRUE, the reduced data (eigengenes) are standardised
 #' to have a mean of 0 and a standard deviation of 1.
@@ -171,6 +172,12 @@ identify_modules <- function(
 #' "module_0" represents unclustered genes, whereas if it is set to "colours"
 #' then "grey" represents unclustered genes.
 #'
+#' Note that if `powers` is a range, the power to use will be selected
+#' automatically based on the output of \link[WGCNA]{pickSoftThreshold}. We
+#' recommend that users avoid relying on the automatic threshold detection
+#' and instead consider the best soft thresholding power carefully, for instance
+#' using the plots described in the `WGCNA` tutorials.
+#'
 #' @returns Returns a list containing:
 #' \describe{
 #'  \item{"E"}{The reduced data (eigengenes).}
@@ -182,25 +189,117 @@ identify_modules <- function(
 #' }
 #'
 #' @export
-run_wgcna <- function(X, powers = 1:30,
-    min_r_squared = 0.85, max_mean_connectivity = 100,
-    corType = "pearson", networkType = "signed",
-    module_labels = "numbers", maxBlockSize = 30000,
-    verbose = 0, return_full_output = FALSE,
-    scale_reduced = TRUE, ...) {
-    if (maxBlockSize < nrow(X)) {
-        warning("maxBlockSize < total features, module detection will be
-                performed in a block-wise manner")
+run_wgcna <- function(X, powers = 1:30, min_r_squared = 0.85,
+    max_mean_connectivity = 100, corType = "pearson",
+    networkType = "signed", module_labels = "numbers", maxBlockSize = 30000,
+    verbose = 0, return_full_output = FALSE, scale_reduced = TRUE, ...) {
+    .max_block_size_check(maxBlockSize, nrow(X))
+    cor <- corFnc <- .get_cor_fn(corType) # Get correlation function
+
+    threshold <- .select_threshold(t(X),
+        min_r_squared = min_r_squared, maxBlockSize = maxBlockSize,
+        verbose = verbose, max_mean_connectivity = max_mean_connectivity,
+        powers = powers, corFnc = corFnc, networkType = networkType
+    ) # Suggest best threshold
+
+    power <- unique(threshold$fitIndices$selected_power)
+
+    bwms <- WGCNA::blockwiseModules(
+        t(X), power = power, corType = corType, networkType = networkType,
+        maxBlockSize = maxBlockSize, verbose = verbose, ...
+    ) # Apply WGCNA pipeline
+
+    d <- if (length(bwms$dendrograms) == 1) bwms$dendrograms[[1]] else NULL
+    wgcna_res <- list(
+        "assignments" = bwms$colors, "E" = bwms$MEs,
+        "dendrogram" = d, "threshold" = threshold$fitIndices
+    )
+
+    original_E <- wgcna_res$E
+    colnames(wgcna_res$E) <- gsub("ME", "", colnames(wgcna_res$E))
+
+    if (module_labels == "numbers") { # Convert colours to numbers
+        converter <- .colors2numbers(wgcna_res$assignments)
+        wgcna_res$assignments <- vapply(
+            wgcna_res$assignments, converter, FUN.VALUE = ""
+        )
+        colnames(wgcna_res$E) <- vapply(
+            colnames(wgcna_res$E), converter, FUN.VALUE = ""
+        )
+    } else if (!module_labels %in% c("colors", "colours")) {
+        stop("Value of `module_labels` does not correspond to a valid option")
     }
 
+    wgcna_res$assignments <- stats::setNames(
+        names(wgcna_res$assignments),
+        paste0("module_", wgcna_res$assignments)
+    )
+    colnames(wgcna_res$E) <- paste0("module_", colnames(wgcna_res$E))
+    wgcna_res$E <- wgcna_res$E[, order(colnames(wgcna_res$E))]
+
+    original_E <- wgcna_res$E
+    recalculated_E <- .calculate_eigengenes(
+        X,
+        colnames(wgcna_res$E),
+        wgcna_res$assignments,
+        realign = TRUE
+    )
+
+    wgcna_res$E <- recalculated_E$reduced
+    wgcna_res$L <- recalculated_E$loadings
+    if (scale_reduced) wgcna_res$E <- scale(wgcna_res$E)
+
+    if (return_full_output) {
+        return(list(
+            "run_wgcna_output" = wgcna_res,
+            "original_E" = original_E,
+            "blockwise_modules_output" = bwms,
+            "pick_soft_threshold_output" = threshold
+        ))
+    } else {
+        return(wgcna_res)
+    }
+}
+
+#' Based on a string, determine the WGCNA correlation function to use
+#'
+#' @noRd
+#' @keywords internal
+.get_cor_fn <- function(corType) {
     if (corType == "pearson") {
-        cor <- corFnc <- WGCNA::cor
+        return(WGCNA::cor)
     } else if (corType == "bicor") {
-        cor <- corFnc <- WGCNA::bicor
+        return(WGCNA::bicor)
     } else {
         stop("`corType` must be one of 'pearson', 'bicor'")
     }
+}
 
+#' Raise warning if blockwise module detection is taking place
+#'
+#' @noRd
+#' @keywords internal
+.max_block_size_check <- function(max_block_size, n_rows) {
+    if (max_block_size < n_rows) {
+        warning(
+            "maxBlockSize < total features, module detection will be ",
+            "performed in a block-wise manner"
+        )
+    }
+}
+
+#' Wrapper around WGCNA::pickSoftThreshold
+#'
+#' @noRd
+#' @keywords internal
+.select_threshold <- function(X,
+    min_r_squared,
+    max_mean_connectivity,
+    powers,
+    corFnc,
+    networkType,
+    maxBlockSize,
+    verbose) {
     threshold <- WGCNA::pickSoftThreshold(
         t(X),
         RsquaredCut = min_r_squared, powerVector = powers, corFnc = corFnc,
@@ -211,9 +310,10 @@ run_wgcna <- function(X, powers = 1:30,
         if (is.null(max_mean_connectivity)) {
             power <- threshold$fitIndices$powerEstimate
         } else {
-            which_power <-
-                which(threshold$fitIndices$SFT.R.sq > min_r_squared &
-                    threshold$fitIndices$mean.k. < max_mean_connectivity)
+            which_power <- which(
+                threshold$fitIndices$SFT.R.sq > min_r_squared &
+                    threshold$fitIndices$mean.k. < max_mean_connectivity
+            )
 
             if (length(which_power) == 0) {
                 stop(
@@ -230,80 +330,27 @@ run_wgcna <- function(X, powers = 1:30,
 
     threshold$fitIndices$selected_power <- power
 
-    bwms <- WGCNA::blockwiseModules(t(X),
-        power = power, corType = corType, networkType = networkType,
-        maxBlockSize = maxBlockSize, verbose = verbose, ...
+    return(threshold)
+}
+
+#' Convert WGCNA colours to numbers
+#'
+#' @noRd
+#' @keywords internal
+.colors2numbers <- function(colors) {
+    color_table <- table(colors)
+    color_table <- color_table[order(color_table, decreasing = TRUE)]
+    color_table <- color_table[which(names(color_table) != "grey")]
+
+    color_table <- stats::setNames(
+        seq_len(length(color_table)),
+        names(color_table)
     )
+    color_table <- c(color_table, "grey" = 0)
 
-    d <- if (length(bwms$dendrograms) == 1) bwms$dendrograms[[1]] else NULL
-    wgcna_res <- list(
-        assignments = bwms$colors,
-        E = bwms$MEs,
-        dendrogram = d,
-        threshold = threshold$fitIndices
-    )
-
-    original_E <- wgcna_res$E
-
-    colnames(wgcna_res$E) <- gsub("ME", "", colnames(wgcna_res$E))
-
-    if (module_labels == "numbers") {
-        .colors2numbers <- function(colors) {
-            color_table <- table(colors)
-            color_table <- color_table[order(color_table, decreasing = TRUE)]
-            color_table <- color_table[which(names(color_table) != "grey")]
-
-            color_table <- stats::setNames(
-                seq_len(length(color_table)),
-                names(color_table)
-            )
-            color_table <- c(color_table, "grey" = 0)
-
-            return(color_table)
-        }
-
-        converter <- .colors2numbers(wgcna_res$assignments)
-        for (i in seq_len(length(wgcna_res$assignments))) {
-            wgcna_res$assignments[i] <-
-                converter[which(names(converter) == wgcna_res$assignments[i])]
-        }
-        for (i in seq_len(length(colnames(wgcna_res$E)))) {
-            colnames(wgcna_res$E)[i] <-
-                converter[which(names(converter) == colnames(wgcna_res$E)[i])]
-        }
-    } else if (module_labels != "colors" & module_labels != "colours") {
-        stop("Value of `module_labels` does not correspond to a valid option")
-    }
-
-    wgcna_res$assignments <- stats::setNames(
-        names(wgcna_res$assignments),
-        paste0("module_", wgcna_res$assignments)
-    )
-    colnames(wgcna_res$E) <- paste0("module_", colnames(wgcna_res$E))
-    wgcna_res$E <- wgcna_res$E[, order(colnames(wgcna_res$E))]
-
-    original_E <- wgcna_res$E
-    recalculated_E <- .calculate_eigengenes(
-        X, colnames(wgcna_res$E),
-        wgcna_res$assignments,
-        realign = TRUE
-    )
-
-    wgcna_res$E <- recalculated_E$reduced
-    wgcna_res$L <- recalculated_E$loadings
-
-    if (scale_reduced) wgcna_res$E <- scale(wgcna_res$E)
-
-    if (return_full_output) {
-        return(list(
-            "run_wgcna_output" = wgcna_res,
-            "original_E" = original_E,
-            "blockwise_modules_output" = bwms,
-            "pick_soft_threshold_output" = threshold
-        ))
-    } else {
-        return(wgcna_res)
-    }
+    return(function(x) {
+        color_table[which(names(color_table) == x)]
+    })
 }
 
 #' Calculates eigengenes for new data based on module assignments

@@ -1,8 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ReducedExperiment <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" />
+# ReducedExperiment
 
+<!-- <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" /> -->
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/jackgisby/ReducedExperiment/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/R-CMD-check.yaml)
@@ -61,7 +62,7 @@ objects, with additional slots designed to store and manipulate the
 outputs of common dimensionality reduction techniques.
 
 As an example, the `SummarizedExperiment` described below contains gene
-expression data from individuals with COVID-19 \[1\]. It contains the
+expression data from individuals with COVID-19. It contains the
 following slots: - `assays` - A features by samples matrix containing
 the expression data. - `colData` - Contains a row for each sample
 containing phenotype data. - `rowData` - Contains a row for each feature
@@ -141,13 +142,12 @@ produced by the popular Weighted Gene Correlation Network Analysis
 Various tools are provided by the package for applying dimensionality
 reduction and manipulating their results. These include: - Workflows for
 applying independent component analysis (ICA) and WGCNA. We additionally
-developed an R implementation of the stabilised ICA algorithm \[2\]. -
-Methods for applying pathway enrichment analysis to factors and
-modules. - Functions for identifying associations between
-factors/modules and sample-level variables. - Methods for applying
-identified factors or modules to new datasets. - Other approach-specific
-plots and utilities, such as factor stability plots and module
-preservation plots.
+developed an R implementation of the stabilised ICA algorithm. - Methods
+for applying pathway enrichment analysis to factors and modules. -
+Functions for identifying associations between factors/modules and
+sample-level variables. - Methods for applying identified factors or
+modules to new datasets. - Other approach-specific plots and utilities,
+such as factor stability plots and module preservation plots.
 
 Many of these are demonstrated in more detail in the [package’s
 vignette](https://jackgisby.github.io/ReducedExperiment/articles/ReducedExperiment.html).
@@ -185,23 +185,5 @@ print(citation("ReducedExperiment"), bibtex = TRUE)
 ```
 
 The `ReducedExperiment` package relies on many software packages and
-development tools, a list of which with relevant citations is available
-in the vignette.
-
-\[1\] The dataset used an example above was derived from the following
-study: Gisby, J.S., Buang, N.B., Papadaki, A. et al. Multi-omics
-identify falling LRRC15 as a COVID-19 severity marker and persistent
-pro-thrombotic signals in convalescence. Nat Commun 13, 7775 (2022).
-<https://doi.org/10.1038/s41467-022-35454-4>
-
-These data were obtained from Zenodo:
-<https://doi.org/10.5281/zenodo.6497251>
-
-\[2\] The stabilised ICA algorithm is described in the following
-publication and implemented in the stabilized-ica Python package:
-Nicolas Captier, Jane Merlevede, Askhat Molkenov, Ainur Ashenova,
-Altynbek Zhubanchaliyev, Petr V Nazarov, Emmanuel Barillot, Ulykbek
-Kairov, Andrei Zinovyev, BIODICA: a computational environment for
-Independent Component Analysis of omics data, Bioinformatics, Volume 38,
-Issue 10, May 2022, Pages 2963–2964,
-<https://doi.org/10.1093/bioinformatics/btac204>
+development tools. The packages used are listed in the vignette and
+relevant papers are cited.

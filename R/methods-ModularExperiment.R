@@ -530,16 +530,15 @@ NULL
 
 #' @rdname calcEigengenes
 #' @export
-setMethod("calcEigengenes", c("ModularExperiment", "matrix"), function(
-        object,
-        newdata,
-        project = TRUE,
-        scale_reduced = TRUE,
-        return_loadings = FALSE,
-        scale_newdata = NULL,
-        center_newdata = NULL,
-        realign = TRUE,
-        min_module_genes = 10) {
+setMethod("calcEigengenes", c("ModularExperiment", "matrix"), function(object,
+    newdata,
+    project = TRUE,
+    scale_reduced = TRUE,
+    return_loadings = FALSE,
+    scale_newdata = NULL,
+    center_newdata = NULL,
+    realign = TRUE,
+    min_module_genes = 10) {
     if (!identical(rownames(object), rownames(newdata))) {
         stop("Rownames of x do not match those of newdata")
     }
@@ -563,8 +562,10 @@ setMethod("calcEigengenes", c("ModularExperiment", "matrix"), function(
             loadings(object),
             min_module_genes = min_module_genes
         )
-        eigengenes <- list("reduced" = as.matrix(red), "
-                           loadings" = loadings(object))
+        eigengenes <- list(
+            "reduced" = as.matrix(red),
+            "loadings" = loadings(object)
+        )
     } else {
         eigengenes <- .calculate_eigengenes(
             newdata,
