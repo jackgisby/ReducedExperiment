@@ -50,3 +50,30 @@ Uses \link[biomaRt]{getBM} to get alternative gene IDs for
 \link[ReducedExperiment]{ReducedExperiment} objects. The new annotations
 are added as columns to the input object's \code{rowData}
 }
+\examples{
+set.seed(2)
+airway <- ReducedExperiment:::.get_airway_data(n_features = 500)
+
+set.seed(1)
+airway_fe <- estimate_factors(airway, nc = 2, use_stability = FALSE, method = "imax")
+
+# rowData before getting additional gene IDs
+rowData(airway_fe)
+
+# For this example we run `getGeneIDs` using a preloaded biomart query
+# (`biomart_out`) to avoid actually querying ensembl during testing
+# Note: do not use this file for your actual data
+biomart_out <- read.csv(system.file(
+    "extdata",
+    "biomart_out.csv",
+    package = "ReducedExperiment"
+))
+airway_fe <- getGeneIDs(airway_fe, biomart_out = biomart_out)
+
+# rowData after getting additional gene IDs
+rowData(airway_fe)
+
+}
+\seealso{
+\code{\link[biomaRt:useEnsembl]{biomaRt::useEnsembl()}}, \code{\link[biomaRt:getBM]{biomaRt::getBM()}}
+}

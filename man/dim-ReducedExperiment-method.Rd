@@ -16,3 +16,11 @@ features and reduced dimensions.
 \description{
 Get the dimensions of a Reducedexperiment object
 }
+\examples{
+# Create a randomised ReducedExperiment
+re <- ReducedExperiment:::.createRandomisedReducedExperiment(100, 50, 10)
+
+# Get the dimensions
+dim(re)
+
+}

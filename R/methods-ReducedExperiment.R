@@ -54,8 +54,8 @@
 #' # practice these will likely be the result of applying some kind of
 #' # dimensionality-reduction method to the assay data (e.g., gene
 #' # expression data) from some study.
-#' rand_assay_data <- .makeRandomData(i, j, "gene", "sample")
-#' rand_reduced_data <- .makeRandomData(j, k, "sample", "component")
+#' rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
 #'
 #' re <- ReducedExperiment(
 #'     assays = list("normal" = rand_assay_data),
@@ -553,14 +553,21 @@ setMethod(
 
 #' Combine ReducedExperiment objects by columns
 #'
+#' @description
 #' Combines \link[ReducedExperiment]{ReducedExperiment} objects by columns
-#' (samples). Combining these objects in such a way assumes that feature-level
-#' slots (e.g., loadings, module membership, rowData) and components (e.g.,
-#' reduced, loadings, module membership) have identical features and components.
-#' If they are not, an error is returned.
+#' (samples). This method assumes that objects have identical features and
+#' components (i.e., factors or modules). If they are not, an error is returned.
+#'
+#' So, this means that the feature-level slots should be equivalent, for example
+#' the assay rownames and the rownames of the factor `loadings` available in
+#' \link[ReducedExperiment]{FactorisedExperiment} objects. The component slots
+#' should also be equivalent, such as the column names of the `reduced` matrix
+#' or the column names of the aformentioned factor `loadings` matrix.
 #'
 #' @param ... A series of \link[ReducedExperiment]{ReducedExperiment} objects
-#' to be combined. See \link[SummarizedExperiment]{cbind} for further details.
+#' to be combined. See
+#' \link[SummarizedExperiment]{cbind,SummarizedExperiment-method} for
+#' further details.
 #'
 #' @param deparse.level Integer, see \link[base]{cbind}.
 #'
@@ -570,13 +577,16 @@ setMethod(
 #' @details
 #' The \link[SummarizedExperiment]{SummarizedExperiment} package includes
 #' separate methods for `cbind`
-#' (\link[SummarizedExperiment]{`cbind,SummarizedExperiment-method`}) and
-#' (\link[SummarizedExperiment]{`combineRows`}). The latter is supposed to be
+#' (\link[SummarizedExperiment]{cbind,SummarizedExperiment-method}) and
+#' (\link[SummarizedExperiment]{combineRows}). The latter is supposed to be
 #' more flexible, permitting differences in the number and identity of the rows.
 #' For \link[ReducedExperiment]{ReducedExperiment} objects we only implement a
 #' single, less flexible, method that assumes the rows and components
-#' (i.e., factors or modules) are identical across objects. This method can be
-#' applied using either `cbind` or `combineRows.`
+#' (i.e., factors or modules) are identical across objects. Attempting to apply
+#' `combineRows` to a \link[ReducedExperiment]{ReducedExperiment} object will
+#' result in the objects being treated as if they were
+#' \link[SummarizedExperiment]{SummarizedExperiment}s, and a single
+#' \link[SummarizedExperiment]{SummarizedExperiment} object will be returned.
 #'
 #' @examples
 #' # Create randomised containers with different numbers of samples
@@ -590,10 +600,11 @@ setMethod(
 #' # Make a new object with 80 columns
 #' cbind(re_1, re_2)
 #'
-#' # This does the same thing for ReducedExperiment objects
+#' # We can apply combineRows to `ReducedExperiment` objects but the resulting
+#' # object will be a `SummarizedExperiment`
 #' combineRows(re_1, re_2)
 #'
-#' @seealso [base::cbind()], \link[SummarizedExperiment]{`cbind,SummarizedExperiment-method`}
+#' @seealso [base::cbind()], \link[SummarizedExperiment]{cbind,SummarizedExperiment-method}
 #'
 #' @rdname cbind
 #' @name cbind
@@ -624,13 +635,6 @@ setMethod("cbind", "ReducedExperiment", function(..., deparse.level = 1) {
     args[["deparse.level"]] <- deparse.level
 
     return(do.call(callNextMethod, args))
-})
-
-#' @rdname cbind
-#' @export
-setMethod("combineRows", "ReducedExperiment",
-          function(..., deparse.level = 1) {
-    return(cbind(..., deparse.level = 1))
 })
 
 #' Get the dimensions of a Reducedexperiment object
@@ -668,16 +672,16 @@ setMethod("dim", "ReducedExperiment", function(x) {
 #' re <- ReducedExperiment:::.createRandomisedReducedExperiment(100, 50, 10)
 #'
 #' # Get the dimensions
-#' nComponents(re)  # 10
-#' nSamples(re)  # 50
-#' nFeatures(re)  # 10
+#' nComponents(re) # 10
+#' nSamples(re) # 50
+#' nFeatures(re) # 10
 #'
 #' # For a ModularExperiment we can alternatively use nModules
 #' me <- ReducedExperiment:::.createRandomisedModularExperiment(100, 50, 10)
-#' nComponents(me)  # 10
-#' nModules(me)  # 10
+#' nComponents(me) # 10
+#' nModules(me) # 10
 #'
-#' @seealso \link[ReducedExperiment]{`dim,ReducedExperiment-method`}
+#' @seealso \link[ReducedExperiment]{dim,ReducedExperiment-method}
 #'
 #' @rdname individual_dims
 #' @name individual_dim
@@ -740,7 +744,7 @@ setMethod("nFeatures", "ReducedExperiment", function(object) {
 #'
 #' @examples
 #' set.seed(2)
-#' airway <- .get_airway_data(n_features = 500)
+#' airway <- ReducedExperiment:::.get_airway_data(n_features = 500)
 #'
 #' set.seed(1)
 #' airway_fe <- estimate_factors(airway, nc = 2, use_stability = FALSE, method = "imax")

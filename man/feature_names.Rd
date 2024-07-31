@@ -65,8 +65,8 @@ stopifnot(all.equal(featureNames(re), rownames(rand_assay_data)))
 stopifnot(all.equal(rownames(re), rownames(rand_assay_data)))
 stopifnot(all.equal(names(re), rownames(rand_assay_data)))
 
-print(paste0("Feature name at [55]: ", featureNames(re)[55]))
+print(paste0("Feature name at position 55: ", featureNames(re)[55]))
 featureNames(re)[55] <- "custom_feature_name"
-print(paste0("Reduced data at [55]: ", featureNames(re)[55]))
+print(paste0("Reduced data at position 55: ", featureNames(re)[55]))
 
 }

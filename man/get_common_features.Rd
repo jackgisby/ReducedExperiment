@@ -7,11 +7,11 @@
 get_common_features(factor_features)
 }
 \arguments{
-\item{factor_features}{The result of
+\item{factor_features}{A \code{data.frame} as returned by
 \link[ReducedExperiment]{getAlignedFeatures}.}
 }
 \value{
-A data.frame for each factor pair with the numbers and proportions
+A \code{data.frame} for each factor pair with the numbers and proportions
 of the genes in the input that overlap.
 }
 \description{
@@ -26,10 +26,14 @@ X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
 fe <- estimate_factors(X, nc = 5)
 
 # Get the genes highly aligned with each factor
-aligned_features <- getAlignedFeatures(fe)
+aligned_features <- getAlignedFeatures(fe, format = "data.frame", proportional_threshold = 0.3)
 
 # Identify overlap between common features for each factor
 common_features <- get_common_features(aligned_features)
 head(common_features)
 
+}
+\seealso{
+\code{\link[=plot_common_features]{plot_common_features()}},
+\code{\link[=getAlignedFeatures]{getAlignedFeatures()}}
 }

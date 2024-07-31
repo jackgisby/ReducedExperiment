@@ -45,16 +45,18 @@ test_that("Get MSGIDB data", {
 })
 
 test_that("Get common features", {
-    airway <- .get_airway_data()
+    airway <- ReducedExperiment:::.get_airway_data()
 
     set.seed(1)
-    airway_fe <- estimate_factors(airway, nc = 2)
+    airway_fe <- estimate_factors(airway, nc = 3)
 
     cf <- get_common_features(getAlignedFeatures(airway_fe, format = "data.frame"))
 
-    expect_equal(dim(cf), c(4, 7))
-    expect_equal(cf$intersect, c(NA, 8, 8, NA))
-    expect_equal(cf$total_feat_1, c(63, 63, 38, 38))
+    expect_equal(dim(cf), c(9, 7))
+    expect_equal(cf$intersect, c(NA, 4, 3, 4, NA, 0, 3, 0, NA))
+    expect_equal(cf$total_feat_1, c(53, 53, 53, 29, 29, 29, 39, 39, 39))
+
+    plot_common_features(cf)
 })
 
 test_that("Module preservation", {

@@ -26,8 +26,26 @@
 }
 \value{
 The number of samples (\code{nSamples}), features (\code{nFeatures})
-and dimensionally-reduced components (\code{nComponents}) are returned.
+or dimensionally-reduced components (\code{nComponents}) are returned.
 }
 \description{
 Prints individual lengths of samples, components and features
+}
+\examples{
+# Create a randomised ReducedExperiment
+re <- ReducedExperiment:::.createRandomisedReducedExperiment(100, 50, 10)
+
+# Get the dimensions
+nComponents(re) # 10
+nSamples(re) # 50
+nFeatures(re) # 10
+
+# For a ModularExperiment we can alternatively use nModules
+me <- ReducedExperiment:::.createRandomisedModularExperiment(100, 50, 10)
+nComponents(me) # 10
+nModules(me) # 10
+
+}
+\seealso{
+\link[ReducedExperiment]{dim,ReducedExperiment-method}
 }

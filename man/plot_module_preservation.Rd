@@ -33,8 +33,8 @@ X_1 <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
 X_2 <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
 
 # Estimate 5 factors based on the data matrix
-me_1 <- identify_modules(X, nc = 5, verbose = 0, powers = 5)
-me_2 <- identify_modules(X, nc = 5, verbose = 0, powers = 5)
+me_1 <- identify_modules(X_1, nc = 5, verbose = 0, powers = 5)
+me_2 <- identify_modules(X_2, nc = 5, verbose = 0, powers = 5)
 
 # Test module preservation
 mp <- module_preservation(me_1, me_2, verbose = 10, nPermutations = 10)

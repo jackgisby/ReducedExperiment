@@ -62,8 +62,8 @@ k <- 10 # Number of factors
 # practice these will likely be the result of applying some kind of
 # dimensionality-reduction method to the assay data (e.g., gene
 # expression data) from some study.
-rand_assay_data <- .makeRandomData(i, j, "gene", "sample")
-rand_reduced_data <- .makeRandomData(j, k, "sample", "component")
+rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
 
 re <- ReducedExperiment(
     assays = list("normal" = rand_assay_data),

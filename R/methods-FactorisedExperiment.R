@@ -50,9 +50,9 @@
 #' # In this case we use random assay, reduced and loadings data, but in
 #' # practice these will likely be the result of applying some kind of factor
 #' # analysis to the assay data (e.g., gene expression data) from some study.
-#' rand_assay_data <- .makeRandomData(i, j, "gene", "sample")
-#' rand_reduced_data <- .makeRandomData(j, k, "sample", "factor")
-#' rand_loadings <- .makeRandomData(i, k, "gene", "factor")
+#' rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "factor")
+#' rand_loadings <- ReducedExperiment:::.makeRandomData(i, k, "gene", "factor")
 #'
 #' fe <- FactorisedExperiment(
 #'     assays = list("normal" = rand_assay_data),

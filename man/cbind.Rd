@@ -16,7 +16,9 @@
 }
 \arguments{
 \item{...}{A series of \link[ReducedExperiment]{ReducedExperiment} objects
-to be combined. See \link[SummarizedExperiment]{cbind} for further details.}
+to be combined. See
+\link[SummarizedExperiment]{cbind,SummarizedExperiment-method} for
+further details.}
 
 \item{deparse.level}{Integer, see \link[base]{cbind}.}
 }
@@ -25,11 +27,47 @@ Returns a single \link[ReducedExperiment]{ReducedExperiment} object
 containing all of the columns in the objects passed to \code{cbind}.
 }
 \description{
-Comnbines \link[ReducedExperiment]{ReducedExperiment} objects by columns
-(samples). Combining these objects in such a way assumes that feature-level
-slots (e.g., loadings, module membership) are the same for all objects to
-be concatenated. If they are not, an error is returned.
+Combines \link[ReducedExperiment]{ReducedExperiment} objects by columns
+(samples). This method assumes that objects have identical features and
+components (i.e., factors or modules). If they are not, an error is returned.
+
+So, this means that the feature-level slots should be equivalent, for example
+the assay rownames and the rownames of the factor \code{loadings} available in
+\link[ReducedExperiment]{FactorisedExperiment} objects. The component slots
+should also be equivalent, such as the column names of the \code{reduced} matrix
+or the column names of the aformentioned factor \code{loadings} matrix.
+}
+\details{
+The \link[SummarizedExperiment]{SummarizedExperiment} package includes
+separate methods for \code{cbind}
+(\link[SummarizedExperiment]{cbind,SummarizedExperiment-method}) and
+(\link[SummarizedExperiment]{combineRows}). The latter is supposed to be
+more flexible, permitting differences in the number and identity of the rows.
+For \link[ReducedExperiment]{ReducedExperiment} objects we only implement a
+single, less flexible, method that assumes the rows and components
+(i.e., factors or modules) are identical across objects. Attempting to apply
+\code{combineRows} to a \link[ReducedExperiment]{ReducedExperiment} object will
+result in the objects being treated as if they were
+\link[SummarizedExperiment]{SummarizedExperiment}s, and a single
+\link[SummarizedExperiment]{SummarizedExperiment} object will be returned.
+}
+\examples{
+# Create randomised containers with different numbers of samples
+i <- 300 # Number of features
+k <- 10 # Number of components (i.e., factors/modules)
+
+# Same features and components, different samples (30 vs. 50 columns)
+re_1 <- ReducedExperiment:::.createRandomisedReducedExperiment(i, 50, k)
+re_2 <- ReducedExperiment:::.createRandomisedReducedExperiment(i, 30, k)
+
+# Make a new object with 80 columns
+cbind(re_1, re_2)
+
+# We can apply combineRows to `ReducedExperiment` objects but the resulting
+# object will be a `SummarizedExperiment`
+combineRows(re_1, re_2)
+
 }
 \seealso{
-\code{\link[base:cbind]{base::cbind()}}, \code{\link[SummarizedExperiment:cbind]{SummarizedExperiment::cbind()}}
+\code{\link[base:cbind]{base::cbind()}}, \link[SummarizedExperiment]{cbind,SummarizedExperiment-method}
 }
