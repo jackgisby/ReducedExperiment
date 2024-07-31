@@ -68,9 +68,13 @@ of components.}
 \link{ReducedExperiment}\link{run_ica}.}
 }
 \value{
-Returns a list containing: i) a list of stabilities as a function
-of the number of components; and ii) the selected number of components based
-on the \code{mean_stability_threshold}.
+Returns a list containing:
+\describe{
+\item{stability}{A data.frame indicating factor stabilities as a function
+of the number of components.}
+\item{selected_nc}{the selected number of components based on the
+\code{mean_stability_threshold}.}
+}
 }
 \description{
 Estimates the stability of factors over a range of component numbers to
@@ -93,4 +97,20 @@ but instead a choice can be made based on visualisation of the
 stabilities, as created by \link[ReducedExperiment]{plot_stability}. The
 MSTD paper provides additional context and advice on choosing the number
 of components based on these data.
+}
+\examples{
+# Get a random matrix with rnorm, with 200 rows (features)
+# and 100 columns (observations)
+X <- ReducedExperiment:::.makeRandomData(200, 100, "feature", "obs")
+
+# Estimate stability across 10 to 30 components
+stab_res_1 <- estimate_stability(X, min_components = 10, max_components = 30)
+
+# Convert the data matrix to a SummarizedExperiment, then estimate stability
+se <- SummarizedExperiment(assays = list("normal" = X))
+stab_res_2 <- estimate_stability(se, min_components = 10, max_components = 30)
+
+# Plot the stability
+plot_stability(stab_res_1)
+
 }

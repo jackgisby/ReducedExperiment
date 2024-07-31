@@ -32,6 +32,29 @@ number of components.}
 
 \item{...}{Additional arguments to be passed to \link[ggplot2]{ggsave}.}
 }
+\value{
+Returns a list of three plots as \code{ggplot2} objects:
+\describe{
+\item{combined_plot}{The two other plots combined with patchwork.}
+\item{stability_plot}{A plot in which each line indicates stability
+as a function of the number of components. A line is shown for each
+number of components tested.}
+\item{mean_plot}{The average component stability as a function of the
+number of components.}
+}
+}
 \description{
-Plots the results of \link[ReducedExperiment]{estimate_stability}.
+Plots the results of \link[ReducedExperiment]{estimate_stability}. See the
+details of this function for more information.
+}
+\examples{
+# Get a random matrix with rnorm, with 200 rows (features)
+# and 100 columns (observations)
+X <- ReducedExperiment:::.makeRandomData(200, 100, "feature", "obs")
+
+# Estimate stability across 10 to 30 components
+stab_res <- estimate_stability(X, min_components = 10, max_components = 30)
+
+plot_stability(stab_res)
+
 }

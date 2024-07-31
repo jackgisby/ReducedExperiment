@@ -260,7 +260,9 @@ setMethod(
     }
 )
 
-# Required for dollarsign autocomplete of colData columns
+#' Required for dollarsign autocomplete of colData columns
+#' @noRd
+#' @export
 .DollarNames.ReducedExperiment <- function(x, pattern = "") {
     grep(pattern, colnames(colData(x)), value = TRUE)
 }

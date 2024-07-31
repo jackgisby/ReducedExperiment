@@ -35,7 +35,33 @@ name of the assay to be subject to ICA.}
 \item{...}{Additional arguments to be passed to
 \link{ReducedExperiment}\link{run_ica}.}
 }
+\value{
+A \link{ReducedExperiment}\link{FactorisedExperiment} is returned
+containing the input data (i.e., the original data matrix in addition to
+other slots if a \link{SummarizedExperiment}\link{SummarizedExperiment} was used
+as input). Additionally contains the results of factor analysis, stored in
+the \code{reduced} and \code{loadings} slots. The \code{center_X}, \code{scale_X} and
+\code{stability} slots may also be filled depending on the arguments given
+to \code{estimate_factors}.
+}
 \description{
-Performs independent component analysis (ICA).
-Calls \link{ReducedExperiment}\link{run_ica} to perform the analysis.
+Performs independent component analysis (ICA) and packages both the input
+data and subsequent results into a
+\link{ReducedExperiment}\link{FactorisedExperiment} container. Calls
+\link{ReducedExperiment}\link{run_ica} to perform the analysis.
+}
+\examples{
+# Get a random matrix with rnorm, with 100 rows (features)
+# and 20 columns (observations)
+X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+
+# Estimate 5 factors based on the data matrix
+fe_1 <- estimate_factors(X, nc = 5)
+fe_1
+
+# Convert the data matrix to a SummarizedExperiment, then estimate 5 factors
+se <- SummarizedExperiment(assays = list("normal" = X))
+fe_2 <- estimate_factors(se, nc = 5)
+fe_2
+
 }

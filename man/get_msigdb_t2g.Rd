@@ -35,6 +35,20 @@ of a pathway, and the \code{gene_id} column indicates genes that belong to
 said pathway.
 }
 \description{
-Gets C2 canonical pathways from the MSigDB database in the format required
-by \code{clusterProfiler} enrichment functions.
+Gets pathways from the MSigDB database in the format required by
+\code{clusterProfiler} enrichment functions. May be used as input to
+\link{ReducedExperiment}\link{runEnrich}. By default, retrieves the C2
+canonical pathways.
+}
+\examples{
+pathways <- get_msigdb_t2g(
+    species = "Homo sapiens",
+    category = "C2",
+    subcategory_to_remove = "CGP",
+    gene_id = "ensembl_gene"
+)
+
+# A data.frame indicating gene-pathway mappings for use in pathway analysis
+head(pathways)
+
 }

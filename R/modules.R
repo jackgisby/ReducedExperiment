@@ -189,10 +189,11 @@ identify_modules <- function(
 #' }
 #'
 #' @export
-run_wgcna <- function(X, powers = 1:30, min_r_squared = 0.85,
-    max_mean_connectivity = 100, corType = "pearson",
-    networkType = "signed", module_labels = "numbers", maxBlockSize = 30000,
-    verbose = 0, return_full_output = FALSE, scale_reduced = TRUE, ...) {
+run_wgcna <- function(
+        X, powers = 1:30, min_r_squared = 0.85,
+        max_mean_connectivity = 100, corType = "pearson",
+        networkType = "signed", module_labels = "numbers", maxBlockSize = 30000,
+        verbose = 0, return_full_output = FALSE, scale_reduced = TRUE, ...) {
     .max_block_size_check(maxBlockSize, nrow(X))
     cor <- corFnc <- .get_cor_fn(corType) # Get correlation function
 
@@ -205,7 +206,8 @@ run_wgcna <- function(X, powers = 1:30, min_r_squared = 0.85,
     power <- unique(threshold$fitIndices$selected_power)
 
     bwms <- WGCNA::blockwiseModules(
-        t(X), power = power, corType = corType, networkType = networkType,
+        t(X),
+        power = power, corType = corType, networkType = networkType,
         maxBlockSize = maxBlockSize, verbose = verbose, ...
     ) # Apply WGCNA pipeline
 
@@ -221,10 +223,12 @@ run_wgcna <- function(X, powers = 1:30, min_r_squared = 0.85,
     if (module_labels == "numbers") { # Convert colours to numbers
         converter <- .colors2numbers(wgcna_res$assignments)
         wgcna_res$assignments <- vapply(
-            wgcna_res$assignments, converter, FUN.VALUE = ""
+            wgcna_res$assignments, converter,
+            FUN.VALUE = 1
         )
         colnames(wgcna_res$E) <- vapply(
-            colnames(wgcna_res$E), converter, FUN.VALUE = ""
+            colnames(wgcna_res$E), converter,
+            FUN.VALUE = 1
         )
     } else if (!module_labels %in% c("colors", "colours")) {
         stop("Value of `module_labels` does not correspond to a valid option")

@@ -293,7 +293,9 @@ setReplaceMethod("dendrogram", "ModularExperiment", function(object, value) {
     return(object)
 })
 
-# Required for dollarsign autocomplete of colData columns
+#' Required for dollarsign autocomplete of colData columns
+#' @noRd
+#' @export
 .DollarNames.ModularExperiment <- function(x, pattern = "") {
     grep(pattern, colnames(colData(x)), value = TRUE)
 }

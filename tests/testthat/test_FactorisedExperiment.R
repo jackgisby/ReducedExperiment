@@ -235,7 +235,7 @@ test_that("Get gene IDs", {
 
     # Test `getGeneIDs` with preloaded `biomart_out` to avoid actually querying
     # ensembl during testing
-    biomart_out <- read.csv("data/biomart_out.csv")
+    biomart_out <- read.csv("inst/extdata/biomart_out.csv")
     airway_fe <- getGeneIDs(airway_fe, biomart_out = biomart_out)
 
     expect_true("hgnc_symbol" %in% colnames(rowData(airway_fe)))

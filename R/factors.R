@@ -1,7 +1,9 @@
 #' Apply dimensionality reduction using ICA
 #'
-#' Performs independent component analysis (ICA).
-#' Calls \link{ReducedExperiment}[run_ica] to perform the analysis.
+#' Performs independent component analysis (ICA) and packages both the input
+#' data and subsequent results into a
+#' \link{ReducedExperiment}[FactorisedExperiment] container. Calls
+#' \link{ReducedExperiment}[run_ica] to perform the analysis.
 #'
 #' @param X Either a \link{SummarizedExperiment}[SummarizedExperiment] object
 #' or a matrix containing data to be subject to ICA. `X` should have rows as
@@ -23,6 +25,28 @@
 #'
 #' @param ... Additional arguments to be passed to
 #' \link{ReducedExperiment}[run_ica].
+#'
+#' @returns A \link{ReducedExperiment}[FactorisedExperiment] is returned
+#' containing the input data (i.e., the original data matrix in addition to
+#' other slots if a \link{SummarizedExperiment}[SummarizedExperiment] was used
+#' as input). Additionally contains the results of factor analysis, stored in
+#' the `reduced` and `loadings` slots. The `center_X`, `scale_X` and
+#' `stability` slots may also be filled depending on the arguments given
+#' to `estimate_factors`.
+#'
+#' @examples
+#' # Get a random matrix with rnorm, with 100 rows (features)
+#' # and 20 columns (observations)
+#' X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+#'
+#' # Estimate 5 factors based on the data matrix
+#' fe_1 <- estimate_factors(X, nc = 5)
+#' fe_1
+#'
+#' # Convert the data matrix to a SummarizedExperiment, then estimate 5 factors
+#' se <- SummarizedExperiment(assays = list("normal" = X))
+#' fe_2 <- estimate_factors(se, nc = 5)
+#' fe_2
 #'
 #' @export
 estimate_factors <- function(
@@ -49,7 +73,6 @@ estimate_factors <- function(
         scale = scale_X
     ))
 
-    # print(assay(X, "transformed"))
     if (center_X) center_X <- attr(assay(X, "transformed"), "scaled:center")
     if (scale_X) scale_X <- attr(assay(X, "transformed"), "scaled:scale")
 
@@ -99,10 +122,9 @@ estimate_factors <- function(
 
 #' Run ICA for a data matrix
 #'
-#' Runs ICA through \link{ica}[ica]. X is passed directly to \link{ica}[ica],
-#' with rows as features and samples as columns. Generates a source signal
-#' matrix (loadings) with rows as features and columns as factors and a mixture
-#' matrix (reduced data) with samples as rows and columns as factors.
+#' Runs ICA through \link{ica}[ica]. If `use_stability` is FALSE, then X is
+#' passed directly to \link{ica}[ica] and a standard ICA analysis is performed.
+#' If `use_stability` is TRUE, then the stabilised ICA procedure is carried out.
 #'
 #' @param X A matrix with features as rows and columns as samples.
 #'
@@ -187,25 +209,48 @@ estimate_factors <- function(
 #' }
 #'
 #' In short, the stability-based algorithm consists of:
-#' i) Running ICA multiple times with either random initialisation or bootstrap
+#' \itemize{
+#'  \item Running ICA multiple times with either random initialisation or bootstrap
 #' resampling of the input data.
-#' ii) Clustering the resulting factors across all runs based on the
+#'  \item Clustering the resulting factors across all runs based on the
 #' signature matrix.
-#' iii) Calculating intra- (aics) and extra- (aecs) cluster
+#'  \item Calculating intra- (aics) and extra- (aecs) cluster
 #' stability, and defining the final cluster stability as `aics - aecs`.
-#' iv) Calculating the cluster centrotype as the factor with the highest
+#'  \item Calculating the cluster centrotype as the factor with the highest
 #' intra-cluster stability.
-#' v) Optionally removing factors below a specified stability threshold
+#'  \item Optionally removing factors below a specified stability threshold
 #' (`stability_threshold`).
+#' }
+#'
+#' @returns
+#' \describe{
+#'  \item{M}{The mixture matrix (reduced data) with samples as rows and columns
+#'  as factors.}
+#'  \item{S}{The source signal matrix (loadings) with rows as features and
+#'  columns as factors.}
+#'  \item{stab}{If `use_stability` is TRUE, "stab" will be a component of the
+#'  list. It is a vector indicating the relative stability, as described
+#'  above.}
+#' }
+#'
+#' @examples
+#' # Get a random matrix with rnorm, with 100 rows (features)
+#' # and 20 columns (observations)
+#' X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+#'
+#' # Run standard ICA on the data with 5 components
+#' ica_res <- run_ica(X, nc = 5, use_stability = FALSE)
+#'
+#' # Run stabilised ICA on the data with 5 components
+#' ica_res_stab <- run_ica(X, nc = 5, use_stability = TRUE)
 #'
 #' @import ica
 #' @export
-run_ica <- function(
-        X, nc, use_stability = FALSE, resample = FALSE,
-        method = "fast", stability_threshold = NULL, center_X = TRUE,
-        scale_X = FALSE, reorient_skewed = TRUE, scale_components = TRUE,
-        scale_reduced = TRUE, n_runs = 30,
-        BPPARAM = BiocParallel::SerialParam(RNGseed = 1), ...) {
+run_ica <- function(X, nc, use_stability = FALSE, resample = FALSE,
+    method = "fast", stability_threshold = NULL, center_X = TRUE,
+    scale_X = FALSE, reorient_skewed = TRUE, scale_components = TRUE,
+    scale_reduced = TRUE, n_runs = 30,
+    BPPARAM = BiocParallel::SerialParam(RNGseed = 1), ...) {
     if (center_X | scale_X) {
         X <- t(scale(t(X), center = center_X, scale = scale_X))
     }
@@ -259,10 +304,9 @@ run_ica <- function(
 #'
 #' @noRd
 #' @keywords internal
-.stability_ica <- function(
-        X, nc, resample, method, n_runs, BPPARAM,
-        stability_threshold, BPOPTIONS = bpoptions(), return_centrotypes = TRUE,
-        ...) {
+.stability_ica <- function(X, nc, resample, method, n_runs, BPPARAM,
+    stability_threshold, BPOPTIONS = bpoptions(), return_centrotypes = TRUE,
+    ...) {
     # Run stabilized ICA in parallel (depending on BPPARAM)
     S_all <- BiocParallel::bplapply(seq_len(n_runs), .ica_random,
         BPPARAM = BPPARAM, BPOPTIONS = BPOPTIONS, X_mat = X, nc = nc,
@@ -462,16 +506,36 @@ run_ica <- function(
 #' MSTD paper provides additional context and advice on choosing the number
 #' of components based on these data.
 #'
-#' @returns Returns a list containing: i) a list of stabilities as a function
-#' of the number of components; and ii) the selected number of components based
-#' on the `mean_stability_threshold`.
+#' @returns Returns a list containing:
+#' \describe{
+#'  \item{stability}{A data.frame indicating factor stabilities as a function
+#'  of the number of components.}
+#'  \item{selected_nc}{the selected number of components based on the
+#'  `mean_stability_threshold`.}
+#' }
+#'
+#' @examples
+#' # Get a random matrix with rnorm, with 200 rows (features)
+#' # and 100 columns (observations)
+#' X <- ReducedExperiment:::.makeRandomData(200, 100, "feature", "obs")
+#'
+#' # Estimate stability across 10 to 30 components
+#' stab_res_1 <- estimate_stability(X, min_components = 10, max_components = 30)
+#'
+#' # Convert the data matrix to a SummarizedExperiment, then estimate stability
+#' se <- SummarizedExperiment(assays = list("normal" = X))
+#' stab_res_2 <- estimate_stability(se, min_components = 10, max_components = 30)
+#'
+#' # Plot the stability
+#' plot_stability(stab_res_1)
 #'
 #' @export
-estimate_stability <- function(X, min_components = 10,
-    max_components = 60, by = 2, n_runs = 30, resample = FALSE,
-    mean_stability_threshold = NULL, center_X = TRUE, scale_X = FALSE,
-    assay_name = "normal", BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
-    verbose = TRUE, ...) {
+estimate_stability <- function(
+        X, min_components = 10,
+        max_components = 60, by = 2, n_runs = 30, resample = FALSE,
+        mean_stability_threshold = NULL, center_X = TRUE, scale_X = FALSE,
+        assay_name = "normal", BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
+        verbose = TRUE, ...) {
     if (inherits(X, "SummarizedExperiment")) {
         X <- assay(X, "normal")
     }
@@ -513,7 +577,7 @@ estimate_stability <- function(X, min_components = 10,
 
     if (verbose) close(tpb)
 
-    .select_nc(stabilities, mean_stability_threshold)
+    select_nc <- .select_nc(stabilities, mean_stability_threshold)
     return(list("stability" = stabilities, "selected_nc" = select_nc))
 }
 
@@ -538,7 +602,8 @@ estimate_stability <- function(X, min_components = 10,
 
 #' Plot component stability as a function of the number of components
 #'
-#' Plots the results of \link[ReducedExperiment]{estimate_stability}.
+#' Plots the results of \link[ReducedExperiment]{estimate_stability}. See the
+#' details of this function for more information.
 #'
 #' @param stability The results of \link[ReducedExperiment]{estimate_stability}.
 #'
@@ -556,6 +621,26 @@ estimate_stability <- function(X, min_components = 10,
 #' @param width The width of the plot, to be passed to \link[ggplot2]{ggsave}.
 #'
 #' @param ... Additional arguments to be passed to \link[ggplot2]{ggsave}.
+#'
+#' @returns Returns a list of three plots as `ggplot2` objects:
+#' \describe{
+#'  \item{combined_plot}{The two other plots combined with patchwork.}
+#'  \item{stability_plot}{A plot in which each line indicates stability
+#'   as a function of the number of components. A line is shown for each
+#'   number of components tested.}
+#'  \item{mean_plot}{The average component stability as a function of the
+#'  number of components.}
+#' }
+#'
+#' @examples
+#' # Get a random matrix with rnorm, with 200 rows (features)
+#' # and 100 columns (observations)
+#' X <- ReducedExperiment:::.makeRandomData(200, 100, "feature", "obs")
+#'
+#' # Estimate stability across 10 to 30 components
+#' stab_res <- estimate_stability(X, min_components = 10, max_components = 30)
+#'
+#' plot_stability(stab_res)
 #'
 #' @import ggplot2
 #' @import patchwork

@@ -70,11 +70,21 @@ is FALSE. See \code{details} for further information.}
 \item{...}{Additional arguments to be passed to
 \link{ica}\link{ica}.}
 }
+\value{
+\describe{
+\item{M}{The mixture matrix (reduced data) with samples as rows and columns
+as factors.}
+\item{S}{The source signal matrix (loadings) with rows as features and
+columns as factors.}
+\item{stab}{If \code{use_stability} is TRUE, "stab" will be a component of the
+list. It is a vector indicating the relative stability, as described
+above.}
+}
+}
 \description{
-Runs ICA through \link{ica}\link{ica}. X is passed directly to \link{ica}\link{ica},
-with rows as features and samples as columns. Generates a source signal
-matrix (loadings) with rows as features and columns as factors and a mixture
-matrix (reduced data) with samples as rows and columns as factors.
+Runs ICA through \link{ica}\link{ica}. If \code{use_stability} is FALSE, then X is
+passed directly to \link{ica}\link{ica} and a standard ICA analysis is performed.
+If \code{use_stability} is TRUE, then the stabilised ICA procedure is carried out.
 }
 \details{
 Function performs ICA for a data matrix. If \code{use_stability} is TRUE, then
@@ -111,14 +121,28 @@ successfully calculated.}
 }
 
 In short, the stability-based algorithm consists of:
-i) Running ICA multiple times with either random initialisation or bootstrap
+\itemize{
+\item Running ICA multiple times with either random initialisation or bootstrap
 resampling of the input data.
-ii) Clustering the resulting factors across all runs based on the
+\item Clustering the resulting factors across all runs based on the
 signature matrix.
-iii) Calculating intra- (aics) and extra- (aecs) cluster
+\item Calculating intra- (aics) and extra- (aecs) cluster
 stability, and defining the final cluster stability as \code{aics - aecs}.
-iv) Calculating the cluster centrotype as the factor with the highest
+\item Calculating the cluster centrotype as the factor with the highest
 intra-cluster stability.
-v) Optionally removing factors below a specified stability threshold
+\item Optionally removing factors below a specified stability threshold
 (\code{stability_threshold}).
+}
+}
+\examples{
+# Get a random matrix with rnorm, with 100 rows (features)
+# and 20 columns (observations)
+X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+
+# Run standard ICA on the data with 5 components
+ica_res <- run_ica(X, nc = 5, use_stability = FALSE)
+
+# Run stabilised ICA on the data with 5 components
+ica_res_stab <- run_ica(X, nc = 5, use_stability = TRUE)
+
 }

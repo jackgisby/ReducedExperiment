@@ -17,3 +17,19 @@ of the genes in the input that overlap.
 \description{
 Function to count how many genes are aligned with multiple factors.
 }
+\examples{
+# Get a random matrix with rnorm, with 100 rows (features)
+# and 20 columns (observations)
+X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+
+# Estimate 5 factors based on the data matrix
+fe <- estimate_factors(X, nc = 5)
+
+# Get the genes highly aligned with each factor
+aligned_features <- getAlignedFeatures(fe)
+
+# Identify overlap between common features for each factor
+common_features <- get_common_features(aligned_features)
+head(common_features)
+
+}

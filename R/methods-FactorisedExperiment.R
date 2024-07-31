@@ -3,7 +3,12 @@
 #' @description
 #' A container inheriting from \link[ReducedExperiment]{ReducedExperiment}, that
 #' contains one or more data matrices, to which factor analysis has been applied
-#' to identify a reduced set of features.
+#' to identify a reduced set of features. A
+#' \link[ReducedExperiment]{FactorisedExperiment} can be created directly in
+#' a similar manner to a \link[SummarizedExperiment]{SummarizedExperiment}.
+#' Alternatively, the \link[ReducedExperiment]{estimate_factors} function
+#' can be used to both apply factor analysis and generate a
+#' \link[ReducedExperiment]{FactorisedExperiment} from the results.
 #'
 #' @param reduced A data matrix, produced by factor analysis, with rows
 #' representing samples and columns representing factors.
@@ -28,6 +33,30 @@
 #'
 #' @param ... Additional arguments to be passed to
 #' \link[ReducedExperiment]{ReducedExperiment}.
+#'
+#' @returns Constructor method returns a
+#' \link[ReducedExperiment]{FactorisedExperiment} object.
+#'
+#' @examples
+#' # Create randomised data as
+#' i <- 300 # Number of features
+#' j <- 100 # Number of samples
+#' k <- 10 # Number of factors
+#'
+#' # In this case we use random assay, reduced and loadings data, but in
+#' # practice these will likely be the result of applying some kind of factor
+#' # analysis to the assay data (e.g., gene expression data) from some study.
+#' rand_assay_data <- .makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- .makeRandomData(j, k, "sample", "factor")
+#' rand_loadings <- .makeRandomData(i, k, "gene", "factor")
+#'
+#' fe <- FactorisedExperiment(
+#'     assays = list("normal" = rand_assay_data),
+#'     reduced = rand_reduced_data,
+#'     loadings = rand_loadings
+#' )
+#'
+#' fe
 #'
 #' @import SummarizedExperiment
 #'
@@ -155,11 +184,15 @@ setReplaceMethod("rownames", "FactorisedExperiment", function(x, value) {
     return(x)
 })
 
-#' Gets the stability values for factors
+#' Getting and setting the stability values for factors
 #'
 #' @param object \link[ReducedExperiment]{FactorisedExperiment} object.
 #'
 #' @param value New value to replace existing stability vector.
+#'
+#' @returns A vector with a value for each factor indicating the factor
+#' stability. More details are available from the
+#' \link[ReducedExperiment]{estimate_stability} help page.
 #'
 #' @rdname stability
 #' @name stability
@@ -192,9 +225,11 @@ setReplaceMethod("componentNames", "FactorisedExperiment", function(object,
     return(object)
 })
 
-# Required for dollarsign autocomplete of colData columns
+#' Required for dollarsign autocomplete of colData columns
+#' @noRd
+#' @export
 .DollarNames.FactorisedExperiment <- function(x, pattern = "") {
-    grep(pattern, colnames(colData(x)), value = TRUE)
+    grep(pattern, names(colData(x)), value = TRUE)
 }
 
 #' @rdname slice
