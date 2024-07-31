@@ -30,9 +30,6 @@ transposed newdata are multiplied by the original loadings matrix."><!-- mathjax
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/jackgisby/ReducedExperiment/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -157,6 +154,72 @@ instead, then a If a <a href="factorised_experiment.html">FactorisedExperiment</
     <div class="dont-index"><p><code><a href="calcEigengenes.html">calcEigengenes</a></code></p></div>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get two random matrices with rnorm</span></span></span>
+<span class="r-in"><span><span class="co"># 1: 100 rows (features) and 20 columns (observations)</span></span></span>
+<span class="r-in"><span><span class="va">X_1</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.makeRandomData</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, <span class="st">"feature"</span>, <span class="st">"obs"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Both matrices must have the same features, but they may have different obs</span></span></span>
+<span class="r-in"><span><span class="co"># 2: 100 rows (features) and 30 columns (observations)</span></span></span>
+<span class="r-in"><span><span class="va">X_2</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.makeRandomData</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">30</span>, <span class="st">"feature"</span>, <span class="st">"obs"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Estimate 5 factors based on the data matrix</span></span></span>
+<span class="r-in"><span><span class="va">fe_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_factors.html">estimate_factors</a></span><span class="op">(</span><span class="va">X_1</span>, nc <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fe_1</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: FactorisedExperiment </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 100 20 5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> assays(2): normal transformed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(100): feature_1 feature_2 ... feature_99 feature_100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(20): obs_1 obs_2 ... obs_19 obs_20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 components</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Project the fe_1 factors for the samples in X_2</span></span></span>
+<span class="r-in"><span><span class="va">fe_2</span> <span class="op">&lt;-</span> <span class="fu">projectData</span><span class="op">(</span><span class="va">fe_1</span>, <span class="va">X_2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fe_2</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           factor_1    factor_2     factor_3    factor_4    factor_5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_1  -0.05324222 -0.31555187  0.699147131 -1.00941522 -1.76451105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_2   0.83576421 -0.69547229  0.159117645  0.55592813  0.30579631</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_3   1.13118474  2.41778204 -0.054443515  0.46792177  1.40456566</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_4  -0.31856790 -1.66543082  0.521999799  1.14918808 -0.82430197</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_5   0.66460005  0.22443362 -1.083005574 -0.75459052 -0.22691631</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_6  -2.18913847  1.14329931  0.101001100  1.14115945  0.29373794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_7   1.17048007  0.93667782 -0.782244989  2.97485618  0.92144494</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_8  -0.49172483 -0.32165945 -0.345583195 -0.07541566  0.17915930</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_9  -0.39023242 -1.31983028  1.178914559  0.64781515  0.57460051</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_10  0.52843885 -0.13879981 -0.358421693 -0.80183711  0.44004667</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_11 -0.23938349  0.30869202 -0.592972191 -0.90805433  0.08694723</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_12 -0.95624200 -0.79517663  0.746796527 -0.06278988  1.86727478</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_13 -0.57119988 -0.39182304  0.497392172 -0.43963582 -1.20086721</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_14  0.95121489  1.19588692  1.581185538  0.25746778  1.34191927</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_15  0.42123089 -0.89537628  0.369596116 -0.42094557 -0.41452911</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_16 -1.21850084 -1.30112706 -1.769879222  1.02781402  0.59105494</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_17  0.43635793  0.56858368  2.332463200 -0.76192308 -1.46833307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_18  2.53467614  0.88763358 -1.736375784  1.05573568 -1.59956378</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_19 -1.16598123  1.86534142  0.078075699  0.39150406  0.20379232</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_20 -0.27438157  0.10560683  0.386156695 -1.25618312 -0.01167785</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_21  0.12689653  1.35690758  0.006238685  0.29783938  0.95235792</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_22 -1.57548497 -0.82673684  0.198194092 -1.15309439  2.13128538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_23 -1.04470054 -0.49144696  0.551479779 -0.08071957  0.25747883</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_24  1.09129568 -0.06854656 -1.091235135 -0.84093237 -1.15724194</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_25 -0.69643016 -1.10121190  0.099834381 -0.03897311 -0.11737642</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_26  0.39220778 -0.70271761  0.770447069  0.99665522 -0.02672246</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_27 -0.21737874  0.32500811 -1.647156912 -0.58221869 -0.70366027</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_28  1.47714349 -1.10705881  0.850041265 -0.02025558 -0.12908276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_29 -0.25834033  0.11835403 -1.900761344 -2.21730815 -1.39182772</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_30 -0.10056164  0.68375928  0.233998102  0.46040725 -0.51485007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"scaled:center")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  factor_1  factor_2  factor_3  factor_4  factor_5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1.048171 -1.850275 -2.801580  1.515847  5.759392 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"scaled:scale")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  factor_1  factor_2  factor_3  factor_4  factor_5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7.869577 11.105263 10.093258  9.995234 11.703628 </span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -165,7 +228,7 @@ instead, then a If a <a href="factorised_experiment.html">FactorisedExperiment</
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jack Gisby.</p>
+  <p></p><p>Developed by Jack Gisby, Mike Barnes.</p>
 </div>
 
 <div class="pkgdown">

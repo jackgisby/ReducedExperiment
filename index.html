@@ -46,9 +46,6 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="news/index.html">Changelog</a>
-</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -69,19 +66,16 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-
 <div class="section level1">
 <div class="page-header"><h1 id="reducedexperiment">ReducedExperiment<a class="anchor" aria-label="anchor" href="#reducedexperiment"></a>
 </h1></div>
+<!-- <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" /> -->
 <!-- badges: start -->
 
-</div>
-<div class="section level1">
-<h1 id="reducedexperiment-">ReducedExperiment <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150"><a class="anchor" aria-label="anchor" href="#reducedexperiment-"></a>
-</h1>
+<!-- badges: end -->
 <p>ReducedExperiment provides SummarizedExperiment-like containers for storing and manipulating dimensionally-reduced assay data. The ReducedExperiment classes allow users to simultaneously manipulate their original dataset and their decomposed data, in addition to other method-specific outputs like feature loadings. Implements utilities and specialised classes for the application of stabilised independent component analysis (sICA) and weighted gene correlation network analysis (WGCNA).</p>
 <div class="section level2">
-<h2 id="installation-instructions">Installation instructions<a class="anchor" aria-label="anchor" href="#installation-instructions"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>Get the latest stable <code>R</code> release from <a href="http://cran.r-project.org/" class="external-link">CRAN</a>. Then install <code>ReducedExperiment</code> from <a href="http://bioconductor.org/" class="external-link">Bioconductor</a> using the following code:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -92,97 +86,64 @@
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ReducedExperiment"</span><span class="op">)</span></span></code></pre></div>
 <p>And the development version from <a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"jackgisby/ReducedExperiment"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jackgisby/ReducedExperiment"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>This is a basic example which shows you how to solve a common problem:</p>
+<p><code>ReducedExperiment</code> objects are derived from <code>SummarizedExperiment</code> objects, with additional slots designed to store and manipulate the outputs of common dimensionality reduction techniques.</p>
+<p>As an example, the <code>SummarizedExperiment</code> described below contains gene expression data from individuals with COVID-19. It contains the following slots: - <code>assays</code> - A features by samples matrix containing the expression data. - <code>colData</code> - Contains a row for each sample containing phenotype data. - <code>rowData</code> - Contains a row for each feature containing gene IDs.</p>
+<p>The <code>SummarizedExperiment</code> objects are convenient because, when we slice the rows or columns of the expression matrix, the metadata for the rows and columns are sliced accordingly.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">"ReducedExperiment"</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: SummarizedExperiment</span></span>
-<span><span class="co">#&gt; Loading required package: MatrixGenerics</span></span>
-<span><span class="co">#&gt; Loading required package: matrixStats</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'MatrixGenerics'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:matrixStats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,</span></span>
-<span><span class="co">#&gt;     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,</span></span>
-<span><span class="co">#&gt;     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,</span></span>
-<span><span class="co">#&gt;     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,</span></span>
-<span><span class="co">#&gt;     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,</span></span>
-<span><span class="co">#&gt;     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,</span></span>
-<span><span class="co">#&gt;     colWeightedMeans, colWeightedMedians, colWeightedSds,</span></span>
-<span><span class="co">#&gt;     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,</span></span>
-<span><span class="co">#&gt;     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,</span></span>
-<span><span class="co">#&gt;     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,</span></span>
-<span><span class="co">#&gt;     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,</span></span>
-<span><span class="co">#&gt;     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,</span></span>
-<span><span class="co">#&gt;     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,</span></span>
-<span><span class="co">#&gt;     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,</span></span>
-<span><span class="co">#&gt;     rowWeightedSds, rowWeightedVars</span></span>
-<span><span class="co">#&gt; Loading required package: GenomicRanges</span></span>
-<span><span class="co">#&gt; Loading required package: stats4</span></span>
-<span><span class="co">#&gt; Loading required package: BiocGenerics</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'BiocGenerics'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     IQR, mad, sd, var, xtabs</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     anyDuplicated, aperm, append, as.data.frame, basename, cbind,</span></span>
-<span><span class="co">#&gt;     colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,</span></span>
-<span><span class="co">#&gt;     get, grep, grepl, intersect, is.unsorted, lapply, Map, mapply,</span></span>
-<span><span class="co">#&gt;     match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,</span></span>
-<span><span class="co">#&gt;     Position, rank, rbind, Reduce, rownames, sapply, setdiff, table,</span></span>
-<span><span class="co">#&gt;     tapply, union, unique, unsplit, which.max, which.min</span></span>
-<span><span class="co">#&gt; Loading required package: S4Vectors</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'S4Vectors'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:utils':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     findMatches</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     expand.grid, I, unname</span></span>
-<span><span class="co">#&gt; Loading required package: IRanges</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'IRanges'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:grDevices':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     windows</span></span>
-<span><span class="co">#&gt; Loading required package: GenomeInfoDb</span></span>
-<span><span class="co">#&gt; Loading required package: Biobase</span></span>
-<span><span class="co">#&gt; Welcome to Bioconductor</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     Vignettes contain introductory material; view with</span></span>
-<span><span class="co">#&gt;     'browseVignettes()'. To cite Bioconductor, see</span></span>
-<span><span class="co">#&gt;     'citation("Biobase")', and for packages 'citation("pkgname")'.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'Biobase'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:MatrixGenerics':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     rowMedians</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:matrixStats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     anyMissing, rowMedians</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'ReducedExperiment'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:Biobase':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     featureNames, featureNames&lt;-, sampleNames, sampleNames&lt;-</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     loadings</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">"SummarizedExperiment"</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">se</span></span>
+<span><span class="co">#&gt; class: SummarizedExperiment </span></span>
+<span><span class="co">#&gt; dim: 2184 234 </span></span>
+<span><span class="co">#&gt; metadata(0):</span></span>
+<span><span class="co">#&gt; assays(1): normal</span></span>
+<span><span class="co">#&gt; rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
+<span><span class="co">#&gt;   ENSG00000288700</span></span>
+<span><span class="co">#&gt; rowData names(3): gencode_id ensembl_id gene_id</span></span>
+<span><span class="co">#&gt; colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13</span></span>
+<span><span class="co">#&gt;   C99_positive_16</span></span>
+<span><span class="co">#&gt; colData names(19): sample_id individual_id ...</span></span>
+<span><span class="co">#&gt;   time_from_first_positive_swab time_from_first_x</span></span></code></pre></div>
+<p>The <code>SummarizedExperiment</code> has two dimensions, representing the features (2,184) and samples (234).</p>
+<p>We can perform a factor analysis on these data, the result of which is a set of reduced components and feature loadings.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## basic example code</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">"ReducedExperiment"</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/estimate_factors.html">estimate_factors</a></span><span class="op">(</span><span class="va">se</span>, nc <span class="op">=</span> <span class="fl">35</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fe</span></span>
+<span><span class="co">#&gt; class: FactorisedExperiment </span></span>
+<span><span class="co">#&gt; dim: 2184 234 35 </span></span>
+<span><span class="co">#&gt; metadata(0):</span></span>
+<span><span class="co">#&gt; assays(2): normal transformed</span></span>
+<span><span class="co">#&gt; rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
+<span><span class="co">#&gt;   ENSG00000288700</span></span>
+<span><span class="co">#&gt; rowData names(3): gencode_id ensembl_id gene_id</span></span>
+<span><span class="co">#&gt; colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13</span></span>
+<span><span class="co">#&gt;   C99_positive_16</span></span>
+<span><span class="co">#&gt; colData names(19): sample_id individual_id ...</span></span>
+<span><span class="co">#&gt;   time_from_first_positive_swab time_from_first_x</span></span>
+<span><span class="co">#&gt; 35 components</span></span></code></pre></div>
+<p>This <code>FactorisedExperiment</code> object has an additional dimension representing the 35 factors. It also has additional slots, including: - <code>reduced</code> - A samples by factors matrix containing the dimensionally-reduced data. - <code>loadings</code> - Contains a features by factors matrix containing the loadings.</p>
+<p>The <code>ReducedExperiment</code> objects allow users to simultaneously slice and modify the <code>assays</code>, <code>rowData</code>, <code>colData</code>, <code>reduced</code> and <code>loadings</code> matrices. Here, we provided a <code>SummarizedExperiment</code> object to <code>estimate_factors</code>, but we could just have easily provided a simple expression matrix.</p>
+</div>
+<div class="section level2">
+<h2 id="functionality">Functionality<a class="anchor" aria-label="anchor" href="#functionality"></a>
+</h2>
+<p>The package currently provides three types of container: - <code>ReducedExperiment</code> - A basic container that can store dimensionally-reduced components. - <code>FactorisedExperiment</code> - A container based on <code>ReducedExperiment</code> designed for working with the results of factor analysis. It can contain feature loadings and factor stability values. - <code>ModularExperiment</code> - A container based on <code>ReducedExperiment</code> designed for working with modules of features (usually genes), as is produced by the popular Weighted Gene Correlation Network Analysis (WGCNA) approach. It contains the mapping of features to modules</p>
+<p>Various tools are provided by the package for applying dimensionality reduction and manipulating their results. These include: - Workflows for applying independent component analysis (ICA) and WGCNA. We additionally developed an R implementation of the stabilised ICA algorithm. - Methods for applying pathway enrichment analysis to factors and modules. - Functions for identifying associations between factors/modules and sample-level variables. - Methods for applying identified factors or modules to new datasets. - Other approach-specific plots and utilities, such as factor stability plots and module preservation plots.</p>
+<p>Many of these are demonstrated in more detail in the <a href="https://jackgisby.github.io/ReducedExperiment/articles/ReducedExperiment.html" class="external-link">package’s vignette</a>.</p>
+<p>The containers implemented in <code>ReducedExperiment</code> are designed to be extensible. We encourage the development of children classes with additional, or alternative, slots and methods.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>Below is the citation output from using <code>citation('ReducedExperiment')</code> in R. Please run this yourself to check for any updates on how to cite <strong>ReducedExperiment</strong>.</p>
+<p>Below is the citation output from using <code>citation('ReducedExperiment')</code> in R.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"ReducedExperiment"</span><span class="op">)</span>, bibtex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; To cite package 'ReducedExperiment' in publications use:</span></span>
@@ -204,28 +165,9 @@
 <span><span class="co">#&gt;     note = {https://github.com/jackgisby/ReducedExperiment/ReducedExperiment - R package version 0.1.2},</span></span>
 <span><span class="co">#&gt;     doi = {10.18129/B9.bioc.ReducedExperiment},</span></span>
 <span><span class="co">#&gt;   }</span></span></code></pre></div>
-<p>Please note that the <code>ReducedExperiment</code> was only made possible thanks to many other R and bioinformatics software authors, which are cited either in the vignette.</p>
-</div>
-<div class="section level2">
-<h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
-</h2>
-<p>Please note that the <code>ReducedExperiment</code> project is released with a <a href="http://bioconductor.org/about/code-of-conduct/" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
-</div>
-<div class="section level2">
-<h2 id="development-tools">Development tools<a class="anchor" aria-label="anchor" href="#development-tools"></a>
-</h2>
-<ul>
-<li>Continuous code testing is possible thanks to <a href="https://www.tidyverse.org/blog/2020/04/usethis-1-6-0/" class="external-link">GitHub actions</a> through <em><a href="https://CRAN.R-project.org/package=usethis" class="external-link">usethis</a></em>, <em><a href="https://CRAN.R-project.org/package=remotes" class="external-link">remotes</a></em>, and <em><a href="https://CRAN.R-project.org/package=rcmdcheck" class="external-link">rcmdcheck</a></em> customized to use <a href="https://www.bioconductor.org/help/docker/" class="external-link">Bioconductor’s docker containers</a> and <em><a href="https://bioconductor.org/packages/3.19/BiocCheck" class="external-link">BiocCheck</a></em>.</li>
-<li>Code coverage assessment is possible thanks to <a href="https://codecov.io/gh" class="external-link">codecov</a> and <em><a href="https://CRAN.R-project.org/package=covr" class="external-link">covr</a></em>.</li>
-<li>The <a href="http://jackgisby.github.io/ReducedExperiment" class="external-link">documentation website</a> is automatically updated thanks to <em><a href="https://CRAN.R-project.org/package=pkgdown" class="external-link">pkgdown</a></em>.</li>
-<li>The code is styled automatically thanks to <em><a href="https://CRAN.R-project.org/package=styler" class="external-link">styler</a></em>.</li>
-<li>The documentation is formatted thanks to <em><a href="https://CRAN.R-project.org/package=devtools" class="external-link">devtools</a></em> and <em><a href="https://CRAN.R-project.org/package=roxygen2" class="external-link">roxygen2</a></em>.</li>
-</ul>
-<p>For more details, check the <code>dev</code> directory.</p>
-<p>This package was developed using <em><a href="https://bioconductor.org/packages/3.19/biocthis" class="external-link">biocthis</a></em>.</p>
+<p>The <code>ReducedExperiment</code> package relies on many software packages and development tools. The packages used are listed in the vignette and relevant papers are cited.</p>
 </div>
 </div>
-
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -264,6 +206,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Jack Gisby <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-0511-8123" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Mike Barnes <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-9097-7381" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
@@ -275,14 +218,6 @@
 <li><a href="https://github.com/jackgisby/ReducedExperiment/issues" class="external-link"><img src="https://img.shields.io/github/issues/jackgisby/ReducedExperiment" alt="GitHub issues"></a></li>
 <li><a href="https://github.com/jackgisby/ReducedExperiment/pulls" class="external-link"><img src="https://img.shields.io/github/issues-pr/jackgisby/ReducedExperiment" alt="GitHub pulls"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://bioconductor.org/checkResults/release/bioc-LATEST/ReducedExperiment" class="external-link"><img src="http://www.bioconductor.org/shields/build/release/bioc/ReducedExperiment.svg" alt="Bioc release status"></a></li>
-<li><a href="https://bioconductor.org/checkResults/devel/bioc-LATEST/ReducedExperiment" class="external-link"><img src="http://www.bioconductor.org/shields/build/devel/bioc/ReducedExperiment.svg" alt="Bioc devel status"></a></li>
-<li><a href="http://bioconductor.org/packages/stats/bioc/ReducedExperiment/" class="external-link"><img src="https://bioconductor.org/shields/downloads/release/ReducedExperiment.svg" alt="Bioc downloads rank"></a></li>
-<li><a href="https://support.bioconductor.org/tag/ReducedExperiment" class="external-link"><img src="https://bioconductor.org/shields/posts/ReducedExperiment.svg" alt="Bioc support"></a></li>
-<li><a href="https://bioconductor.org/packages/release/bioc/html/ReducedExperiment.html#since" class="external-link"><img src="https://bioconductor.org/shields/years-in-bioc/ReducedExperiment.svg" alt="Bioc history"></a></li>
-<li><a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/ReducedExperiment/" class="external-link"><img src="https://bioconductor.org/shields/lastcommit/devel/bioc/ReducedExperiment.svg" alt="Bioc last commit"></a></li>
-<li><a href="https://bioconductor.org/packages/release/bioc/html/ReducedExperiment.html#since" class="external-link"><img src="https://bioconductor.org/shields/dependencies/release/ReducedExperiment.svg" alt="Bioc dependencies"></a></li>
-<li><a href="https://github.com/jackgisby/ReducedExperiment/actions/workflows/check-bioc.yml" class="external-link"><img src="https://github.com/jackgisby/ReducedExperiment/actions/workflows/check-bioc.yml/badge.svg" alt="check-bioc"></a></li>
 </ul>
 </div>
 
@@ -292,7 +227,7 @@
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Jack Gisby.</p>
+<p>Developed by Jack Gisby, Mike Barnes.</p>
 </div>
 
 <div class="pkgdown">

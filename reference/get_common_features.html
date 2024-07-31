@@ -28,9 +28,6 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/jackgisby/ReducedExperiment/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -62,7 +59,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>factor_features</dt>
-<dd><p>The result of
+<dd><p>A <code>data.frame</code> as returned by
 <a href="getAlignedFeatures.html">getAlignedFeatures</a>.</p></dd>
 
 </dl></div>
@@ -70,10 +67,47 @@
     <h2>Value</h2>
     
 
-<p>A data.frame for each factor pair with the numbers and proportions
+<p>A <code>data.frame</code> for each factor pair with the numbers and proportions
 of the genes in the input that overlap.</p>
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p><code><a href="plot_common_features.html">plot_common_features()</a></code>,
+<code><a href="getAlignedFeatures.html">getAlignedFeatures()</a></code></p></div>
+    </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get a random matrix with rnorm, with 100 rows (features)</span></span></span>
+<span class="r-in"><span><span class="co"># and 20 columns (observations)</span></span></span>
+<span class="r-in"><span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.makeRandomData</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, <span class="st">"feature"</span>, <span class="st">"obs"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Estimate 5 factors based on the data matrix</span></span></span>
+<span class="r-in"><span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_factors.html">estimate_factors</a></span><span class="op">(</span><span class="va">X</span>, nc <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get the genes highly aligned with each factor</span></span></span>
+<span class="r-in"><span><span class="va">aligned_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="getAlignedFeatures.html">getAlignedFeatures</a></span><span class="op">(</span><span class="va">fe</span>, format <span class="op">=</span> <span class="st">"data.frame"</span>, proportional_threshold <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Identify overlap between common features for each factor</span></span></span>
+<span class="r-in"><span><span class="va">common_features</span> <span class="op">&lt;-</span> <span class="fu">get_common_features</span><span class="op">(</span><span class="va">aligned_features</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">common_features</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        c_1      c_2 intersect total_feat_1 total_feat_2 smaller_total</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 factor_1 factor_1        NA           10           10            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 factor_1 factor_2         3           10           15            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 factor_1 factor_3         1           10           17            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 factor_1 factor_4         0           10            8             8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 factor_1 factor_5         1           10            9             9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 factor_2 factor_1         3           15           10            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   intersect_prop</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      0.3000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      0.1000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      0.0000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      0.1111111</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      0.3000000</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -82,7 +116,7 @@ of the genes in the input that overlap.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jack Gisby.</p>
+  <p></p><p>Developed by Jack Gisby, Mike Barnes.</p>
 </div>
 
 <div class="pkgdown">

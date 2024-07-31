@@ -22,9 +22,6 @@
     <loc>/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
     <loc>/reference/associate_components.html</loc>
   </url>
   <url>
@@ -38,6 +35,9 @@
   </url>
   <url>
     <loc>/reference/dim-ReducedExperiment-method.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dollar_names.html</loc>
   </url>
   <url>
     <loc>/reference/enrichment.html</loc>
@@ -127,7 +127,7 @@
     <loc>/reference/sample_names.html</loc>
   </url>
   <url>
-    <loc>/reference/show-ReducedExperiment-method.html</loc>
+    <loc>/reference/show.html</loc>
   </url>
   <url>
     <loc>/reference/slice.html</loc>

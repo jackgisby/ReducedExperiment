@@ -28,9 +28,6 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/jackgisby/ReducedExperiment/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -137,6 +134,16 @@ analysis, or <a href="https://rdrr.io/pkg/clusterProfiler/man/GSEA.html" class="
 <a href="https://rdrr.io/pkg/clusterProfiler/man/enricher.html" class="external-link">enricher</a> (if <code>method == "overrepresentation"</code>).</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    
+
+<p>If <code>as_dataframe</code> is <code>TRUE</code>, the results will be returned as a
+data.frame. Otherwise, the results will be returned as a list of objects
+created by either <a href="https://rdrr.io/pkg/clusterProfiler/man/enricher.html" class="external-link">enricher</a>, in the case of
+overrepresentation analysis, or <a href="https://rdrr.io/pkg/clusterProfiler/man/GSEA.html" class="external-link">GSEA</a>, in the case of
+GSEA.</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>When running module analysis, the overrepresentation method identifies
@@ -149,6 +156,150 @@ method instead uses the entire set of factor loadings, and identifies
 pathways that are overrepresented in the tails of this distribution.</p>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">airway</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.get_airway_data</span><span class="op">(</span>n_features <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">airway_fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_factors.html">estimate_factors</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">airway</span>,</span></span>
+<span class="r-in"><span>    nc <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>    use_stability <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>    method <span class="op">=</span> <span class="st">"imax"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run overrepresentation analysis</span></span></span>
+<span class="r-in"><span><span class="va">overrep_res</span> <span class="op">&lt;-</span> <span class="fu">runEnrich</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">airway_fe</span>,</span></span>
+<span class="r-in"><span>    method <span class="op">=</span> <span class="st">"overrepresentation"</span>,</span></span>
+<span class="r-in"><span>    feature_id_col <span class="op">=</span> <span class="st">"rownames"</span>,</span></span>
+<span class="r-in"><span>    as_dataframe <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    p_cutoff <span class="op">=</span> <span class="fl">0.1</span>,</span></span>
+<span class="r-in"><span>    universe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">airway_fe</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">overrep_res</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                           ID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED                 NABA_MATRISOME_ASSOCIATED</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                                       NABA_MATRISOME</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY                 WP_MAPK_SIGNALING_PATHWAY</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY             KEGG_MAPK_SIGNALING_PATHWAY</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM                   REACTOME_NEURONAL_SYSTEM</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA WP_MALIGNANT_PLEURAL_MESOTHELIOMA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                  Description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED                 NABA_MATRISOME_ASSOCIATED</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                                       NABA_MATRISOME</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY                 WP_MAPK_SIGNALING_PATHWAY</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY             KEGG_MAPK_SIGNALING_PATHWAY</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM                   REACTOME_NEURONAL_SYSTEM</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA WP_MALIGNANT_PLEURAL_MESOTHELIOMA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            GeneRatio BgRatio      pvalue</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED              4/11 52/1010 0.001579609</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                         4/11 69/1010 0.004572905</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY              3/13 22/1010 0.002231104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY            3/13 24/1010 0.002888557</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM               3/13 31/1010 0.006085876</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA      3/13 39/1010 0.011649264</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                               p.adjust qvalue</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED         0.003159217     NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                    0.004572905     NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY         0.008665670     NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY       0.008665670     NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM          0.012171751     NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA 0.017473897     NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                     geneID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED         ENSG00000172156/ENSG00000123243/ENSG00000145423/ENSG00000126838</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                    ENSG00000172156/ENSG00000123243/ENSG00000145423/ENSG00000126838</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY                         ENSG00000066468/ENSG00000165995/ENSG00000173110</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY                       ENSG00000066468/ENSG00000165995/ENSG00000173110</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM                          ENSG00000099337/ENSG00000165995/ENSG00000135821</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA                 ENSG00000145423/ENSG00000040731/ENSG00000066468</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            Count adj_method             method</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED             4         BH overrepresentation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                        4         BH overrepresentation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY             3         BH overrepresentation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY           3         BH overrepresentation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM              3         BH overrepresentation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA     3         BH overrepresentation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            component loading_threshold</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED          factor_1               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                     factor_1               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY          factor_2               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY        factor_2               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM           factor_2               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA  factor_2               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            proportional_threshold</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED                           0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                                      0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY                           0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY                         0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM                            0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA                   0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            loadings_centered loadings_scaled</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED                     FALSE            TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                                FALSE            TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY                     FALSE            TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY                   FALSE            TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM                      FALSE            TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA             FALSE            TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            abs_loadings</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED                FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                           FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY                FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY              FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM                 FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA        FALSE</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run gene set enrichment approach</span></span></span>
+<span class="r-in"><span><span class="va">gsea_res</span> <span class="op">&lt;-</span> <span class="fu">runEnrich</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">airway_fe</span>,</span></span>
+<span class="r-in"><span>    method <span class="op">=</span> <span class="st">"gsea"</span>,</span></span>
+<span class="r-in"><span>    feature_id_col <span class="op">=</span> <span class="st">"rownames"</span>,</span></span>
+<span class="r-in"><span>    as_dataframe <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    p_cutoff <span class="op">=</span> <span class="fl">0.1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> using 'fgsea' for GSEA analysis, please cite Korotkevich et al (2019).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> preparing geneSet collections...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> GSEA analysis...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> leading edge analysis...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> done...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> using 'fgsea' for GSEA analysis, please cite Korotkevich et al (2019).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> preparing geneSet collections...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> GSEA analysis...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'package:stats' may not be available when loading</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> leading edge analysis...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> done...</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gsea_res</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                          ID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2 WP_OSTEOBLAST_DIFFERENTIATION_AND_RELATED_DISEASES</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 Description setSize</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2 WP_OSTEOBLAST_DIFFERENTIATION_AND_RELATED_DISEASES      12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          enrichmentScore     NES       pvalue   p.adjust qvalue rank</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2       0.8344876 1.95485 0.0001722686 0.04410075     NA  175</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           leading_edge</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2 tags=58%, list=9%, signal=54%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                          core_enrichment</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2 ENSG00000066468/ENSG00000002745/ENSG00000133056/ENSG00000170365/ENSG00000109339/ENSG00000090932/ENSG00000074047</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          adj_method method component loadings_centered loadings_scaled</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2         BH   gsea  factor_2             FALSE            TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          abs_loadings</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2        FALSE</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -157,7 +308,7 @@ pathways that are overrepresented in the tails of this distribution.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jack Gisby.</p>
+  <p></p><p>Developed by Jack Gisby, Mike Barnes.</p>
 </div>
 
 <div class="pkgdown">

@@ -30,9 +30,6 @@ are added as columns to the input object's rowData"><!-- mathjax --><script src=
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/jackgisby/ReducedExperiment/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -120,7 +117,130 @@ of gene IDs.</p></dd>
 <p>Returns the original object, with additional variables added to
 the <code>rowData</code> slot.</p>
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/biomaRt/man/useEnsembl.html" class="external-link">biomaRt::useEnsembl()</a></code>, <code><a href="https://rdrr.io/pkg/biomaRt/man/getBM.html" class="external-link">biomaRt::getBM()</a></code></p></div>
+    </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">airway</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.get_airway_data</span><span class="op">(</span>n_features <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">airway_fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_factors.html">estimate_factors</a></span><span class="op">(</span><span class="va">airway</span>, nc <span class="op">=</span> <span class="fl">2</span>, use_stability <span class="op">=</span> <span class="cn">FALSE</span>, method <span class="op">=</span> <span class="st">"imax"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># rowData before getting additional gene IDs</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">airway_fe</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DataFrame with 500 rows and 10 columns</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                         gene_id   gene_name  entrezid   gene_biotype</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;character&gt; &lt;character&gt; &lt;integer&gt;    &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000186523 ENSG00000186523     FAM86B1        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000203871 ENSG00000203871    C6orf164        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000127125 ENSG00000127125        PPCS        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000177692 ENSG00000177692     DNAJC28        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000161249 ENSG00000161249        DMKN        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...                         ...         ...       ...            ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000113361 ENSG00000113361        CDH6        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000077152 ENSG00000077152       UBE2T        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000115963 ENSG00000115963        RND3        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000147439 ENSG00000147439        BIN3        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000116661 ENSG00000116661       FBXO2        NA protein_coding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 gene_seq_start gene_seq_end    seq_name seq_strand</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      &lt;integer&gt;    &lt;integer&gt; &lt;character&gt;  &lt;integer&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000186523       12039605     12051642           8         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000203871       88106840     88109467           6          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000127125       42921788     42939056           1          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000177692       34860497     34864027          21         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000161249       35988122     36004560          19         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...                        ...          ...         ...        ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000113361       31193857     31329253           5          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000077152      202300785    202311108           1         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000115963      151324709    151395525           2         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000147439       22477931     22526661           8         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000116661       11708424     11715842           1         -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 seq_coord_system      symbol</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                        &lt;integer&gt; &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000186523               NA     FAM86B1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000203871               NA    C6orf164</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000127125               NA        PPCS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000177692               NA     DNAJC28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000161249               NA        DMKN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...                          ...         ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000113361               NA        CDH6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000077152               NA       UBE2T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000115963               NA        RND3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000147439               NA        BIN3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000116661               NA       FBXO2</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># For this example we run `getGeneIDs` using a preloaded biomart query</span></span></span>
+<span class="r-in"><span><span class="co"># (`biomart_out`) to avoid actually querying ensembl during testing</span></span></span>
+<span class="r-in"><span><span class="co"># Note: do not use this file for your actual data</span></span></span>
+<span class="r-in"><span><span class="va">biomart_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"extdata"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"biomart_out.csv"</span>,</span></span>
+<span class="r-in"><span>    package <span class="op">=</span> <span class="st">"ReducedExperiment"</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">airway_fe</span> <span class="op">&lt;-</span> <span class="fu">getGeneIDs</span><span class="op">(</span><span class="va">airway_fe</span>, biomart_out <span class="op">=</span> <span class="va">biomart_out</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># rowData after getting additional gene IDs</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">airway_fe</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DataFrame with 500 rows and 13 columns</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 ensembl_gene_id         gene_id   gene_name  entrezid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;character&gt;     &lt;character&gt; &lt;character&gt; &lt;integer&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000186523 ENSG00000186523 ENSG00000186523     FAM86B1        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000203871 ENSG00000203871 ENSG00000203871    C6orf164        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000127125 ENSG00000127125 ENSG00000127125        PPCS        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000177692 ENSG00000177692 ENSG00000177692     DNAJC28        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000161249 ENSG00000161249 ENSG00000161249        DMKN        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...                         ...             ...         ...       ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000113361 ENSG00000113361 ENSG00000113361        CDH6        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000077152 ENSG00000077152 ENSG00000077152       UBE2T        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000115963 ENSG00000115963 ENSG00000115963        RND3        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000147439 ENSG00000147439 ENSG00000147439        BIN3        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000116661 ENSG00000116661 ENSG00000116661       FBXO2        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   gene_biotype gene_seq_start gene_seq_end    seq_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;character&gt;      &lt;integer&gt;    &lt;integer&gt; &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000186523 protein_coding       12039605     12051642           8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000203871 protein_coding       88106840     88109467           6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000127125 protein_coding       42921788     42939056           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000177692 protein_coding       34860497     34864027          21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000161249 protein_coding       35988122     36004560          19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...                        ...            ...          ...         ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000113361 protein_coding       31193857     31329253           5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000077152 protein_coding      202300785    202311108           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000115963 protein_coding      151324709    151395525           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000147439 protein_coding       22477931     22526661           8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000116661 protein_coding       11708424     11715842           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 seq_strand seq_coord_system      symbol hgnc_symbol</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;integer&gt;        &lt;integer&gt; &lt;character&gt; &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000186523         -1               NA     FAM86B1     FAM86B1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000203871          1               NA    C6orf164          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000127125          1               NA        PPCS        PPCS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000177692         -1               NA     DNAJC28     DNAJC28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000161249         -1               NA        DMKN        DMKN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...                    ...              ...         ...         ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000113361          1               NA        CDH6        CDH6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000077152         -1               NA       UBE2T       UBE2T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000115963         -1               NA        RND3        RND3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000147439         -1               NA        BIN3        BIN3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000116661         -1               NA       FBXO2       FBXO2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 entrezgene_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;integer&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000186523         85002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000203871            NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000127125         79717</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000177692         54943</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000161249         93099</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...                       ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000113361          1004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000077152         29089</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000115963           390</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000147439         55909</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ENSG00000116661         26232</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -129,7 +249,7 @@ the <code>rowData</code> slot.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jack Gisby.</p>
+  <p></p><p>Developed by Jack Gisby, Mike Barnes.</p>
 </div>
 
 <div class="pkgdown">

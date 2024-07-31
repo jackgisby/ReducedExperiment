@@ -28,9 +28,6 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/jackgisby/ReducedExperiment/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -68,11 +65,15 @@
       </tr><tr><td>
           <p><code><a href="component_names.html">`componentNames&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="component_names.html">`componentNames&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="component_names.html">moduleNames(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="component_names.html">`moduleNames&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="component_names.html">componentNames(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="component_names.html">`componentNames&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Get names of reduced components</p></td>
+        <td><p>Get names of dimensionally-reduced components</p></td>
       </tr><tr><td>
           <p><code><a href="dim-ReducedExperiment-method.html">dim(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
         </td>
         <td><p>Get the dimensions of a Reducedexperiment object</p></td>
+      </tr><tr><td>
+          <p><code><a href="dollar_names.html">.DollarNames(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="dollar_names.html">.DollarNames(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="dollar_names.html">.DollarNames(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Command line completion for <code>$</code></p></td>
       </tr><tr><td>
           <p><code><a href="enrichment.html">runEnrich(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="enrichment.html">runEnrich(<i>&lt;ModularExperiment&gt;</i>)</a></code> </p>
         </td>
@@ -186,7 +187,7 @@
         </td>
         <td><p>Get sample names</p></td>
       </tr><tr><td>
-          <p><code><a href="show-ReducedExperiment-method.html">show(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
+          <p><code><a href="show.html">show(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
         </td>
         <td><p>Prints a summary of a ReducedExperiment object</p></td>
       </tr><tr><td>
@@ -196,7 +197,7 @@
       </tr><tr><td>
           <p><code><a href="stability.html">stability(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="stability.html">`stability&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Gets the stability values for factors</p></td>
+        <td><p>Getting and setting the stability values for factors</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -206,7 +207,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jack Gisby.</p>
+  <p></p><p>Developed by Jack Gisby, Mike Barnes.</p>
 </div>
 
 <div class="pkgdown">

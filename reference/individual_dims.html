@@ -28,9 +28,6 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/jackgisby/ReducedExperiment/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -80,9 +77,40 @@
     
 
 <p>The number of samples (<code>nSamples</code>), features (<code>nFeatures</code>)
-and dimensionally-reduced components (<code>nComponents</code>) are returned.</p>
+or dimensionally-reduced components (<code>nComponents</code>) are returned.</p>
+    </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p><a href="dim-ReducedExperiment-method.html">dim,ReducedExperiment-method</a></p></div>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create a randomised ReducedExperiment</span></span></span>
+<span class="r-in"><span><span class="va">re</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.createRandomisedReducedExperiment</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get the dimensions</span></span></span>
+<span class="r-in"><span><span class="fu">nComponents</span><span class="op">(</span><span class="va">re</span><span class="op">)</span> <span class="co"># 10</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Components </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         10 </span>
+<span class="r-in"><span><span class="fu">nSamples</span><span class="op">(</span><span class="va">re</span><span class="op">)</span> <span class="co"># 50</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      50 </span>
+<span class="r-in"><span><span class="fu">nFeatures</span><span class="op">(</span><span class="va">re</span><span class="op">)</span> <span class="co"># 10</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Features </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      100 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># For a ModularExperiment we can alternatively use nModules</span></span></span>
+<span class="r-in"><span><span class="va">me</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.createRandomisedModularExperiment</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">nComponents</span><span class="op">(</span><span class="va">me</span><span class="op">)</span> <span class="co"># 10</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Components </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         10 </span>
+<span class="r-in"><span><span class="fu">nModules</span><span class="op">(</span><span class="va">me</span><span class="op">)</span> <span class="co"># 10</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Components </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         10 </span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -91,7 +119,7 @@ and dimensionally-reduced components (<code>nComponents</code>) are returned.</p
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jack Gisby.</p>
+  <p></p><p>Developed by Jack Gisby, Mike Barnes.</p>
 </div>
 
 <div class="pkgdown">

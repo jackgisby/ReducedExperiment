@@ -46,9 +46,6 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -87,12 +84,14 @@
 </h2>
 <p>Install the package - currently only available on GitHub.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">ReducedExperiment</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># if (!requireNamespace("BiocManager", quietly = TRUE))  {</span></span>
 <span><span class="co">#     install.packages("BiocManager")</span></span>
 <span><span class="co"># }</span></span>
-<span><span class="co">#</span></span>
-<span><span class="co"># The following initializes usage of Bioc devel</span></span>
-<span><span class="co"># BiocManager::install(version='devel')</span></span>
 <span><span class="co">#</span></span>
 <span><span class="co"># BiocManager::install("ReducedExperiment")</span></span>
 <span></span>
@@ -161,7 +160,7 @@ this example, only ~2000 genes were retained.</p>
 wave of COVID-19 (early-mid 2020) and another for the second (early
 2021). In this vignette, we will mainly use the first cohort, whereas
 the second cohort will be used as a validation set.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># TODO: Implement data loading best practices and document</span></span>
 <span><span class="va">wave1_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"wave1.rds"</span>,</span>
 <span>    package <span class="op">=</span> <span class="st">"ReducedExperiment"</span></span>
@@ -202,7 +201,7 @@ transcriptome dimension approach, described here: <a href="https://bmcgenomics.b
 of components. We ideally want to pick the maximal number of components
 with acceptable stability. There is an apparent elbow in the first curve
 between 30-40 components, so we move forward with 35 components.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">stability_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_stability.html">estimate_stability</a></span><span class="op">(</span></span>
 <span>    <span class="va">wave1_se</span>,</span>
 <span>    n_runs <span class="op">=</span> <span class="fl">30</span>,</span>
@@ -214,7 +213,7 @@ between 30-40 components, so we move forward with 35 components.</p>
 <p>Now we run the factor analysis with these components. We additionally
 set a stability threshold of 0.25 to remove components with low
 stability. This results in the identification of 34 factors.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wave1_fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_factors.html">estimate_factors</a></span><span class="op">(</span></span>
 <span>    <span class="va">wave1_se</span>,</span>
 <span>    nc <span class="op">=</span> <span class="fl">35</span>,</span>
@@ -242,7 +241,7 @@ additional slots. The FactorisedExperiment contains an additional matrix
 for the dimensionally-reduced data (i.e., samples vs. factors) and one
 for the factor loadings (i.e., genes vs. factors).</p>
 <p>We can get the reduced data as so:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get reduced data for first 5 samples and factors</span></span>
 <span><span class="fu"><a href="../reference/reduced.html">reduced</a></span><span class="op">(</span><span class="va">wave1_fe</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##                   factor_1   factor_2  factor_3   factor_4   factor_5</span></span>
@@ -252,7 +251,7 @@ for the factor loadings (i.e., genes vs. factors).</p>
 <span><span class="co">## C101_negative   -0.4822797  0.4867121 0.4334622  0.7956593  0.7206154</span></span>
 <span><span class="co">## C103_negative   -0.3392127  0.8005804 1.1864415  0.8582552  0.7839168</span></span></code></pre>
 <p>And we get the factor loadings below:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get loadings for first 5 genes and factors</span></span>
 <span><span class="fu"><a href="../reference/loadings.html">loadings</a></span><span class="op">(</span><span class="va">wave1_fe</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##                   factor_1    factor_2   factor_3   factor_4   factor_5</span></span>
@@ -265,7 +264,7 @@ for the factor loadings (i.e., genes vs. factors).</p>
 SummarizedExperiment objects can also be performed on
 FactorisedExperiments. We can slice them by samples, features and
 components, like so:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">wave1_fe</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   Features    Samples Components </span></span>
 <span><span class="co">##         20         10          5</span></span></code></pre>
@@ -280,42 +279,43 @@ such an analysis, before packaging them into a ModularExperiment
 class.</p>
 <p>The dendrogram is also stored in this object, allowing us to plot the
 clusters of genes that are identified.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wave1_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/identify_modules.html">identify_modules</a></span><span class="op">(</span><span class="va">wave1_se</span>, verbose <span class="op">=</span> <span class="fl">0</span>, powers <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">WGCNA</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/WGCNA/man/allowWGCNAThreads.html" class="external-link">disableWGCNAThreads</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span></code></pre>
-<pre><code><span><span class="co">## Warning: executing %dopar% sequentially: no parallel backend registered</span></span></code></pre>
-<pre><code><span><span class="co">##    Power SFT.R.sq slope truncated.R.sq mean.k. median.k. max.k.</span></span>
-<span><span class="co">## 1      1    0.355  6.48          0.747 1140.00  1.14e+03 1260.0</span></span>
-<span><span class="co">## 2      2    0.128 -1.19          0.283  618.00  6.08e+02  793.0</span></span>
-<span><span class="co">## 3      3    0.539 -1.61          0.490  352.00  3.34e+02  532.0</span></span>
-<span><span class="co">## 4      4    0.791 -1.60          0.732  211.00  1.88e+02  379.0</span></span>
-<span><span class="co">## 5      5    0.870 -1.59          0.837  133.00  1.10e+02  291.0</span></span>
-<span><span class="co">## 6      6    0.899 -1.48          0.880   87.90  6.61e+01  235.0</span></span>
-<span><span class="co">## 7      7    0.909 -1.40          0.901   61.20  4.16e+01  197.0</span></span>
-<span><span class="co">## 8      8    0.898 -1.35          0.900   44.70  2.69e+01  169.0</span></span>
-<span><span class="co">## 9      9    0.847 -1.32          0.856   34.00  1.79e+01  148.0</span></span>
-<span><span class="co">## 10    10    0.836 -1.29          0.856   26.80  1.21e+01  132.0</span></span>
-<span><span class="co">## 11    11    0.781 -1.30          0.810   21.70  8.58e+00  120.0</span></span>
-<span><span class="co">## 12    12    0.744 -1.31          0.790   18.00  6.13e+00  109.0</span></span>
-<span><span class="co">## 13    13    0.760 -1.27          0.808   15.20  4.48e+00  100.0</span></span>
-<span><span class="co">## 14    14    0.774 -1.25          0.818   13.10  3.30e+00   92.5</span></span>
-<span><span class="co">## 15    15    0.785 -1.23          0.827   11.40  2.46e+00   85.8</span></span>
-<span><span class="co">## 16    16    0.797 -1.22          0.836    9.98  1.85e+00   79.9</span></span>
-<span><span class="co">## 17    17    0.809 -1.21          0.844    8.84  1.39e+00   74.6</span></span>
-<span><span class="co">## 18    18    0.819 -1.20          0.854    7.89  1.09e+00   69.9</span></span>
-<span><span class="co">## 19    19    0.858 -1.17          0.887    7.08  8.74e-01   65.6</span></span>
-<span><span class="co">## 20    20    0.889 -1.15          0.912    6.40  7.02e-01   61.7</span></span>
-<span><span class="co">## 21    21    0.928 -1.12          0.946    5.80  5.61e-01   58.1</span></span>
-<span><span class="co">## 22    22    0.954 -1.10          0.968    5.29  4.59e-01   54.9</span></span>
-<span><span class="co">## 23    23    0.953 -1.09          0.963    4.84  3.68e-01   51.8</span></span>
-<span><span class="co">## 24    24    0.959 -1.09          0.967    4.44  3.03e-01   49.4</span></span>
-<span><span class="co">## 25    25    0.964 -1.09          0.973    4.09  2.43e-01   47.4</span></span>
-<span><span class="co">## 26    26    0.967 -1.09          0.974    3.77  1.96e-01   45.6</span></span>
-<span><span class="co">## 27    27    0.961 -1.10          0.966    3.49  1.59e-01   43.8</span></span>
-<span><span class="co">## 28    28    0.960 -1.11          0.967    3.24  1.27e-01   42.3</span></span>
-<span><span class="co">## 29    29    0.956 -1.11          0.961    3.02  1.04e-01   40.8</span></span>
-<span><span class="co">## 30    30    0.946 -1.12          0.952    2.81  8.52e-02   39.4</span></span></code></pre>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">wave1_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/identify_modules.html">identify_modules</a></span><span class="op">(</span><span class="va">wave1_se</span>, verbose <span class="op">=</span> <span class="fl">0</span>, powers <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##    Power SFT.R.sq  slope truncated.R.sq  mean.k. median.k.   max.k.</span></span>
+<span><span class="co">## 1      1    0.461  29.40          0.812 1.16e+02  1.16e+02 118.0000</span></span>
+<span><span class="co">## 2      2    0.878 -25.10          0.851 5.99e+01  5.94e+01  63.7000</span></span>
+<span><span class="co">## 3      3    0.701 -10.90          0.797 3.19e+01  3.16e+01  36.6000</span></span>
+<span><span class="co">## 4      4    0.732  -6.03          0.900 1.76e+01  1.72e+01  22.2000</span></span>
+<span><span class="co">## 5      5    0.679  -3.93          0.883 9.98e+00  9.65e+00  14.2000</span></span>
+<span><span class="co">## 6      6    0.668  -3.09          0.853 5.84e+00  5.58e+00   9.4200</span></span>
+<span><span class="co">## 7      7    0.696  -2.51          0.907 3.52e+00  3.33e+00   6.5000</span></span>
+<span><span class="co">## 8      8    0.697  -2.26          0.877 2.18e+00  2.02e+00   4.6400</span></span>
+<span><span class="co">## 9      9    0.748  -2.14          0.856 1.39e+00  1.26e+00   3.4000</span></span>
+<span><span class="co">## 10    10    0.788  -2.10          0.895 9.14e-01  8.13e-01   2.5600</span></span>
+<span><span class="co">## 11    11    0.815  -1.95          0.897 6.16e-01  5.25e-01   1.9800</span></span>
+<span><span class="co">## 12    12    0.863  -1.89          0.927 4.26e-01  3.50e-01   1.5600</span></span>
+<span><span class="co">## 13    13    0.850  -1.81          0.880 3.02e-01  2.35e-01   1.2500</span></span>
+<span><span class="co">## 14    14    0.848  -1.68          0.863 2.19e-01  1.63e-01   1.0100</span></span>
+<span><span class="co">## 15    15    0.852  -1.73          0.842 1.62e-01  1.13e-01   0.8360</span></span>
+<span><span class="co">## 16    16    0.934  -1.67          0.941 1.23e-01  7.82e-02   0.6970</span></span>
+<span><span class="co">## 17    17    0.918  -1.64          0.913 9.45e-02  5.65e-02   0.5860</span></span>
+<span><span class="co">## 18    18    0.924  -1.58          0.915 7.40e-02  4.10e-02   0.4960</span></span>
+<span><span class="co">## 19    19    0.923  -1.55          0.906 5.88e-02  3.05e-02   0.4230</span></span>
+<span><span class="co">## 20    20    0.878  -1.51          0.846 4.73e-02  2.30e-02   0.3620</span></span>
+<span><span class="co">## 21    21    0.879  -1.45          0.847 3.84e-02  1.70e-02   0.3110</span></span>
+<span><span class="co">## 22    22    0.882  -1.43          0.851 3.15e-02  1.29e-02   0.2680</span></span>
+<span><span class="co">## 23    23    0.923  -1.37          0.902 2.61e-02  9.62e-03   0.2320</span></span>
+<span><span class="co">## 24    24    0.885  -1.37          0.854 2.18e-02  7.33e-03   0.2010</span></span>
+<span><span class="co">## 25    25    0.868  -1.34          0.831 1.83e-02  5.68e-03   0.1750</span></span>
+<span><span class="co">## 26    26    0.870  -1.31          0.833 1.54e-02  4.42e-03   0.1520</span></span>
+<span><span class="co">## 27    27    0.891  -1.29          0.860 1.30e-02  3.37e-03   0.1320</span></span>
+<span><span class="co">## 28    28    0.872  -1.29          0.840 1.11e-02  2.55e-03   0.1150</span></span>
+<span><span class="co">## 29    29    0.935  -1.21          0.917 9.47e-03  1.94e-03   0.1010</span></span>
+<span><span class="co">## 30    30    0.877  -1.20          0.842 8.11e-03  1.44e-03   0.0878</span></span></code></pre>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotDendro.html">plotDendro</a></span><span class="op">(</span><span class="va">wave1_me</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
 <p>In this case we only identify 10 modules, far fewer than that
@@ -326,10 +326,10 @@ the soft thresholding power. In general, it is recommended more careful
 consider the parameters used to generate modules, which can be aided by
 functions in the WGCNA package that allow for the creating of diagnostic
 plots. For now, however, we will move forward with our 10 modules.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wave1_me</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: ModularExperiment </span></span>
-<span><span class="co">## dim: 2184 234 10 </span></span>
+<span><span class="co">## dim: 2184 234 6 </span></span>
 <span><span class="co">## metadata(0):</span></span>
 <span><span class="co">## assays(3): cpm normal transformed</span></span>
 <span><span class="co">## rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
@@ -339,35 +339,35 @@ plots. For now, however, we will move forward with our 10 modules.</p>
 <span><span class="co">##   C99_positive_16</span></span>
 <span><span class="co">## colData names(19): sample_id individual_id ...</span></span>
 <span><span class="co">##   time_from_first_positive_swab time_from_first_x</span></span>
-<span><span class="co">## 10 components</span></span></code></pre>
+<span><span class="co">## 6 components</span></span></code></pre>
 <p>The ModularExperiment functions much like a FactorisedExperiment,
 with a slot for the dimensionally-reduced data (samples vs. modules) and
 loadings (a vector containing a value for each gene). There is
 additionally a slot for the module assignments.</p>
 <p>We can get the reduced data as so:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get reduced data for first 5 samples and factors</span></span>
 <span><span class="fu"><a href="../reference/reduced.html">reduced</a></span><span class="op">(</span><span class="va">wave1_me</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##                   module_0   module_1   module_2   module_3   module_4</span></span>
-<span><span class="co">## C10_positive_18 -1.0854859  0.9839964  0.5603661 -0.3566351 -1.8295450</span></span>
-<span><span class="co">## C10_positive_21 -1.6308704  0.4098281  0.5931040 -0.5450127 -1.6479929</span></span>
-<span><span class="co">## C10_positive_30 -1.2086998 -0.9319989 -0.4032074  0.5707573 -0.8842173</span></span>
-<span><span class="co">## C101_negative    0.6457043 -1.5430151 -1.2930237 -0.7297776  1.1354458</span></span>
-<span><span class="co">## C103_negative    0.9281741 -0.4940898 -0.7730769  0.8946754  0.2345846</span></span></code></pre>
+<span><span class="co">## C10_positive_18 -2.3070429  0.8374160  0.9817508 -1.4290146 -0.3793866</span></span>
+<span><span class="co">## C10_positive_21 -2.3077994  0.8472858  0.4102342 -1.5055763 -0.5623632</span></span>
+<span><span class="co">## C10_positive_30 -1.7675281 -0.2063378 -0.9272871 -0.8044500  0.5440462</span></span>
+<span><span class="co">## C101_negative    0.8713345 -1.2871892 -1.5405546  0.3077991 -0.7347361</span></span>
+<span><span class="co">## C103_negative    0.1656519 -0.7980786 -0.4987395  1.2893444  0.9095729</span></span></code></pre>
 <p>The module assignments:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get assignments for first 5 genes</span></span>
 <span><span class="fu"><a href="../reference/module_assignments.html">assignments</a></span><span class="op">(</span><span class="va">wave1_me</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##          module_7          module_2          module_7          module_0 </span></span>
+<pre><code><span><span class="co">##          module_0          module_1          module_0          module_0 </span></span>
 <span><span class="co">## "ENSG00000002587" "ENSG00000002726" "ENSG00000002745" "ENSG00000002933" </span></span>
 <span><span class="co">##          module_0 </span></span>
 <span><span class="co">## "ENSG00000004799"</span></span></code></pre>
 <p>And the loadings:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get loadings for first 5 genes</span></span>
 <span><span class="fu"><a href="../reference/loadings.html">loadings</a></span><span class="op">(</span><span class="va">wave1_me</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## ENSG00000002587 ENSG00000002726 ENSG00000002745 ENSG00000002933 ENSG00000004799 </span></span>
-<span><span class="co">##     0.094380642     0.038097156     0.057910834    -0.004026115    -0.022048886</span></span></code></pre>
+<span><span class="co">##      0.01671898      0.03420756      0.02899456     -0.01206232     -0.06285365</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="identifying-factor-and-module-associations">Identifying factor and module associations<a class="anchor" aria-label="anchor" href="#identifying-factor-and-module-associations"></a>
@@ -375,8 +375,9 @@ additionally a slot for the module assignments.</p>
 <p>One thing we might be interested in doing is identifying factors that
 are associated with disease outcomes. We can do this with the
 <code>associate_components</code> function. First, we can look at the
-sample-level data available for</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+sample-level data available in the <code>SummarizedExperiment</code>
+container.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">wave1_se</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## DataFrame with 234 rows and 19 columns</span></span>
 <span><span class="co">##                       sample_id individual_id   ethnicity         sex  calc_age</span></span>
@@ -464,7 +465,7 @@ study, there were multiple samples for each individual. To handle
 repeated measurements from the same individuals, we use the “lmer”
 method (i.e., a linear mixed model) and include a random intercept for
 the individual in the model formula.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="st">"~ case_control + sex + calc_age + ethnicity + (1|individual_id)"</span></span>
 <span></span>
 <span><span class="va">associations_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave1_me</span>, method <span class="op">=</span> <span class="st">"lmer"</span>, formula <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span>
@@ -472,7 +473,7 @@ the individual in the model formula.</p>
 <p>Below is a table for the associations of factors with our
 <code>case_control</code> variable, encoding COVID-19 infection
 status.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">associations_fe</span><span class="op">$</span><span class="va">summaries</span><span class="op">[</span></span>
 <span>    <span class="va">associations_fe</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">term</span> <span class="op">==</span> <span class="st">"case_controlPOSITIVE"</span>,</span>
 <span><span class="op">]</span></span></code></pre></div>
@@ -588,39 +589,39 @@ significance (i.e., adjusted p-values less than 0.05).</p>
 <p>We can see a number of factors that are significantly downregulated
 in COVID-19 patients. Factor 7, on the other hand, is up-regulated in
 COVID-19.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span></span>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>    <span class="va">associations_fe</span><span class="op">$</span><span class="va">summaries</span><span class="op">[</span></span>
 <span>        <span class="va">associations_fe</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">term</span> <span class="op">==</span> <span class="st">"case_controlPOSITIVE"</span>,</span>
 <span>    <span class="op">]</span>,</span>
-<span>    <span class="fu">aes</span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">adj_pvalue</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">adj_pvalue</span><span class="op">)</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">component</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">adj_pvalue</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>        fill <span class="op">=</span> <span class="va">estimate</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_point</span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ylab</span><span class="op">(</span><span class="st">"Factor name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">scale_fill_gradient2</span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Factor name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/plot_factor_associations-1.png" width="700"></p>
 <p>A similar plot for our modules shows significant upregulation of
 modules 1, 8, 2 and 9, along with down-regulation of 3 modules.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span></span>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>    <span class="va">associations_me</span><span class="op">$</span><span class="va">summaries</span><span class="op">[</span></span>
 <span>        <span class="va">associations_me</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">term</span> <span class="op">==</span> <span class="st">"case_controlPOSITIVE"</span>,</span>
 <span>    <span class="op">]</span>,</span>
-<span>    <span class="fu">aes</span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">adj_pvalue</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">adj_pvalue</span><span class="op">)</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">component</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">adj_pvalue</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>        fill <span class="op">=</span> <span class="va">estimate</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_point</span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ylab</span><span class="op">(</span><span class="st">"Module name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">scale_fill_gradient2</span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Module name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/plot_module_associations-1.png" width="700"></p>
 </div>
 <div class="section level2">
@@ -633,7 +634,7 @@ associated with our factors.</p>
 accessing the module assignments in the ModularExperiment object. We can
 also identify the genes that are highly aligned with each factor, as
 follows:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aligned_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getAlignedFeatures.html">getAlignedFeatures</a></span><span class="op">(</span><span class="va">wave1_fe</span>, format <span class="op">=</span> <span class="st">"data.frame"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aligned_features</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                 component         feature      value loadings_centered</span></span>
@@ -659,42 +660,42 @@ modules. We use the enrichment methods implemented in the
 clusterProfiler package. By default, we run gene set enrichment analysis
 for the factors, whereas we use a simple overrepresentation analysis for
 the modules.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">factor_enrich</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enrichment.html">runEnrich</a></span><span class="op">(</span><span class="va">wave1_fe</span>, as_dataframe <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">module_enrich</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enrichment.html">runEnrich</a></span><span class="op">(</span><span class="va">wave1_me</span>, as_dataframe <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>We can again plot summaries of these results. For instance, we see
 that factor 2, that was downregulated in COVID-19 patients, and is
 enriched for pathways related to IL4, -13 and -18 signaling and platelet
 activation..</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span></span>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>    <span class="va">factor_enrich</span><span class="op">[</span><span class="va">factor_enrich</span><span class="op">$</span><span class="va">component</span> <span class="op">==</span> <span class="st">"factor_2"</span> <span class="op">&amp;</span></span>
 <span>        <span class="va">factor_enrich</span><span class="op">$</span><span class="va">p.adjust</span> <span class="op">&lt;</span> <span class="fl">0.05</span>, <span class="op">]</span>,</span>
-<span>    <span class="fu">aes</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
 <span>        <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">ID</span>, <span class="fl">1</span>, <span class="fl">45</span><span class="op">)</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>        fill <span class="op">=</span> <span class="va">enrichmentScore</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_point</span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ylab</span><span class="op">(</span><span class="st">"Pathway name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">scale_fill_gradient2</span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Pathway name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/example_factor_enrichment-1.png" width="700"></p>
 <p>Module 1 was upregulated in COVID-19 patients, and we see that it is
 enriched for pathways related to histone-encoding genes (as was noted in
 the original publication) in addition to cytokine pathways and terms
 related to cell replication.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span></span>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>    <span class="va">module_enrich</span><span class="op">[</span><span class="va">module_enrich</span><span class="op">$</span><span class="va">component</span> <span class="op">==</span> <span class="st">"module_2"</span> <span class="op">&amp;</span></span>
 <span>        <span class="va">module_enrich</span><span class="op">$</span><span class="va">p.adjust</span> <span class="op">&lt;</span> <span class="fl">0.05</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">15</span>, <span class="op">]</span>,</span>
-<span>    <span class="fu">aes</span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">ID</span>, <span class="fl">1</span>, <span class="fl">45</span><span class="op">)</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">ID</span>, <span class="fl">1</span>, <span class="fl">45</span><span class="op">)</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_point</span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ylab</span><span class="op">(</span><span class="st">"Pathway name (ordered by p-value)"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Pathway name (ordered by p-value)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/example_module_enrichment-1.png" width="700"></p>
 </div>
 <div class="section level2">
@@ -722,13 +723,13 @@ assumed that the projected data are on the same scale as the original
 data.</p>
 <p>With all that in mind, we can apply projection as follows. These
 datasets were processed and normalised in the same way.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wave2_fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/projectData.html">projectData</a></span><span class="op">(</span><span class="va">wave1_fe</span>, <span class="va">wave2_se</span><span class="op">)</span></span>
 <span><span class="va">wave2_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calcEigengenes.html">calcEigengenes</a></span><span class="op">(</span><span class="va">wave1_me</span>, <span class="va">wave2_se</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wave2_me</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: ModularExperiment </span></span>
-<span><span class="co">## dim: 2184 119 10 </span></span>
+<span><span class="co">## dim: 2184 119 6 </span></span>
 <span><span class="co">## metadata(0):</span></span>
 <span><span class="co">## assays(2): cpm normal</span></span>
 <span><span class="co">## rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
@@ -738,14 +739,14 @@ datasets were processed and normalised in the same way.</p>
 <span><span class="co">##   C58_positive_9</span></span>
 <span><span class="co">## colData names(19): sample_id individual_id ...</span></span>
 <span><span class="co">##   time_from_first_positive_swab time_from_first_x</span></span>
-<span><span class="co">## 10 components</span></span></code></pre>
+<span><span class="co">## 6 components</span></span></code></pre>
 <p>The new ModularExperiment created by projecting the wave 2 data
 (above) has the same genes (2184) and modules (10) as the original
 ModularExperiment (below), but with different samples (119 vs. 234).</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wave1_me</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: ModularExperiment </span></span>
-<span><span class="co">## dim: 2184 234 10 </span></span>
+<span><span class="co">## dim: 2184 234 6 </span></span>
 <span><span class="co">## metadata(0):</span></span>
 <span><span class="co">## assays(3): cpm normal transformed</span></span>
 <span><span class="co">## rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
@@ -755,11 +756,11 @@ ModularExperiment (below), but with different samples (119 vs. 234).</p>
 <span><span class="co">##   C99_positive_16</span></span>
 <span><span class="co">## colData names(19): sample_id individual_id ...</span></span>
 <span><span class="co">##   time_from_first_positive_swab time_from_first_x</span></span>
-<span><span class="co">## 10 components</span></span></code></pre>
+<span><span class="co">## 6 components</span></span></code></pre>
 <p>While we will avoid directly comparing the dimensionally-reduced data
 from the two cohorts, we can calculate associations between the factors
 and modules and COVID-19 status, as we did in the original cohort.</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">replication_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave2_me</span>, method <span class="op">=</span> <span class="st">"lmer"</span>, formula <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span>
 <span><span class="va">replication_fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave2_fe</span>, method <span class="op">=</span> <span class="st">"lmer"</span>, formula <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span></code></pre></div>
 <p>While there are differences in the most significantly associated
@@ -769,22 +770,22 @@ COVID-19 status, whereas modules 0, 5 and 4 remain negatively
 associated.</p>
 <p>It’s worth noting, however, that module 0 is not truly a module in
 itself, but rather represents all of the unclustered genes.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span></span>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>    <span class="va">replication_me</span><span class="op">$</span><span class="va">summaries</span><span class="op">[</span></span>
 <span>        <span class="va">replication_me</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">term</span> <span class="op">==</span> <span class="st">"case_controlPOSITIVE"</span>,</span>
 <span>    <span class="op">]</span>,</span>
-<span>    <span class="fu">aes</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
 <span>        <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">adj_pvalue</span><span class="op">)</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">component</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">adj_pvalue</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>        fill <span class="op">=</span> <span class="va">estimate</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_point</span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ylab</span><span class="op">(</span><span class="st">"Module name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">scale_fill_gradient2</span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Module name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/plotting_replicated_associations-1.png" width="700"></p>
 <p>And, as we see in the following chunk, the estimated associations
 between the modules and COVID-19 status (positive vs. negative) have a
@@ -794,7 +795,7 @@ COVID-19 status can be explained by differences in the cohorts. For
 instance, different SARS-CoV-2 variants were in prevalent at the time
 the cohorts were sampled, and there were more treatments available for
 the 2021 (wave 2) cohort.</p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">original_estimates</span> <span class="op">&lt;-</span> <span class="va">associations_me</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span></span>
 <span>    <span class="va">associations_me</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">term</span> <span class="op">==</span> <span class="st">"case_controlPOSITIVE"</span></span>
 <span><span class="op">]</span></span>
@@ -807,13 +808,13 @@ the 2021 (wave 2) cohort.</p>
 <span><span class="co">##  Pearson's product-moment correlation</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## data:  original_estimates and replication_estimates</span></span>
-<span><span class="co">## t = 5.9052, df = 8, p-value = 0.0003596</span></span>
+<span><span class="co">## t = 3.6047, df = 4, p-value = 0.02266</span></span>
 <span><span class="co">## alternative hypothesis: true correlation is not equal to 0</span></span>
 <span><span class="co">## 95 percent confidence interval:</span></span>
-<span><span class="co">##  0.6300112 0.9768223</span></span>
+<span><span class="co">##  0.2165109 0.9861591</span></span>
 <span><span class="co">## sample estimates:</span></span>
 <span><span class="co">##       cor </span></span>
-<span><span class="co">## 0.9018852</span></span></code></pre>
+<span><span class="co">## 0.8744253</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="vignette-references">Vignette references<a class="anchor" aria-label="anchor" href="#vignette-references"></a>
@@ -971,7 +972,7 @@ document was compiled:</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Jack Gisby.</p>
+<p>Developed by Jack Gisby, Mike Barnes.</p>
 </div>
 
 <div class="pkgdown">
