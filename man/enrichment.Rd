@@ -66,6 +66,13 @@ analysis, or \link[clusterProfiler]{GSEA}, in the case of GSEA.}
 \link[clusterProfiler]{GSEA} (if \code{method == "gsea"}) or
 \link[clusterProfiler]{enricher} (if \code{method == "overrepresentation"}).}
 }
+\value{
+If \code{as_dataframe} is \code{TRUE}, the results will be returned as a
+data.frame. Otherwise, the results will be returned as a list of objects
+created by either \link[clusterProfiler]{enricher}, in the case of
+overrepresentation analysis, or \link[clusterProfiler]{GSEA}, in the case of
+GSEA.
+}
 \description{
 Functional enrichment analyses for dimensionally-reduced data
 }
@@ -79,4 +86,37 @@ most highly aligned with each factor
 the resulting gene lists to perform overrepresentation analysis. The GSEA
 method instead uses the entire set of factor loadings, and identifies
 pathways that are overrepresented in the tails of this distribution.
+}
+\examples{
+set.seed(2)
+airway <- ReducedExperiment:::.get_airway_data(n_features = 2000)
+airway_fe <- estimate_factors(
+    airway,
+    nc = 2,
+    use_stability = FALSE,
+    method = "imax"
+)
+
+# Run overrepresentation analysis
+overrep_res <- runEnrich(
+    airway_fe,
+    method = "overrepresentation",
+    feature_id_col = "rownames",
+    as_dataframe = TRUE,
+    p_cutoff = 0.1,
+    universe = rownames(airway_fe)
+)
+head(overrep_res)
+
+# Run gene set enrichment approach
+gsea_res <- runEnrich(
+    airway_fe,
+    method = "gsea",
+    feature_id_col = "rownames",
+    as_dataframe = TRUE,
+    p_cutoff = 0.1
+)
+
+head(gsea_res)
+
 }

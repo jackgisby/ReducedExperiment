@@ -4,6 +4,7 @@
 \name{cbind,FactorisedExperiment-method}
 \alias{cbind,FactorisedExperiment-method}
 \alias{cbind,ModularExperiment-method}
+\alias{cbind}
 \alias{cbind,ReducedExperiment-method}
 \title{Combine ReducedExperiment objects by columns}
 \usage{
@@ -14,14 +15,21 @@
 \S4method{cbind}{ReducedExperiment}(..., deparse.level = 1)
 }
 \arguments{
-\item{...}{\link[ReducedExperiment]{ReducedExperiment} objects.}
+\item{...}{A series of \link[ReducedExperiment]{ReducedExperiment} objects
+to be combined. See \link[SummarizedExperiment]{cbind} for further details.}
 
-\item{deparse.level}{Integer, included for consistency with
-\link[base]{cbind}.}
+\item{deparse.level}{Integer, see \link[base]{cbind}.}
+}
+\value{
+Returns a single \link[ReducedExperiment]{ReducedExperiment} object
+containing all of the columns in the objects passed to \code{cbind}.
 }
 \description{
 Comnbines \link[ReducedExperiment]{ReducedExperiment} objects by columns
 (samples). Combining these objects in such a way assumes that feature-level
 slots (e.g., loadings, module membership) are the same for all objects to
 be concatenated. If they are not, an error is returned.
+}
+\seealso{
+\code{\link[base:cbind]{base::cbind()}}, \code{\link[SummarizedExperiment:cbind]{SummarizedExperiment::cbind()}}
 }

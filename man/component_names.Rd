@@ -12,7 +12,7 @@
 \alias{moduleNames<-}
 \alias{componentNames,ReducedExperiment-method}
 \alias{componentNames<-,ReducedExperiment-method}
-\title{Get names of reduced components}
+\title{Get names of dimensionally-reduced components}
 \usage{
 \S4method{componentNames}{FactorisedExperiment}(object) <- value
 
@@ -31,8 +31,37 @@
 
 \item{value}{New value to replace existing names.}
 }
+\value{
+A vector containing the names of the components.
+}
 \description{
 Retrieves the feature names post-dimensionality reduction In the case of
 module analysis, these are the names of the gene modules; in the case of
 factor analysis, these are the names of the factors.
+}
+\details{
+\code{componentNames} is valid for all \link[ReducedExperiment]{ReducedExperiment}
+objects, whereas \code{moduleNames} is only valid for
+\link[ReducedExperiment]{ModularExperiment}s.
+}
+\examples{
+# Create randomised data with the following dimensions
+i <- 300 # Number of features
+j <- 100 # Number of samples
+k <- 10 # Number of factors
+
+rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+
+re <- ReducedExperiment(
+    assays = list("normal" = rand_assay_data),
+    reduced = rand_reduced_data
+)
+
+stopifnot(all.equal(componentNames(re), colnames(rand_reduced_data)))
+
+print(paste0("Component name at [2]: ", componentNames(re)[2]))
+componentNames(re)[2] <- "custom_component_name"
+print(paste0("Component name at [2]: ", componentNames(re)[2]))
+
 }

@@ -16,6 +16,31 @@
 
 \item{value}{New value to replace existing names.}
 }
+\value{
+A vector containing the names of the features.
+}
 \description{
 Retrieves sample names (colnames).
+}
+\examples{
+# Create randomised data with the following dimensions
+i <- 300 # Number of features
+j <- 100 # Number of samples
+k <- 10 # Number of factors
+
+rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+
+re <- ReducedExperiment(
+    assays = list("normal" = rand_assay_data),
+    reduced = rand_reduced_data
+)
+
+stopifnot(all.equal(sampleNames(re), colnames(rand_assay_data)))
+stopifnot(all.equal(colnames(re), colnames(rand_assay_data)))
+
+print(paste0("Sample name at [80]: ", sampleNames(re)[80]))
+sampleNames(re)[80] <- "custom_feature_name"
+print(paste0("Sample data at [80]: ", sampleNames(re)[80]))
+
 }

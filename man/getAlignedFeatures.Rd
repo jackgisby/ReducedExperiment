@@ -33,18 +33,40 @@ the \code{loadings}}
 feature ID. Setting this to "rownames" (default) instead uses
 \code{rownames(object)}.}
 
-\item{format}{The format in which to return the results. If \code{list}, then a
+\item{format}{The format in which to return the results. See \code{value} below.}
+
+\item{center_loadings}{If \code{TRUE}, loadings will be centered column-wise to
+have a mean of 0.}
+}
+\value{
+If the \code{format} argument is \code{list}, then a
 list will be returned with an entry for each factor, each containing a vector
 of input features. Otherwise, if \code{format} is \code{data.frame}, a data.frame is
 returned with a row for each gene-factor combination. The \code{format} argument
 can also be a function to be applied to the output data.frame before
-returning the results.}
-
-\item{center_loadings}{If \code{TRUE}, loadings will be centered column-wise to
-have a mean of 0.}
+returning the results.
 }
 \description{
 Retrieves features (usually genes) and their alignment (\code{loadings}) with the
 factors. Allows for the selection of features whose alignments are high
 relative to other features. Useful for functional interpretation of factors.
+}
+\examples{
+# Get a random matrix with rnorm, with 100 rows (features)
+# and 20 columns (observations)
+X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+
+# Estimate 5 factors based on the data matrix
+fe <- estimate_factors(X, nc = 5)
+
+# Get the genes highly aligned with each factoras a list
+aligned_features <- getAlignedFeatures(fe)
+aligned_features
+
+# Can also view as a data.frame
+head(getAlignedFeatures(fe, format = "data.frame"))
+
+}
+\seealso{
+\code{\link[=get_common_features]{get_common_features()}}
 }

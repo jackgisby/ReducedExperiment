@@ -209,6 +209,7 @@ The dendrogram is also stored in this object, allowing us to plot the clusters
 of genes that are identified.
 
 ```{r}
+WGCNA::disableWGCNAThreads()
 wave1_me <- identify_modules(wave1_se, verbose = 0, powers = 1:30)
 
 plotDendro(wave1_me)

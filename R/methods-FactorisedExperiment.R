@@ -37,8 +37,12 @@
 #' @returns Constructor method returns a
 #' \link[ReducedExperiment]{FactorisedExperiment} object.
 #'
+#' @seealso [ReducedExperiment::ReducedExperiment()],
+#' [ReducedExperiment::ModularExperiment()],
+#' [ReducedExperiment::estimate_factors()]
+#'
 #' @examples
-#' # Create randomised data as
+#' # Create randomised data with the following dimensions
 #' i <- 300 # Number of features
 #' j <- 100 # Number of samples
 #' k <- 10 # Number of factors
@@ -172,6 +176,7 @@ setReplaceMethod("names", "FactorisedExperiment", function(x, value) {
 })
 
 #' @rdname feature_names
+#' @export
 setReplaceMethod("featureNames", "FactorisedExperiment", function(x, value) {
     names(x) <- value
     return(x)
@@ -193,6 +198,21 @@ setReplaceMethod("rownames", "FactorisedExperiment", function(x, value) {
 #' @returns A vector with a value for each factor indicating the factor
 #' stability. More details are available from the
 #' \link[ReducedExperiment]{estimate_stability} help page.
+#'
+#' @seealso [ReducedExperiment::estimate_stability()]
+#'
+#' @examples
+#' # Get a random matrix with rnorm, with 100 rows (features)
+#' # and 20 columns (observations)
+#' X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+#'
+#' # Run stabilised ICA on the data with 5 components
+#' fe <- estimate_factors(X, nc = 5, use_stability = TRUE)
+#'
+#' stability(fe)
+#'
+#' stability(fe)[2] <- 10
+#' stability(fe)
 #'
 #' @rdname stability
 #' @name stability
@@ -225,8 +245,7 @@ setReplaceMethod("componentNames", "FactorisedExperiment", function(object,
     return(object)
 })
 
-#' Required for dollarsign autocomplete of colData columns
-#' @noRd
+#' @rdname dollar_names
 #' @export
 .DollarNames.FactorisedExperiment <- function(x, pattern = "") {
     grep(pattern, names(colData(x)), value = TRUE)
@@ -356,6 +375,23 @@ setMethod("cbind", "FactorisedExperiment", function(..., deparse.level = 1) {
 #'
 #' @seealso \code{\link[ReducedExperiment]{calcEigengenes}}
 #'
+#' @examples
+#' # Get two random matrices with rnorm
+#' # 1: 100 rows (features) and 20 columns (observations)
+#' X_1 <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+#'
+#' # Both matrices must have the same features, but they may have different obs
+#' # 2: 100 rows (features) and 30 columns (observations)
+#' X_2 <- ReducedExperiment:::.makeRandomData(100, 30, "feature", "obs")
+#'
+#' # Estimate 5 factors based on the data matrix
+#' fe_1 <- estimate_factors(X_1, nc = 5)
+#' fe_1
+#'
+#' # Project the fe_1 factors for the samples in X_2
+#' fe_2 <- projectData(fe_1, X_2)
+#' fe_2
+#'
 #' @rdname projectData
 #' @name projectData
 #' @export projectData
@@ -466,15 +502,34 @@ setMethod("predict", c("FactorisedExperiment"), function(object, newdata, ...) {
 #' feature ID. Setting this to "rownames" (default) instead uses
 #' `rownames(object)`.
 #'
-#' @param format The format in which to return the results. If `list`, then a
+#' @param format The format in which to return the results. See `value` below.
+#'
+#' @param center_loadings If `TRUE`, loadings will be centered column-wise to
+#' have a mean of 0.
+#'
+#' @returns If the `format` argument is `list`, then a
 #' list will be returned with an entry for each factor, each containing a vector
 #' of input features. Otherwise, if `format` is `data.frame`, a data.frame is
 #' returned with a row for each gene-factor combination. The `format` argument
 #' can also be a function to be applied to the output data.frame before
 #' returning the results.
 #'
-#' @param center_loadings If `TRUE`, loadings will be centered column-wise to
-#' have a mean of 0.
+#' @seealso [ReducedExperiment::get_common_features()]
+#'
+#' @examples
+#' # Get a random matrix with rnorm, with 100 rows (features)
+#' # and 20 columns (observations)
+#' X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+#'
+#' # Estimate 5 factors based on the data matrix
+#' fe <- estimate_factors(X, nc = 5)
+#'
+#' # Get the genes highly aligned with each factoras a list
+#' aligned_features <- getAlignedFeatures(fe)
+#' aligned_features
+#'
+#' # Can also view as a data.frame
+#' head(getAlignedFeatures(fe, format = "data.frame"))
 #'
 #' @rdname getAlignedFeatures
 #' @name getAlignedFeatures
@@ -598,6 +653,44 @@ setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object,
 #' the resulting gene lists to perform overrepresentation analysis. The GSEA
 #' method instead uses the entire set of factor loadings, and identifies
 #' pathways that are overrepresented in the tails of this distribution.
+#'
+#' @returns If `as_dataframe` is `TRUE`, the results will be returned as a
+#' data.frame. Otherwise, the results will be returned as a list of objects
+#' created by either \link[clusterProfiler]{enricher}, in the case of
+#' overrepresentation analysis, or \link[clusterProfiler]{GSEA}, in the case of
+#' GSEA.
+#'
+#' @examples
+#' set.seed(2)
+#' airway <- ReducedExperiment:::.get_airway_data(n_features = 2000)
+#' airway_fe <- estimate_factors(
+#'     airway,
+#'     nc = 2,
+#'     use_stability = FALSE,
+#'     method = "imax"
+#' )
+#'
+#' # Run overrepresentation analysis
+#' overrep_res <- runEnrich(
+#'     airway_fe,
+#'     method = "overrepresentation",
+#'     feature_id_col = "rownames",
+#'     as_dataframe = TRUE,
+#'     p_cutoff = 0.1,
+#'     universe = rownames(airway_fe)
+#' )
+#' head(overrep_res)
+#'
+#' # Run gene set enrichment approach
+#' gsea_res <- runEnrich(
+#'     airway_fe,
+#'     method = "gsea",
+#'     feature_id_col = "rownames",
+#'     as_dataframe = TRUE,
+#'     p_cutoff = 0.1
+#' )
+#'
+#' head(gsea_res)
 #'
 #' @rdname enrichment
 #' @name runEnrich

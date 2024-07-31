@@ -5,7 +5,7 @@
 \alias{stability<-}
 \alias{stability,FactorisedExperiment-method}
 \alias{stability<-,FactorisedExperiment-method}
-\title{Gets the stability values for factors}
+\title{Getting and setting the stability values for factors}
 \usage{
 \S4method{stability}{FactorisedExperiment}(object)
 
@@ -16,6 +16,28 @@
 
 \item{value}{New value to replace existing stability vector.}
 }
+\value{
+A vector with a value for each factor indicating the factor
+stability. More details are available from the
+\link[ReducedExperiment]{estimate_stability} help page.
+}
 \description{
-Gets the stability values for factors
+Getting and setting the stability values for factors
+}
+\examples{
+# Get a random matrix with rnorm, with 100 rows (features)
+# and 20 columns (observations)
+X <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+
+# Run stabilised ICA on the data with 5 components
+fe <- estimate_factors(X, nc = 5, use_stability = TRUE)
+
+stability(fe)
+
+stability(fe)[2] <- 10
+stability(fe)
+
+}
+\seealso{
+\code{\link[=estimate_stability]{estimate_stability()}}
 }

@@ -4,6 +4,7 @@
 \name{[,FactorisedExperiment,ANY,ANY,ANY-method}
 \alias{[,FactorisedExperiment,ANY,ANY,ANY-method}
 \alias{[,ModularExperiment,ANY,ANY,ANY-method}
+\alias{slice}
 \alias{[,ReducedExperiment,ANY,ANY,ANY-method}
 \title{Extract and replace parts of ReducedExperiment objects}
 \usage{
@@ -16,16 +17,41 @@
 \arguments{
 \item{x}{\link[ReducedExperiment]{ReducedExperiment} object.}
 
-\item{i}{Slicing by rows (features, usually genes)}
+\item{i}{Slicing by rows (features, usually genes).}
 
-\item{j}{Slicing by samples}
+\item{j}{Slicing by columns (samples/observations).}
 
-\item{k}{Slicing by reduced dimensions}
+\item{k}{Slicing by reduced dimensions.}
 
 \item{...}{Additional arguments to be passed to the parent method.}
 
 \item{drop}{Included for consistency with other slicing methods.}
 }
+\value{
+A \link[ReducedExperiment]{ReducedExperiment} object sliced by
+rows (\code{i}), columns (\code{j}) and components (\code{k}).
+}
 \description{
-Extract and replace parts of ReducedExperiment objects
+Method permits slicing of \link[ReducedExperiment]{ReducedExperiment}
+objects.
+}
+\examples{
+# Create randomised data with the following dimensions
+i <- 300 # Number of features
+j <- 100 # Number of samples
+k <- 10 # Number of components (i.e., factors/modules)
+
+rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+
+# Create a randomised ReducedExperiment container
+re <- ReducedExperiment(
+    assays = list("normal" = rand_assay_data),
+    reduced = rand_reduced_data
+)
+
+# Slice our object by rows (1:50), columns (1:20) and components (1:5)
+# re[i, j, k, ...]
+re[1:50, 1:20, 1:5]
+
 }

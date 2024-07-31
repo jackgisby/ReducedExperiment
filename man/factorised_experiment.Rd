@@ -41,8 +41,44 @@ slot will indicate the stability of the factors across multiple runs of ICA.}
 \item{...}{Additional arguments to be passed to
 \link[ReducedExperiment]{ReducedExperiment}.}
 }
+\value{
+Constructor method returns a
+\link[ReducedExperiment]{FactorisedExperiment} object.
+}
 \description{
 A container inheriting from \link[ReducedExperiment]{ReducedExperiment}, that
 contains one or more data matrices, to which factor analysis has been applied
-to identify a reduced set of features.
+to identify a reduced set of features. A
+\link[ReducedExperiment]{FactorisedExperiment} can be created directly in
+a similar manner to a \link[SummarizedExperiment]{SummarizedExperiment}.
+Alternatively, the \link[ReducedExperiment]{estimate_factors} function
+can be used to both apply factor analysis and generate a
+\link[ReducedExperiment]{FactorisedExperiment} from the results.
+}
+\examples{
+# Create randomised data with the following dimensions
+i <- 300 # Number of features
+j <- 100 # Number of samples
+k <- 10 # Number of factors
+
+# In this case we use random assay, reduced and loadings data, but in
+# practice these will likely be the result of applying some kind of factor
+# analysis to the assay data (e.g., gene expression data) from some study.
+rand_assay_data <- .makeRandomData(i, j, "gene", "sample")
+rand_reduced_data <- .makeRandomData(j, k, "sample", "factor")
+rand_loadings <- .makeRandomData(i, k, "gene", "factor")
+
+fe <- FactorisedExperiment(
+    assays = list("normal" = rand_assay_data),
+    reduced = rand_reduced_data,
+    loadings = rand_loadings
+)
+
+fe
+
+}
+\seealso{
+\code{\link[=ReducedExperiment]{ReducedExperiment()}},
+\code{\link[=ModularExperiment]{ModularExperiment()}},
+\code{\link[=estimate_factors]{estimate_factors()}}
 }

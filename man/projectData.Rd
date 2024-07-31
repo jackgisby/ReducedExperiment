@@ -80,6 +80,24 @@ Uses a projection approach to calculate factors in new data. Functions in a
 similar fashion to the \code{predict} method of \link[stats]{prcomp}. The
 transposed \code{newdata} are multiplied by the original loadings matrix.
 }
+\examples{
+# Get two random matrices with rnorm
+# 1: 100 rows (features) and 20 columns (observations)
+X_1 <- ReducedExperiment:::.makeRandomData(100, 20, "feature", "obs")
+
+# Both matrices must have the same features, but they may have different obs
+# 2: 100 rows (features) and 30 columns (observations)
+X_2 <- ReducedExperiment:::.makeRandomData(100, 30, "feature", "obs")
+
+# Estimate 5 factors based on the data matrix
+fe_1 <- estimate_factors(X_1, nc = 5)
+fe_1
+
+# Project the fe_1 factors for the samples in X_2
+fe_2 <- projectData(fe_1, X_2)
+fe_2
+
+}
 \seealso{
 \code{\link[ReducedExperiment]{calcEigengenes}}
 }

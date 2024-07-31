@@ -27,6 +27,10 @@ means of the original features (as produced by
 \item{...}{Additional arguments to be passed to
 \link[SummarizedExperiment]{SummarizedExperiment}.}
 }
+\value{
+Constructor method returns a
+\link[ReducedExperiment]{ReducedExperiment} object.
+}
 \description{
 Inherits from \link[SummarizedExperiment]{SummarizedExperiment}, a
 container for one or more matrices with features as rows (e.g., genes) and
@@ -47,4 +51,29 @@ by default, named "normal" and contains some type of normalised data,
 such as gene expression data. The second is "transformed", which is typically
 the result of applying scaling and/or centering to the normalised data
 matrix.
+}
+\examples{
+# Create randomised data with the following dimensions
+i <- 300 # Number of features
+j <- 100 # Number of samples
+k <- 10 # Number of factors
+
+# In this case we use random assay and reduced data, but in
+# practice these will likely be the result of applying some kind of
+# dimensionality-reduction method to the assay data (e.g., gene
+# expression data) from some study.
+rand_assay_data <- .makeRandomData(i, j, "gene", "sample")
+rand_reduced_data <- .makeRandomData(j, k, "sample", "component")
+
+re <- ReducedExperiment(
+    assays = list("normal" = rand_assay_data),
+    reduced = rand_reduced_data
+)
+
+re
+
+}
+\seealso{
+\code{\link[=FactorisedExperiment]{FactorisedExperiment()}},
+\code{\link[=ModularExperiment]{ModularExperiment()}}
 }

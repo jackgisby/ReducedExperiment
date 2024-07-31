@@ -12,7 +12,8 @@
 \S4method{reduced}{ReducedExperiment}(object) <- value
 }
 \arguments{
-\item{object}{\link[ReducedExperiment]{ReducedExperiment} object.}
+\item{object}{\link[ReducedExperiment]{ReducedExperiment} object or its
+children.}
 
 \item{scale_reduced}{If \code{TRUE}, data will be scaled column-wise to have a
 standard deviation of 0.}
@@ -22,10 +23,35 @@ mean of 0.}
 
 \item{value}{New value to replace existing reduced data matrix.}
 }
+\value{
+A matrix with samples/observations as rows and columns referring
+to the dimensionally-reduced components.
+
+Create randomised data with the following dimensions
+
+i <- 300 # Number of features
+j <- 100 # Number of samples
+k <- 10 # Number of factors
+
+rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+
+re <- ReducedExperiment(
+assays = list("normal" = rand_assay_data),
+reduced = rand_reduced_data
+)
+
+stopifnot(all.equal(reduced(re), rand_reduced_data))
+
+print(paste0("Reduced data at (2, 2): ", reduced(re)\link{2, 2}))
+reduced(re)\link{2, 2} <- 5
+print(paste0("Reduced data at (2, 2): ", reduced(re)\link{2, 2}))
+}
 \description{
 Retrieves the reduced data matrix, with samples as rows and reduced
-components as columns.
+components as columns. Setter method can be used to replace or modify
+all or part of the matrix.
 }
-\details{
-The reduced data can be modified with \verb{<-}.
+\seealso{
+\code{\link[=ReducedExperiment]{ReducedExperiment()}}
 }

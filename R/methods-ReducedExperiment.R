@@ -38,6 +38,32 @@
 #' @param ... Additional arguments to be passed to
 #' \link[SummarizedExperiment]{SummarizedExperiment}.
 #'
+#' @returns Constructor method returns a
+#' \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @seealso [ReducedExperiment::FactorisedExperiment()],
+#' [ReducedExperiment::ModularExperiment()]
+#'
+#' @examples
+#' # Create randomised data with the following dimensions
+#' i <- 300 # Number of features
+#' j <- 100 # Number of samples
+#' k <- 10 # Number of factors
+#'
+#' # In this case we use random assay and reduced data, but in
+#' # practice these will likely be the result of applying some kind of
+#' # dimensionality-reduction method to the assay data (e.g., gene
+#' # expression data) from some study.
+#' rand_assay_data <- .makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- .makeRandomData(j, k, "sample", "component")
+#'
+#' re <- ReducedExperiment(
+#'     assays = list("normal" = rand_assay_data),
+#'     reduced = rand_reduced_data
+#' )
+#'
+#' re
+#'
 #' @import SummarizedExperiment
 #'
 #' @rdname reduced_experiment
@@ -102,11 +128,11 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
 #' Get and set reduced data
 #'
 #' Retrieves the reduced data matrix, with samples as rows and reduced
-#' components as columns.
+#' components as columns. Setter method can be used to replace or modify
+#' all or part of the matrix.
 #'
-#' The reduced data can be modified with `<-`.
-#'
-#' @param object \link[ReducedExperiment]{ReducedExperiment} object.
+#' @param object \link[ReducedExperiment]{ReducedExperiment} object or its
+#' children.
 #'
 #' @param scale_reduced If `TRUE`, data will be scaled column-wise to have a
 #' standard deviation of 0.
@@ -115,6 +141,31 @@ S4Vectors::setValidity2("ReducedExperiment", function(object) {
 #' mean of 0.
 #'
 #' @param value New value to replace existing reduced data matrix.
+#'
+#' @returns A matrix with samples/observations as rows and columns referring
+#' to the dimensionally-reduced components.
+#'
+#' @examples
+#' # Create randomised data with the following dimensions
+#' i <- 300 # Number of features
+#' j <- 100 # Number of samples
+#' k <- 10 # Number of factors
+#'
+#' rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+#'
+#' re <- ReducedExperiment(
+#'     assays = list("normal" = rand_assay_data),
+#'     reduced = rand_reduced_data
+#' )
+#'
+#' stopifnot(all.equal(reduced(re), rand_reduced_data))
+#'
+#' print(paste0("Reduced data at position (2, 2): ", reduced(re)[2, 2]))
+#' reduced(re)[2, 2] <- 5
+#' print(paste0("Reduced data at position (2, 2): ", reduced(re)[2, 2]))
+#'
+#' @seealso [ReducedExperiment::ReducedExperiment()]
 #'
 #' @rdname reduced
 #' @name reduced
@@ -143,7 +194,7 @@ setReplaceMethod("reduced", "ReducedExperiment", function(object, value) {
     return(object)
 })
 
-#' Get names of reduced components
+#' Get names of dimensionally-reduced components
 #'
 #' Retrieves the feature names post-dimensionality reduction In the case of
 #' module analysis, these are the names of the gene modules; in the case of
@@ -152,6 +203,33 @@ setReplaceMethod("reduced", "ReducedExperiment", function(object, value) {
 #' @param object A \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @param value New value to replace existing names.
+#'
+#' @returns A vector containing the names of the components.
+#'
+#' @details
+#' `componentNames` is valid for all \link[ReducedExperiment]{ReducedExperiment}
+#' objects, whereas `moduleNames` is only valid for
+#' \link[ReducedExperiment]{ModularExperiment}s.
+#'
+#' @examples
+#' # Create randomised data with the following dimensions
+#' i <- 300 # Number of features
+#' j <- 100 # Number of samples
+#' k <- 10 # Number of factors
+#'
+#' rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+#'
+#' re <- ReducedExperiment(
+#'     assays = list("normal" = rand_assay_data),
+#'     reduced = rand_reduced_data
+#' )
+#'
+#' stopifnot(all.equal(componentNames(re), colnames(rand_reduced_data)))
+#'
+#' print(paste0("Component name at [2]: ", componentNames(re)[2]))
+#' componentNames(re)[2] <- "custom_component_name"
+#' print(paste0("Component name at [2]: ", componentNames(re)[2]))
 #'
 #' @rdname component_names
 #' @name componentNames
@@ -182,6 +260,30 @@ setReplaceMethod("componentNames", "ReducedExperiment", function(
 #' @param x \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @param value New value to replace existing names.
+#'
+#' @returns A vector containing the names of the features.
+#'
+#' @examples
+#' # Create randomised data with the following dimensions
+#' i <- 300 # Number of features
+#' j <- 100 # Number of samples
+#' k <- 10 # Number of factors
+#'
+#' rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+#'
+#' re <- ReducedExperiment(
+#'     assays = list("normal" = rand_assay_data),
+#'     reduced = rand_reduced_data
+#' )
+#'
+#' stopifnot(all.equal(featureNames(re), rownames(rand_assay_data)))
+#' stopifnot(all.equal(rownames(re), rownames(rand_assay_data)))
+#' stopifnot(all.equal(names(re), rownames(rand_assay_data)))
+#'
+#' print(paste0("Feature name at position 55: ", featureNames(re)[55]))
+#' featureNames(re)[55] <- "custom_feature_name"
+#' print(paste0("Reduced data at position 55: ", featureNames(re)[55]))
 #'
 #' @rdname feature_names
 #' @name featureNames
@@ -226,6 +328,28 @@ setReplaceMethod("featureNames", "ReducedExperiment", function(x, value) {
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @param value New value to replace existing names.
+#' @returns A vector containing the names of the features.
+#'
+#' @examples
+#' # Create randomised data with the following dimensions
+#' i <- 300 # Number of features
+#' j <- 100 # Number of samples
+#' k <- 10 # Number of factors
+#'
+#' rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+#'
+#' re <- ReducedExperiment(
+#'     assays = list("normal" = rand_assay_data),
+#'     reduced = rand_reduced_data
+#' )
+#'
+#' stopifnot(all.equal(sampleNames(re), colnames(rand_assay_data)))
+#' stopifnot(all.equal(colnames(re), colnames(rand_assay_data)))
+#'
+#' print(paste0("Sample name at [80]: ", sampleNames(re)[80]))
+#' sampleNames(re)[80] <- "custom_feature_name"
+#' print(paste0("Sample data at [80]: ", sampleNames(re)[80]))
 #'
 #' @rdname sample_names
 #' @name sampleNames
@@ -251,6 +375,30 @@ setReplaceMethod("sampleNames", "ReducedExperiment", function(object, value) {
 #'
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
 #'
+#' @returns A character summary describing the object.
+#'
+#' @examples
+#' # Create randomised data with the following dimensions
+#' i <- 300 # Number of features
+#' j <- 100 # Number of samples
+#' k <- 10 # Number of factors
+#'
+#' rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+#'
+#' re <- ReducedExperiment(
+#'     assays = list("normal" = rand_assay_data),
+#'     reduced = rand_reduced_data
+#' )
+#'
+#' # Equivalent to `show(re)`
+#' re
+#'
+#' @rdname show
+#' @name show
+NULL
+
+#' @rdname show
 #' @export
 setMethod(
     "show", "ReducedExperiment",
@@ -260,8 +408,30 @@ setMethod(
     }
 )
 
-#' Required for dollarsign autocomplete of colData columns
-#' @noRd
+#' Command line completion for `$`
+#'
+#' @description
+#' Command line completion for `$`.
+#' This function is not intended to be used directly by users but provides
+#' auto-completion capabilities.
+#' Autocompletes based on column data names (i.e., the column names of the
+#' `colData`).
+#'
+#' @param x The \link[ReducedExperiment]{ReducedExperiment} object.
+#'
+#' @param pattern Search pattern.
+#'
+#' @return The names of the matching columns of `colData`.
+#'
+#' @seealso [utils::.DollarNames()]
+#'
+#' @importFrom utils .DollarNames
+#'
+#' @rdname dollar_names
+#' @name dollar_names
+NULL
+
+#' @rdname dollar_names
 #' @export
 .DollarNames.ReducedExperiment <- function(x, pattern = "") {
     grep(pattern, colnames(colData(x)), value = TRUE)
@@ -269,18 +439,48 @@ setMethod(
 
 #' Extract and replace parts of ReducedExperiment objects
 #'
+#' @description
+#' Method permits slicing of \link[ReducedExperiment]{ReducedExperiment}
+#' objects.
+#'
 #' @param x \link[ReducedExperiment]{ReducedExperiment} object.
 #'
-#' @param i Slicing by rows (features, usually genes)
+#' @param i Slicing by rows (features, usually genes).
 #'
-#' @param j Slicing by samples
+#' @param j Slicing by columns (samples/observations).
 #'
-#' @param k Slicing by reduced dimensions
+#' @param k Slicing by reduced dimensions.
 #'
 #' @param drop Included for consistency with other slicing methods.
 #'
 #' @param ... Additional arguments to be passed to the parent method.
 #'
+#' @returns A \link[ReducedExperiment]{ReducedExperiment} object sliced by
+#' rows (`i`), columns (`j`) and components (`k`).
+#'
+#' @examples
+#' # Create randomised data with the following dimensions
+#' i <- 300 # Number of features
+#' j <- 100 # Number of samples
+#' k <- 10 # Number of components (i.e., factors/modules)
+#'
+#' rand_assay_data <- ReducedExperiment:::.makeRandomData(i, j, "gene", "sample")
+#' rand_reduced_data <- ReducedExperiment:::.makeRandomData(j, k, "sample", "component")
+#'
+#' # Create a randomised ReducedExperiment container
+#' re <- ReducedExperiment(
+#'     assays = list("normal" = rand_assay_data),
+#'     reduced = rand_reduced_data
+#' )
+#'
+#' # Slice our object by rows (1:50), columns (1:20) and components (1:5)
+#' # re[i, j, k, ...]
+#' re[1:50, 1:20, 1:5]
+#'
+#' @rdname slice
+#' @name slice
+NULL
+
 #' @rdname slice
 #' @export
 setMethod(
@@ -353,16 +553,52 @@ setMethod(
 
 #' Combine ReducedExperiment objects by columns
 #'
-#' Comnbines \link[ReducedExperiment]{ReducedExperiment} objects by columns
+#' Combines \link[ReducedExperiment]{ReducedExperiment} objects by columns
 #' (samples). Combining these objects in such a way assumes that feature-level
-#' slots (e.g., loadings, module membership) are the same for all objects to
-#' be concatenated. If they are not, an error is returned.
+#' slots (e.g., loadings, module membership, rowData) and components (e.g.,
+#' reduced, loadings, module membership) have identical features and components.
+#' If they are not, an error is returned.
 #'
-#' @param deparse.level Integer, included for consistency with
-#' \link[base]{cbind}.
+#' @param ... A series of \link[ReducedExperiment]{ReducedExperiment} objects
+#' to be combined. See \link[SummarizedExperiment]{cbind} for further details.
 #'
-#' @param ... \link[ReducedExperiment]{ReducedExperiment} objects.
+#' @param deparse.level Integer, see \link[base]{cbind}.
 #'
+#' @returns Returns a single \link[ReducedExperiment]{ReducedExperiment} object
+#' containing all of the columns in the objects passed to `cbind`.
+#'
+#' @details
+#' The \link[SummarizedExperiment]{SummarizedExperiment} package includes
+#' separate methods for `cbind`
+#' (\link[SummarizedExperiment]{`cbind,SummarizedExperiment-method`}) and
+#' (\link[SummarizedExperiment]{`combineRows`}). The latter is supposed to be
+#' more flexible, permitting differences in the number and identity of the rows.
+#' For \link[ReducedExperiment]{ReducedExperiment} objects we only implement a
+#' single, less flexible, method that assumes the rows and components
+#' (i.e., factors or modules) are identical across objects. This method can be
+#' applied using either `cbind` or `combineRows.`
+#'
+#' @examples
+#' # Create randomised containers with different numbers of samples
+#' i <- 300 # Number of features
+#' k <- 10 # Number of components (i.e., factors/modules)
+#'
+#' # Same features and components, different samples (30 vs. 50 columns)
+#' re_1 <- ReducedExperiment:::.createRandomisedReducedExperiment(i, 50, k)
+#' re_2 <- ReducedExperiment:::.createRandomisedReducedExperiment(i, 30, k)
+#'
+#' # Make a new object with 80 columns
+#' cbind(re_1, re_2)
+#'
+#' # This does the same thing for ReducedExperiment objects
+#' combineRows(re_1, re_2)
+#'
+#' @seealso [base::cbind()], \link[SummarizedExperiment]{`cbind,SummarizedExperiment-method`}
+#'
+#' @rdname cbind
+#' @name cbind
+NULL
+
 #' @rdname cbind
 #' @export
 setMethod("cbind", "ReducedExperiment", function(..., deparse.level = 1) {
@@ -373,9 +609,7 @@ setMethod("cbind", "ReducedExperiment", function(..., deparse.level = 1) {
     std_slots_equal <- vapply(args, function(re) {
         return(identical(re@scale, args[[1]]@scale) &
             identical(re@center, args[[1]]@center))
-    },
-    FUN.VALUE = FALSE
-    )
+    }, FUN.VALUE = FALSE)
 
     if (all(std_slots_equal)) {
         args[[1]] <- BiocGenerics:::replaceSlots(
@@ -392,12 +626,26 @@ setMethod("cbind", "ReducedExperiment", function(..., deparse.level = 1) {
     return(do.call(callNextMethod, args))
 })
 
+#' @rdname cbind
+#' @export
+setMethod("combineRows", "ReducedExperiment",
+          function(..., deparse.level = 1) {
+    return(cbind(..., deparse.level = 1))
+})
+
 #' Get the dimensions of a Reducedexperiment object
 #'
 #' @param x \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @returns Returns a named vector containing the dimensions of the samples,
 #' features and reduced dimensions.
+#'
+#' @examples
+#' # Create a randomised ReducedExperiment
+#' re <- ReducedExperiment:::.createRandomisedReducedExperiment(100, 50, 10)
+#'
+#' # Get the dimensions
+#' dim(re)
 #'
 #' @export
 setMethod("dim", "ReducedExperiment", function(x) {
@@ -413,7 +661,23 @@ setMethod("dim", "ReducedExperiment", function(x) {
 #' @param object \link[ReducedExperiment]{ReducedExperiment} object.
 #'
 #' @returns The number of samples (`nSamples`), features (`nFeatures`)
-#' and dimensionally-reduced components (`nComponents`) are returned.
+#' or dimensionally-reduced components (`nComponents`) are returned.
+#'
+#' @examples
+#' # Create a randomised ReducedExperiment
+#' re <- ReducedExperiment:::.createRandomisedReducedExperiment(100, 50, 10)
+#'
+#' # Get the dimensions
+#' nComponents(re)  # 10
+#' nSamples(re)  # 50
+#' nFeatures(re)  # 10
+#'
+#' # For a ModularExperiment we can alternatively use nModules
+#' me <- ReducedExperiment:::.createRandomisedModularExperiment(100, 50, 10)
+#' nComponents(me)  # 10
+#' nModules(me)  # 10
+#'
+#' @seealso \link[ReducedExperiment]{`dim,ReducedExperiment-method`}
 #'
 #' @rdname individual_dims
 #' @name individual_dim
@@ -471,6 +735,31 @@ setMethod("nFeatures", "ReducedExperiment", function(object) {
 #'
 #' @returns Returns the original object, with additional variables added to
 #' the `rowData` slot.
+#'
+#' @seealso [biomaRt::useEnsembl()], [biomaRt::getBM()]
+#'
+#' @examples
+#' set.seed(2)
+#' airway <- .get_airway_data(n_features = 500)
+#'
+#' set.seed(1)
+#' airway_fe <- estimate_factors(airway, nc = 2, use_stability = FALSE, method = "imax")
+#'
+#' # rowData before getting additional gene IDs
+#' rowData(airway_fe)
+#'
+#' # For this example we run `getGeneIDs` using a preloaded biomart query
+#' # (`biomart_out`) to avoid actually querying ensembl during testing
+#' # Note: do not use this file for your actual data
+#' biomart_out <- read.csv(system.file(
+#'     "extdata",
+#'     "biomart_out.csv",
+#'     package = "ReducedExperiment"
+#' ))
+#' airway_fe <- getGeneIDs(airway_fe, biomart_out = biomart_out)
+#'
+#' # rowData after getting additional gene IDs
+#' rowData(airway_fe)
 #'
 #' @import biomaRt
 #'

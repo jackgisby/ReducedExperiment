@@ -24,6 +24,8 @@ test_that("ModularExperiment enrichment", {
 
     set.seed(2)
     airway <- .get_airway_data(n_features = 500)
+
+    WGCNA::disableWGCNAThreads()
     airway_me <- identify_modules(airway, verbose = 0, powers = 21)
 
     # Run overrepresentation analysis
@@ -58,16 +60,18 @@ test_that("Get common features", {
 test_that("Module preservation", {
     set.seed(2)
     airway <- .get_airway_data(n_features = 500)
+
+    WGCNA::disableWGCNAThreads()
     airway_me <- identify_modules(airway, verbose = 0, powers = 21)
 
     assay(airway_me, "noised") <- assay(airway_me, "transformed") + matrix(rnorm(nrow(airway_me) * ncol(airway_me), mean = 0, sd = 0.3), nrow = nrow(airway_me), ncol = ncol(airway_me))
 
     # Test module preservation
-    mp <- module_preservation(airway_me, airway_me, reference_assay_name = "transformed", test_assay_name = "noised", verbose = 10, nPermutations = 10)
+    mp <- module_preservation(airway_me, airway_me, reference_assay_name = "transformed", test_assay_name = "noised", verbose = 0, nPermutations = 10)
     plot_module_preservation(mp)
 
     # Test that module_preservation works with matrices
-    mp_matrices <- module_preservation(assay(airway_me, "transformed"), assay(airway_me, "noised"), module_assignments = assignments(airway_me), verbose = 10, nPermutations = 10)
+    mp_matrices <- module_preservation(assay(airway_me, "transformed"), assay(airway_me, "noised"), module_assignments = assignments(airway_me), verbose = 0, nPermutations = 10)
     plot_module_preservation(mp)
 
     # Ensure results are the same

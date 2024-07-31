@@ -136,6 +136,8 @@ test_that("Eigengene calculation / projection / prediction", {
 
     set.seed(2)
     airway <- .get_airway_data(n_features = 500)
+
+    WGCNA::disableWGCNAThreads()
     airway_me <- identify_modules(airway, verbose = 0, powers = 21) # , return_full_output=TRUE
 
     # Recalculate eigengenes using WGCNA::moduleEigengenes
