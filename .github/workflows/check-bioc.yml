@@ -7,8 +7,8 @@ on:
 
 name: R-CMD-check-bioc
 
-## These environment variables control whether to run GHA code later on that is
-## specific to testthat, covr, and pkgdown.
+## These environment variables control whether to run GitHub Actions (GHA) code
+## later on that is specific to testthat, covr, and pkgdown.
 ##
 ## If you need to clear the cache of packages, update the number inside
 ## cache-version as discussed at https://github.com/r-lib/actions/issues/86.
@@ -212,12 +212,6 @@ jobs:
         if:  env.has_testthat == 'true'
         run: find . -name testthat.Rout -exec cat '{}' ';'
 
-      - name: Run RUnit tests
-        if:  env.has_RUnit == 'true'
-        run: |
-          BiocGenerics:::testPackage()
-        shell: Rscript {0}
-
       - name: Run BiocCheck
         env:
           DISPLAY: 99.0
@@ -228,12 +222,6 @@ jobs:
               `no-check-R-ver` = TRUE,
               `no-check-bioc-help` = TRUE
           )
-        shell: Rscript {0}
-
-      - name: Test coverage
-        if: github.ref == 'refs/heads/devel' && env.run_covr == 'true' && runner.os == 'Linux'
-        run: |
-          covr::codecov(coverage = covr::package_coverage(type = "all"))
         shell: Rscript {0}
 
       - name: Install package

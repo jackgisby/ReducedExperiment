@@ -423,10 +423,9 @@ module_preservation <- function(
 #' @import ggplot2
 #' @import patchwork
 #' @export
-plot_module_preservation <- function(
-        module_preservation_results,
-        show_random = TRUE,
-        remove_module = NULL) {
+plot_module_preservation <- function(module_preservation_results,
+    show_random = TRUE,
+    remove_module = NULL) {
     mr_df <- module_preservation_results$preservation$observed$ref.reference$
         inColumnsAlsoPresentIn.test
     zs_df <- module_preservation_results$preservation$Z$ref.reference$

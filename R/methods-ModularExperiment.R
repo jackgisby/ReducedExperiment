@@ -115,7 +115,9 @@ NULL
 
 #' @rdname module_assignments
 #' @export
-setMethod("assignments", "ModularExperiment", function(object, as_list = FALSE) {
+setMethod("assignments", "ModularExperiment", function(
+        object,
+        as_list = FALSE) {
     if (as_list) {
         a <- list()
         for (comp in componentNames(object)) {
@@ -230,7 +232,9 @@ setReplaceMethod("rownames", "ModularExperiment", function(x, value) {
 
 #' @rdname component_names
 #' @export
-setReplaceMethod("componentNames", "ModularExperiment", function(object, value) {
+setReplaceMethod("componentNames", "ModularExperiment", function(
+        object,
+        value) {
     curr_names <- colnames(object@reduced)
     object <- callNextMethod(object, value)
     new_names <- colnames(object@reduced)
@@ -341,10 +345,10 @@ setMethod("cbind", "ModularExperiment", function(..., deparse.level = 1) {
     args <- list(...)
 
     loadings_assignments_equal <- vapply(args, function(re) {
-        return(identical(re@loadings, args[[1]]@loadings)
-               & identical(re@assignments, args[[1]]@assignments))
+        return(identical(re@loadings, args[[1]]@loadings) &
+            identical(re@assignments, args[[1]]@assignments))
     },
-        FUN.VALUE = FALSE
+    FUN.VALUE = FALSE
     )
 
     if (!all(loadings_assignments_equal)) {

@@ -56,7 +56,6 @@ test_that("Get common features", {
 })
 
 test_that("Module preservation", {
-
     set.seed(2)
     airway <- .get_airway_data(n_features = 500)
     airway_me <- identify_modules(airway, verbose = 0, powers = 21)

@@ -245,10 +245,10 @@ setMethod("cbind", "FactorisedExperiment", function(..., deparse.level = 1) {
     args <- list(...)
 
     loadings_stability_equal <- vapply(args, function(re) {
-        return(identical(re@loadings, args[[1]]@loadings)
-               & identical(re@stability, args[[1]]@stability))
+        return(identical(re@loadings, args[[1]]@loadings) &
+            identical(re@stability, args[[1]]@stability))
     },
-        FUN.VALUE = FALSE
+    FUN.VALUE = FALSE
     )
 
     if (!all(loadings_stability_equal)) {
@@ -435,16 +435,21 @@ NULL
 
 #' @rdname getAlignedFeatures
 #' @export
-setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(
+setMethod("getAlignedFeatures", c("FactorisedExperiment"), function(object,
+    loading_threshold = 0.5,
+    proportional_threshold = 0.01,
+    feature_id_col = "rownames",
+    format = "list",
+    center_loadings = FALSE) {
+    S <- loadings(
         object,
-        loading_threshold = 0.5,
-        proportional_threshold = 0.01,
-        feature_id_col = "rownames",
-        format = "list",
-        center_loadings = FALSE) {
-    S <- loadings(object, scale_loadings = TRUE, center_loadings = center_loadings)
+        scale_loadings = TRUE,
+        center_loadings = center_loadings
+    )
 
-    if (feature_id_col != "rownames") rownames(S) <- rowData(object)[[feature_id_col]]
+    if (feature_id_col != "rownames") {
+        rownames(S) <- rowData(object)[[feature_id_col]]
+    }
 
     abs_thresholds <- apply(S, 2, function(l) {
         max(abs(l)) * loading_threshold

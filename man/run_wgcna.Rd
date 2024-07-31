@@ -67,8 +67,6 @@ to have a mean of 0 and a standard deviation of 1.}
 
 \item{...}{Additional arguments to be passed to
 \link[WGCNA]{blockwiseModules}.}
-
-\item{seed}{The random seed.}
 }
 \value{
 Returns a list containing:

@@ -35,7 +35,6 @@ test_that("Build and subset", {
 })
 
 test_that("Access and replace assignments", {
-
     set.seed(1)
     rrs <- .createRandomisedModularExperiment(i = 300, j = 100, k = 10)
 

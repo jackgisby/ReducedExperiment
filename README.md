@@ -11,6 +11,23 @@
 issues](https://img.shields.io/github/issues/jackgisby/ReducedExperiment)](https://github.com/jackgisby/ReducedExperiment/issues)
 [![GitHub
 pulls](https://img.shields.io/github/issues-pr/jackgisby/ReducedExperiment)](https://github.com/jackgisby/ReducedExperiment/pulls)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Bioc release
+status](http://www.bioconductor.org/shields/build/release/bioc/ReducedExperiment.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/ReducedExperiment)
+[![Bioc devel
+status](http://www.bioconductor.org/shields/build/devel/bioc/ReducedExperiment.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/ReducedExperiment)
+[![Bioc downloads
+rank](https://bioconductor.org/shields/downloads/release/ReducedExperiment.svg)](http://bioconductor.org/packages/stats/bioc/ReducedExperiment/)
+[![Bioc
+support](https://bioconductor.org/shields/posts/ReducedExperiment.svg)](https://support.bioconductor.org/tag/ReducedExperiment)
+[![Bioc
+history](https://bioconductor.org/shields/years-in-bioc/ReducedExperiment.svg)](https://bioconductor.org/packages/release/bioc/html/ReducedExperiment.html#since)
+[![Bioc last
+commit](https://bioconductor.org/shields/lastcommit/devel/bioc/ReducedExperiment.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/ReducedExperiment/)
+[![Bioc
+dependencies](https://bioconductor.org/shields/dependencies/release/ReducedExperiment.svg)](https://bioconductor.org/packages/release/bioc/html/ReducedExperiment.html#since)
+[![check-bioc](https://github.com/jackgisby/ReducedExperiment/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/check-bioc.yml)
 <!-- badges: end -->
 
 # ReducedExperiment <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" />
@@ -140,28 +157,38 @@ in R. Please run this yourself to check for any updates on how to cite
 **ReducedExperiment**.
 
 ``` r
-print(citation('ReducedExperiment'), bibtex = TRUE)
-#> Warning in citation("ReducedExperiment"): could not determine year for
-#> 'ReducedExperiment' from package DESCRIPTION file
+print(citation("ReducedExperiment"), bibtex = TRUE)
 #> To cite package 'ReducedExperiment' in publications use:
 #> 
-#>   Gisby J (????). _ReducedExperiment: Tools for investigating
-#>   dimensionally reduced expression data_. R package version 0.1.2,
-#>   <https://github.com/jackgisby/ReducedExperiment>.
+#>   jackgisby (2024). _ReducedExperiment_.
+#>   doi:10.18129/B9.bioc.ReducedExperiment
+#>   <https://doi.org/10.18129/B9.bioc.ReducedExperiment>,
+#>   https://github.com/jackgisby/ReducedExperiment/ReducedExperiment - R
+#>   package version 0.1.2,
+#>   <http://www.bioconductor.org/packages/ReducedExperiment>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Manual{,
-#>     title = {ReducedExperiment: Tools for investigating dimensionally reduced expression data},
-#>     author = {Jack Gisby},
-#>     note = {R package version 0.1.2},
-#>     url = {https://github.com/jackgisby/ReducedExperiment},
+#>     title = {ReducedExperiment},
+#>     author = {{jackgisby}},
+#>     year = {2024},
+#>     url = {http://www.bioconductor.org/packages/ReducedExperiment},
+#>     note = {https://github.com/jackgisby/ReducedExperiment/ReducedExperiment - R package version 0.1.2},
+#>     doi = {10.18129/B9.bioc.ReducedExperiment},
 #>   }
 ```
 
 Please note that the `ReducedExperiment` was only made possible thanks
 to many other R and bioinformatics software authors, which are cited
 either in the vignette.
+
+## Code of Conduct
+
+Please note that the `ReducedExperiment` project is released with a
+[Contributor Code of
+Conduct](http://bioconductor.org/about/code-of-conduct/). By
+contributing to this project, you agree to abide by its terms.
 
 ## Development tools
 

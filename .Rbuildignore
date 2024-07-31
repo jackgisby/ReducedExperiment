@@ -10,3 +10,4 @@ permutedStats-actualModules.RData
 codecov.yml
 ^README\.Rmd$
 ^dev$
+pkgdown/

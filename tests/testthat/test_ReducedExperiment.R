@@ -162,7 +162,6 @@ test_that("Access and replace scale/center", {
 })
 
 test_that("Combine ReducedExperiments with cbind", {
-
     set.seed(1)
     rrs_a <- .createRandomisedReducedExperiment(i = 300, j = 100, k = 10)
 

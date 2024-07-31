@@ -1,7 +1,6 @@
 context("samples")
 
 test_that("Associate components", {
-
     set.seed(2)
     airway <- .get_airway_data(n_features = 500)
 

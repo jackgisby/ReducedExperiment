@@ -127,7 +127,6 @@ test_that("Access and replace stability", {
 })
 
 test_that("Predict and project", {
-
     # Use real data from airway package
     airway <- .get_airway_data()
 
@@ -200,20 +199,22 @@ test_that("Get aligned features", {
         feature_id_col = "rownames", format = "list"
     )
 
-    expect_equal(unique(sapply(aligned_features, length)),
-                 proportional_threshold * 300)
+    expect_equal(
+        unique(sapply(aligned_features, length)),
+        proportional_threshold * 300
+    )
 
     expect_equal(aligned_features, list(
-        "factor_1" =  c("gene_219", "gene_11",  "gene_56"),
-        "factor_10" = c("gene_193", "gene_55",  "gene_23"),
-        "factor_2" =  c("gene_254", "gene_75",  "gene_17"),
-        "factor_3" =  c("gene_24",  "gene_187", "gene_32"),
-        "factor_4" =  c("gene_191", "gene_80",  "gene_208"),
-        "factor_5" =  c("gene_247", "gene_268", "gene_58"),
-        "factor_6" =  c("gene_131", "gene_24",  "gene_154"),
-        "factor_7" =  c("gene_131", "gene_118", "gene_42"),
-        "factor_8" =  c("gene_252", "gene_283", "gene_267"),
-        "factor_9" =  c("gene_110", "gene_275", "gene_64")
+        "factor_1" = c("gene_219", "gene_11", "gene_56"),
+        "factor_10" = c("gene_193", "gene_55", "gene_23"),
+        "factor_2" = c("gene_254", "gene_75", "gene_17"),
+        "factor_3" = c("gene_24", "gene_187", "gene_32"),
+        "factor_4" = c("gene_191", "gene_80", "gene_208"),
+        "factor_5" = c("gene_247", "gene_268", "gene_58"),
+        "factor_6" = c("gene_131", "gene_24", "gene_154"),
+        "factor_7" = c("gene_131", "gene_118", "gene_42"),
+        "factor_8" = c("gene_252", "gene_283", "gene_267"),
+        "factor_9" = c("gene_110", "gene_275", "gene_64")
     ))
 
     # Sanity check of factor 1 z cutoff approach
@@ -226,7 +227,6 @@ test_that("Get aligned features", {
 })
 
 test_that("Get gene IDs", {
-
     set.seed(2)
     airway <- .get_airway_data(n_features = 500)
 

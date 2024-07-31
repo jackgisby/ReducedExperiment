@@ -201,7 +201,10 @@ estimate_factors <- function(
 #' @import ica
 #' @export
 run_ica <- function(
-        X, nc, use_stability = FALSE, resample = FALSE,
+        X,
+        nc,
+        use_stability = FALSE,
+        resample = FALSE,
         method = "fast", stability_threshold = NULL,
         center_X = TRUE, scale_X = FALSE,
         reorient_skewed = TRUE,
@@ -209,7 +212,6 @@ run_ica <- function(
         n_runs = 30,
         BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
         ...) {
-
     if (center_X | scale_X) {
         X <- t(scale(t(X), center = center_X, scale = scale_X))
     }
@@ -270,19 +272,17 @@ run_ica <- function(
 #'
 #' @noRd
 #' @keywords internal
-.stability_ica <- function(
-        X,
-        nc,
-        resample,
-        method,
-        n_runs,
-        BPPARAM,
-        stability_threshold,
-        BPOPTIONS = bpoptions(),
-        return_centrotypes = TRUE,
-        ...) {
+.stability_ica <- function(X,
+    nc,
+    resample,
+    method,
+    n_runs,
+    BPPARAM,
+    stability_threshold,
+    BPOPTIONS = bpoptions(),
+    return_centrotypes = TRUE,
+    ...) {
     .ica_random <- function(i, nc, method, resample) {
-
         # Randomly initialises ICA
         Rmat <- matrix(stats::rnorm(nc**2), nrow = nc, ncol = nc)
 
@@ -495,20 +495,19 @@ run_ica <- function(
 #'
 #' @export
 estimate_stability <- function(
-    X,
-    min_components = 10,
-    max_components = 60,
-    by = 2,
-    n_runs = 30,
-    resample = FALSE,
-    mean_stability_threshold = NULL,
-    center_X = TRUE,
-    scale_X = FALSE,
-    assay_name = "normal",
-    BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
-    verbose = TRUE,
-    ...
-) {
+        X,
+        min_components = 10,
+        max_components = 60,
+        by = 2,
+        n_runs = 30,
+        resample = FALSE,
+        mean_stability_threshold = NULL,
+        center_X = TRUE,
+        scale_X = FALSE,
+        assay_name = "normal",
+        BPPARAM = BiocParallel::SerialParam(RNGseed = 1),
+        verbose = TRUE,
+        ...) {
     if (inherits(X, "SummarizedExperiment")) {
         X <- assay(X, "normal")
     }
@@ -601,17 +600,16 @@ estimate_stability <- function(
 #' @import patchwork
 #'
 #' @export
-plot_stability <- function(
-        stability, plot_path = NULL,
-        stability_threshold = NULL, mean_stability_threshold = NULL,
-        height = 4, width = 10, ...) {
+plot_stability <- function(stability, plot_path = NULL,
+    stability_threshold = NULL, mean_stability_threshold = NULL,
+    height = 4, width = 10, ...) {
     if (is.list(stability)) stability <- stability[["stability"]]
 
     stab_plot <- ggplot(stability, aes(
-            !!sym("component_number"),
-            !!sym("stability"),
-            group = !!sym("nc")
-        )) +
+        !!sym("component_number"),
+        !!sym("stability"),
+        group = !!sym("nc")
+    )) +
         geom_line() +
         ylim(c(0, 1)) +
         ylab("Component stability") +
@@ -628,8 +626,10 @@ plot_stability <- function(
         mean
     )
 
-    mean_stab_plot <- ggplot(stabilities_agg,
-                             aes(!!sym("nc"), !!sym("stability"), group = 1))  +
+    mean_stab_plot <- ggplot(
+        stabilities_agg,
+        aes(!!sym("nc"), !!sym("stability"), group = 1)
+    ) +
         geom_line() +
         ylim(c(0, 1)) +
         ylab("Mean component stability") +

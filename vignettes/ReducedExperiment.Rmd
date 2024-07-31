@@ -109,10 +109,12 @@ will be used as a validation set.
 
 ```{r load_data}
 # TODO: Implement data loading best practices and document
-wave1_se <- readRDS(system.file("extdata", "wave1.rds", 
-                                package = "ReducedExperiment"))
-wave2_se <- readRDS(system.file("extdata", "wave2.rds", 
-                                package = "ReducedExperiment"))
+wave1_se <- readRDS(system.file("extdata", "wave1.rds",
+    package = "ReducedExperiment"
+))
+wave2_se <- readRDS(system.file("extdata", "wave2.rds",
+    package = "ReducedExperiment"
+))
 
 assay(wave1_se, "normal") <- assay(wave1_se, "cpm")
 assay(wave2_se, "normal") <- assay(wave2_se, "cpm")
@@ -140,7 +142,6 @@ acceptable stability. There is an apparent elbow in the first curve between
 30-40 components, so we move forward with 35 components.
 
 ```{r estimate_stability, eval=FALSE}
-
 stability_res <- estimate_stability(
     wave1_se,
     n_runs = 30,
@@ -156,7 +157,6 @@ stability threshold of 0.25 to remove components with low stability. This
 results in the identification of 34 factors.
 
 ```{r run_factor_analysis}
-
 wave1_fe <- estimate_factors(
     wave1_se,
     nc = 35,
@@ -279,7 +279,7 @@ variable, encoding COVID-19 infection status.
 
 ```{r associate_table}
 associations_fe$summaries[
-    associations_fe$summaries$term == "case_controlPOSITIVE", 
+    associations_fe$summaries$term == "case_controlPOSITIVE",
 ]
 ```
 
@@ -294,11 +294,12 @@ patients. Factor 7, on the other hand, is up-regulated in COVID-19.
 ```{r plot_factor_associations}
 ggplot(
     associations_fe$summaries[
-        associations_fe$summaries$term == "case_controlPOSITIVE", 
+        associations_fe$summaries$term == "case_controlPOSITIVE",
     ],
-    aes(-log10(adj_pvalue), 
-        reorder(component, -log10(adj_pvalue)), 
-        fill = estimate)
+    aes(-log10(adj_pvalue),
+        reorder(component, -log10(adj_pvalue)),
+        fill = estimate
+    )
 ) +
     geom_point(pch = 21, size = 3) +
     xlab("-log10(p-value)") +
@@ -313,11 +314,12 @@ A similar plot for our modules shows significant upregulation of modules 1,
 ```{r plot_module_associations}
 ggplot(
     associations_me$summaries[
-        associations_me$summaries$term == "case_controlPOSITIVE", 
+        associations_me$summaries$term == "case_controlPOSITIVE",
     ],
-    aes(-log10(adj_pvalue), 
-        reorder(component, -log10(adj_pvalue)), 
-        fill = estimate)
+    aes(-log10(adj_pvalue),
+        reorder(component, -log10(adj_pvalue)),
+        fill = estimate
+    )
 ) +
     geom_point(pch = 21, size = 3) +
     xlab("-log10(p-value)") +
@@ -360,11 +362,11 @@ pathways related to IL4, -13 and -18 signaling and platelet activation..
 
 ```{r example_factor_enrichment}
 ggplot(
-    factor_enrich[factor_enrich$component == "factor_2" 
-                  & factor_enrich$p.adjust < 0.05, ],
+    factor_enrich[factor_enrich$component == "factor_2" &
+        factor_enrich$p.adjust < 0.05, ],
     aes(
-        -log10(p.adjust), 
-        reorder(substr(ID, 1, 45), -log10(p.adjust)), 
+        -log10(p.adjust),
+        reorder(substr(ID, 1, 45), -log10(p.adjust)),
         fill = enrichmentScore
     )
 ) +
@@ -382,8 +384,8 @@ to cell replication.
 
 ```{r example_module_enrichment}
 ggplot(
-    module_enrich[module_enrich$component == "module_2" 
-                  & module_enrich$p.adjust < 0.05, ][1:15, ],
+    module_enrich[module_enrich$component == "module_2" &
+        module_enrich$p.adjust < 0.05, ][1:15, ],
     aes(-log10(p.adjust), reorder(substr(ID, 1, 45), -log10(p.adjust)))
 ) +
     geom_point(pch = 21, size = 3) +
@@ -452,11 +454,11 @@ rather represents all of the unclustered genes.
 ```{r plotting_replicated_associations}
 ggplot(
     replication_me$summaries[
-        replication_me$summaries$term == "case_controlPOSITIVE", 
+        replication_me$summaries$term == "case_controlPOSITIVE",
     ],
     aes(
-        -log10(adj_pvalue), 
-        reorder(component, -log10(adj_pvalue)), 
+        -log10(adj_pvalue),
+        reorder(component, -log10(adj_pvalue)),
         fill = estimate
     )
 ) +

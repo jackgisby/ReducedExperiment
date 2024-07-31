@@ -182,14 +182,12 @@ identify_modules <- function(
 #' }
 #'
 #' @export
-run_wgcna <- function(
-        X, powers = 1:30,
-        min_r_squared = 0.85, max_mean_connectivity = 100,
-        corType = "pearson", networkType = "signed",
-        module_labels = "numbers", maxBlockSize = 30000,
-        verbose = 0, return_full_output = FALSE,
-        scale_reduced = TRUE, ...) {
-
+run_wgcna <- function(X, powers = 1:30,
+    min_r_squared = 0.85, max_mean_connectivity = 100,
+    corType = "pearson", networkType = "signed",
+    module_labels = "numbers", maxBlockSize = 30000,
+    verbose = 0, return_full_output = FALSE,
+    scale_reduced = TRUE, ...) {
     if (maxBlockSize < nrow(X)) {
         warning("maxBlockSize < total features, module detection will be
                 performed in a block-wise manner")
@@ -269,7 +267,7 @@ run_wgcna <- function(
             wgcna_res$assignments[i] <-
                 converter[which(names(converter) == wgcna_res$assignments[i])]
         }
-        for (i in seq_len(length(colnames(wgcna_res$E))) ){
+        for (i in seq_len(length(colnames(wgcna_res$E)))) {
             colnames(wgcna_res$E)[i] <-
                 converter[which(names(converter) == colnames(wgcna_res$E)[i])]
         }
