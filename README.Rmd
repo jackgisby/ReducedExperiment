@@ -4,7 +4,7 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ReducedExperiment
+# ReducedExperiment <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/jackgisby/ReducedExperiment/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/R-CMD-check.yaml)
@@ -32,8 +32,6 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-# ReducedExperiment <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" />
-
 ReducedExperiment provides SummarizedExperiment-like containers for storing and
 manipulating dimensionally-reduced assay data. The ReducedExperiment
 classes allow users to simultaneously manipulate their original dataset
@@ -42,7 +40,7 @@ like feature loadings. Implements utilities and specialised classes for the
 application of stabilised independent component analysis (sICA) and 
 weighted gene correlation network analysis (WGCNA).
 
-## Installation instructions
+## Installation
 
 Get the latest stable `R` release from [CRAN](http://cran.r-project.org/). Then install `ReducedExperiment` from [Bioconductor](http://bioconductor.org/) using the following code:
 
@@ -57,43 +55,121 @@ BiocManager::install("ReducedExperiment")
 And the development version from [GitHub](https://github.com/jackgisby/ReducedExperiment) with:
 
 ```{r 'install_dev', eval = FALSE}
-BiocManager::install("jackgisby/ReducedExperiment")
+devtools::install_github("jackgisby/ReducedExperiment")
 ```
 
-## Example
+## Usage
 
-This is a basic example which shows you how to solve a common problem:
+`ReducedExperiment` objects are derived from `SummarizedExperiment` objects, with
+additional slots designed to store and manipulate the outputs of common
+dimensionality reduction techniques. 
 
-```{r example, eval = requireNamespace('ReducedExperiment')}
+As an example, the `SummarizedExperiment` described below contains gene 
+expression data from individuals with COVID-19 [1]. It contains the following slots:
+- `assays` - A features by samples matrix containing the expression data.
+- `colData` - Contains a row for each sample containing phenotype data.
+- `rowData` - Contains a row for each feature containing gene IDs.
+
+The `SummarizedExperiment` objects are convenient
+because, when we slice the rows or columns of the expression matrix, the 
+metadata for the rows and columns are sliced accordingly.
+
+```{r load_se, eval=requireNamespace('SummarizedExperiment'), include=FALSE}
+library(SummarizedExperiment)
+
+se <- readRDS(system.file("extdata", "wave1.rds",
+    package = "ReducedExperiment"
+))
+
+assay(se, "normal") <- assay(se, "cpm")
+assay(se, "cpm") <- NULL
+```
+
+```{r show_se, eval=requireNamespace('SummarizedExperiment'), message=FALSE, warning=FALSE}
+library("SummarizedExperiment")
+
+se
+```
+
+The `SummarizedExperiment` has two dimensions, representing the features (2,184)
+and samples (234). 
+
+We can perform a factor analysis on these data, the result of which is a set
+of reduced components and feature loadings. 
+
+```{r estimate_factors, eval=requireNamespace('SummarizedExperiment'), message=FALSE, warning=FALSE}
 library("ReducedExperiment")
-## basic example code
+
+fe <- estimate_factors(se, nc = 35)
+
+fe
 ```
+
+This `FactorisedExperiment` object has an additional dimension representing the 
+35 factors. It also has additional slots, including:
+- `reduced` - A samples by factors matrix containing the dimensionally-reduced 
+    data.
+- `loadings` - Contains a features by factors matrix containing the loadings.
+
+The `ReducedExperiment` objects allow users to simultaneously slice and modify the 
+`assays`, `rowData`, `colData`, `reduced` and `loadings` matrices. Here, we 
+provided a `SummarizedExperiment` object to `estimate_factors`, but we could 
+just have easily provided a simple expression matrix.
+
+## Functionality
+
+The package currently provides three types of container:
+- `ReducedExperiment` - A basic container that can store dimensionally-reduced 
+    components.
+- `FactorisedExperiment` - A container based on `ReducedExperiment` designed for
+    working with the results of factor analysis. It can contain feature loadings
+    and factor stability values.
+- `ModularExperiment` - A container based on `ReducedExperiment` designed for
+    working with modules of features (usually genes), as is produced by the
+    popular Weighted Gene Correlation Network Analysis (WGCNA) approach. It
+    contains the mapping of features to modules
+
+Various tools are provided by the package for applying dimensionality reduction
+and manipulating their results. These include:
+- Workflows for applying independent component analysis (ICA) and 
+    WGCNA. We additionally developed an R implementation of the stabilised ICA 
+    algorithm [2].
+- Methods for applying pathway enrichment analysis to factors and modules.
+- Functions for identifying associations between factors/modules and 
+    sample-level variables.
+- Methods for applying identified factors or modules to new datasets.
+- Other approach-specific plots and utilities, such as factor stability plots
+    and module preservation plots.
+
+Many of these are demonstrated in more detail in the [package's vignette](https://jackgisby.github.io/ReducedExperiment/articles/ReducedExperiment.html).
+
+The containers implemented in `ReducedExperiment` are designed to be extensible. 
+We encourage the development of children classes with additional, or 
+alternative, slots and methods.
 
 ## Citation
 
-Below is the citation output from using `citation('ReducedExperiment')` in R. Please
-run this yourself to check for any updates on how to cite __ReducedExperiment__.
+Below is the citation output from using `citation('ReducedExperiment')` in R. 
 
 ```{r 'citation', eval = requireNamespace('ReducedExperiment')}
 print(citation("ReducedExperiment"), bibtex = TRUE)
 ```
 
-Please note that the `ReducedExperiment` was only made possible thanks to many other R and bioinformatics software authors, which are cited either in the vignette.
+The `ReducedExperiment` package relies on many software packages and development
+tools, a list of which with relevant citations is available in the vignette.
 
-## Code of Conduct
+[1] The dataset used an example above was derived from the following study:
+Gisby, J.S., Buang, N.B., Papadaki, A. et al. Multi-omics identify falling 
+LRRC15 as a COVID-19 severity marker and persistent pro-thrombotic signals in 
+convalescence. Nat Commun 13, 7775 (2022). 
+https://doi.org/10.1038/s41467-022-35454-4
 
-Please note that the `ReducedExperiment` project is released with a [Contributor Code of Conduct](http://bioconductor.org/about/code-of-conduct/). By contributing to this project, you agree to abide by its terms.
+These data were obtained from Zenodo: https://doi.org/10.5281/zenodo.6497251
 
-## Development tools
-
-* Continuous code testing is possible thanks to [GitHub actions](https://www.tidyverse.org/blog/2020/04/usethis-1-6-0/)  through `r BiocStyle::CRANpkg('usethis')`, `r BiocStyle::CRANpkg('remotes')`, and `r BiocStyle::CRANpkg('rcmdcheck')` customized to use [Bioconductor's docker containers](https://www.bioconductor.org/help/docker/) and `r BiocStyle::Biocpkg('BiocCheck')`.
-* Code coverage assessment is possible thanks to [codecov](https://codecov.io/gh) and `r BiocStyle::CRANpkg('covr')`.
-* The [documentation website](http://jackgisby.github.io/ReducedExperiment) is automatically updated thanks to `r BiocStyle::CRANpkg('pkgdown')`.
-* The code is styled automatically thanks to `r BiocStyle::CRANpkg('styler')`.
-* The documentation is formatted thanks to `r BiocStyle::CRANpkg('devtools')` and `r BiocStyle::CRANpkg('roxygen2')`.
-
-For more details, check the `dev` directory.
-
-This package was developed using `r BiocStyle::Biocpkg('biocthis')`.
-
-
+[2] The stabilised ICA algorithm is described in the following publication and
+implemented in the stabilized-ica Python package:
+Nicolas Captier, Jane Merlevede, Askhat Molkenov, Ainur Ashenova, Altynbek 
+Zhubanchaliyev, Petr V Nazarov, Emmanuel Barillot, Ulykbek Kairov, Andrei 
+Zinovyev, BIODICA: a computational environment for Independent Component 
+Analysis of omics data, Bioinformatics, Volume 38, Issue 10, May 2022, 
+Pages 2963–2964, https://doi.org/10.1093/bioinformatics/btac204

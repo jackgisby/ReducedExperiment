@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ReducedExperiment
+# ReducedExperiment <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" />
 
 <!-- badges: start -->
 
@@ -24,8 +24,6 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 <!-- badges: end -->
 
-# ReducedExperiment <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" />
-
 ReducedExperiment provides SummarizedExperiment-like containers for
 storing and manipulating dimensionally-reduced assay data. The
 ReducedExperiment classes allow users to simultaneously manipulate their
@@ -35,7 +33,7 @@ specialised classes for the application of stabilised independent
 component analysis (sICA) and weighted gene correlation network analysis
 (WGCNA).
 
-## Installation instructions
+## Installation
 
 Get the latest stable `R` release from
 [CRAN](http://cran.r-project.org/). Then install `ReducedExperiment`
@@ -53,102 +51,115 @@ And the development version from
 [GitHub](https://github.com/jackgisby/ReducedExperiment) with:
 
 ``` r
-BiocManager::install("jackgisby/ReducedExperiment")
+devtools::install_github("jackgisby/ReducedExperiment")
 ```
 
-## Example
+## Usage
 
-This is a basic example which shows you how to solve a common problem:
+`ReducedExperiment` objects are derived from `SummarizedExperiment`
+objects, with additional slots designed to store and manipulate the
+outputs of common dimensionality reduction techniques.
+
+As an example, the `SummarizedExperiment` described below contains gene
+expression data from individuals with COVID-19 \[1\]. It contains the
+following slots: - `assays` - A features by samples matrix containing
+the expression data. - `colData` - Contains a row for each sample
+containing phenotype data. - `rowData` - Contains a row for each feature
+containing gene IDs.
+
+The `SummarizedExperiment` objects are convenient because, when we slice
+the rows or columns of the expression matrix, the metadata for the rows
+and columns are sliced accordingly.
+
+``` r
+library("SummarizedExperiment")
+
+se
+#> class: SummarizedExperiment 
+#> dim: 2184 234 
+#> metadata(0):
+#> assays(1): normal
+#> rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600
+#>   ENSG00000288700
+#> rowData names(3): gencode_id ensembl_id gene_id
+#> colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13
+#>   C99_positive_16
+#> colData names(19): sample_id individual_id ...
+#>   time_from_first_positive_swab time_from_first_x
+```
+
+The `SummarizedExperiment` has two dimensions, representing the features
+(2,184) and samples (234).
+
+We can perform a factor analysis on these data, the result of which is a
+set of reduced components and feature loadings.
 
 ``` r
 library("ReducedExperiment")
-#> Loading required package: SummarizedExperiment
-#> Loading required package: MatrixGenerics
-#> Loading required package: matrixStats
-#> 
-#> Attaching package: 'MatrixGenerics'
-#> The following objects are masked from 'package:matrixStats':
-#> 
-#>     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
-#>     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
-#>     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
-#>     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
-#>     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
-#>     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
-#>     colWeightedMeans, colWeightedMedians, colWeightedSds,
-#>     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
-#>     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
-#>     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
-#>     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
-#>     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
-#>     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
-#>     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
-#>     rowWeightedSds, rowWeightedVars
-#> Loading required package: GenomicRanges
-#> Loading required package: stats4
-#> Loading required package: BiocGenerics
-#> 
-#> Attaching package: 'BiocGenerics'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     IQR, mad, sd, var, xtabs
-#> The following objects are masked from 'package:base':
-#> 
-#>     anyDuplicated, aperm, append, as.data.frame, basename, cbind,
-#>     colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,
-#>     get, grep, grepl, intersect, is.unsorted, lapply, Map, mapply,
-#>     match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
-#>     Position, rank, rbind, Reduce, rownames, sapply, setdiff, table,
-#>     tapply, union, unique, unsplit, which.max, which.min
-#> Loading required package: S4Vectors
-#> 
-#> Attaching package: 'S4Vectors'
-#> The following object is masked from 'package:utils':
-#> 
-#>     findMatches
-#> The following objects are masked from 'package:base':
-#> 
-#>     expand.grid, I, unname
-#> Loading required package: IRanges
-#> 
-#> Attaching package: 'IRanges'
-#> The following object is masked from 'package:grDevices':
-#> 
-#>     windows
-#> Loading required package: GenomeInfoDb
-#> Loading required package: Biobase
-#> Welcome to Bioconductor
-#> 
-#>     Vignettes contain introductory material; view with
-#>     'browseVignettes()'. To cite Bioconductor, see
-#>     'citation("Biobase")', and for packages 'citation("pkgname")'.
-#> 
-#> Attaching package: 'Biobase'
-#> The following object is masked from 'package:MatrixGenerics':
-#> 
-#>     rowMedians
-#> The following objects are masked from 'package:matrixStats':
-#> 
-#>     anyMissing, rowMedians
-#> 
-#> Attaching package: 'ReducedExperiment'
-#> The following objects are masked from 'package:Biobase':
-#> 
-#>     featureNames, featureNames<-, sampleNames, sampleNames<-
-#> The following object is masked from 'package:stats':
-#> 
-#>     loadings
+
+fe <- estimate_factors(se, nc = 35)
+
+fe
+#> class: FactorisedExperiment 
+#> dim: 2184 234 35 
+#> metadata(0):
+#> assays(2): normal transformed
+#> rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600
+#>   ENSG00000288700
+#> rowData names(3): gencode_id ensembl_id gene_id
+#> colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13
+#>   C99_positive_16
+#> colData names(19): sample_id individual_id ...
+#>   time_from_first_positive_swab time_from_first_x
+#> 35 components
 ```
 
-``` r
-## basic example code
-```
+This `FactorisedExperiment` object has an additional dimension
+representing the 35 factors. It also has additional slots, including: -
+`reduced` - A samples by factors matrix containing the
+dimensionally-reduced data. - `loadings` - Contains a features by
+factors matrix containing the loadings.
+
+The `ReducedExperiment` objects allow users to simultaneously slice and
+modify the `assays`, `rowData`, `colData`, `reduced` and `loadings`
+matrices. Here, we provided a `SummarizedExperiment` object to
+`estimate_factors`, but we could just have easily provided a simple
+expression matrix.
+
+## Functionality
+
+The package currently provides three types of container: -
+`ReducedExperiment` - A basic container that can store
+dimensionally-reduced components. - `FactorisedExperiment` - A container
+based on `ReducedExperiment` designed for working with the results of
+factor analysis. It can contain feature loadings and factor stability
+values. - `ModularExperiment` - A container based on `ReducedExperiment`
+designed for working with modules of features (usually genes), as is
+produced by the popular Weighted Gene Correlation Network Analysis
+(WGCNA) approach. It contains the mapping of features to modules
+
+Various tools are provided by the package for applying dimensionality
+reduction and manipulating their results. These include: - Workflows for
+applying independent component analysis (ICA) and WGCNA. We additionally
+developed an R implementation of the stabilised ICA algorithm \[2\]. -
+Methods for applying pathway enrichment analysis to factors and
+modules. - Functions for identifying associations between
+factors/modules and sample-level variables. - Methods for applying
+identified factors or modules to new datasets. - Other approach-specific
+plots and utilities, such as factor stability plots and module
+preservation plots.
+
+Many of these are demonstrated in more detail in the [package’s
+vignette](https://jackgisby.github.io/ReducedExperiment/articles/ReducedExperiment.html).
+
+The containers implemented in `ReducedExperiment` are designed to be
+extensible. We encourage the development of children classes with
+additional, or alternative, slots and methods.
 
 ## Citation
 
 Below is the citation output from using `citation('ReducedExperiment')`
-in R. Please run this yourself to check for any updates on how to cite
-**ReducedExperiment**.
+in R.
 
 ``` r
 print(citation("ReducedExperiment"), bibtex = TRUE)
@@ -173,41 +184,24 @@ print(citation("ReducedExperiment"), bibtex = TRUE)
 #>   }
 ```
 
-Please note that the `ReducedExperiment` was only made possible thanks
-to many other R and bioinformatics software authors, which are cited
-either in the vignette.
+The `ReducedExperiment` package relies on many software packages and
+development tools, a list of which with relevant citations is available
+in the vignette.
 
-## Code of Conduct
+\[1\] The dataset used an example above was derived from the following
+study: Gisby, J.S., Buang, N.B., Papadaki, A. et al. Multi-omics
+identify falling LRRC15 as a COVID-19 severity marker and persistent
+pro-thrombotic signals in convalescence. Nat Commun 13, 7775 (2022).
+<https://doi.org/10.1038/s41467-022-35454-4>
 
-Please note that the `ReducedExperiment` project is released with a
-[Contributor Code of
-Conduct](http://bioconductor.org/about/code-of-conduct/). By
-contributing to this project, you agree to abide by its terms.
+These data were obtained from Zenodo:
+<https://doi.org/10.5281/zenodo.6497251>
 
-## Development tools
-
-- Continuous code testing is possible thanks to [GitHub
-  actions](https://www.tidyverse.org/blog/2020/04/usethis-1-6-0/)
-  through *[usethis](https://CRAN.R-project.org/package=usethis)*,
-  *[remotes](https://CRAN.R-project.org/package=remotes)*, and
-  *[rcmdcheck](https://CRAN.R-project.org/package=rcmdcheck)* customized
-  to use [Bioconductor’s docker
-  containers](https://www.bioconductor.org/help/docker/) and
-  *[BiocCheck](https://bioconductor.org/packages/3.19/BiocCheck)*.
-- Code coverage assessment is possible thanks to
-  [codecov](https://codecov.io/gh) and
-  *[covr](https://CRAN.R-project.org/package=covr)*.
-- The [documentation
-  website](http://jackgisby.github.io/ReducedExperiment) is
-  automatically updated thanks to
-  *[pkgdown](https://CRAN.R-project.org/package=pkgdown)*.
-- The code is styled automatically thanks to
-  *[styler](https://CRAN.R-project.org/package=styler)*.
-- The documentation is formatted thanks to
-  *[devtools](https://CRAN.R-project.org/package=devtools)* and
-  *[roxygen2](https://CRAN.R-project.org/package=roxygen2)*.
-
-For more details, check the `dev` directory.
-
-This package was developed using
-*[biocthis](https://bioconductor.org/packages/3.19/biocthis)*.
+\[2\] The stabilised ICA algorithm is described in the following
+publication and implemented in the stabilized-ica Python package:
+Nicolas Captier, Jane Merlevede, Askhat Molkenov, Ainur Ashenova,
+Altynbek Zhubanchaliyev, Petr V Nazarov, Emmanuel Barillot, Ulykbek
+Kairov, Andrei Zinovyev, BIODICA: a computational environment for
+Independent Component Analysis of omics data, Bioinformatics, Volume 38,
+Issue 10, May 2022, Pages 2963–2964,
+<https://doi.org/10.1093/bioinformatics/btac204>

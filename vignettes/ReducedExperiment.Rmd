@@ -24,7 +24,7 @@ dir.create("tempOutput")
 set.seed(1)
 ```
 
-```{r load_packages}
+```{r load_packages, message=FALSE, warning=FALSE}
 library(ReducedExperiment)
 library(ggplot2)
 
