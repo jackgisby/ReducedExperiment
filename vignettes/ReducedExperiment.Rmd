@@ -16,6 +16,21 @@ vignette: >
 
 Install the package - currently only available on GitHub. 
 
+```{r setup, include = FALSE}
+BiocStyle::markdown()
+
+dir.create("tempOutput")
+
+set.seed(1)
+```
+
+```{r load_packages}
+library(ReducedExperiment)
+library(ggplot2)
+
+theme_set(theme_bw())
+```
+
 ```{r install_package, eval=FALSE}
 # if (!requireNamespace("BiocManager", quietly = TRUE))  {
 #     install.packages("BiocManager")
@@ -27,19 +42,6 @@ Install the package - currently only available on GitHub.
 # BiocManager::install("ReducedExperiment")
 
 devtools::install_github("jackgisby/ReducedExperiment")
-```
-
-```{r setup, include = FALSE}
-BiocStyle::markdown()
-
-library(ReducedExperiment)
-library(ggplot2)
-
-theme_set(theme_bw())
-
-dir.create("tempOutput")
-
-set.seed(1)
 ```
 
 # Introduction
