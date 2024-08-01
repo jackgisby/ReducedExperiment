@@ -6,7 +6,7 @@
 <!-- <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" /> -->
 <!-- badges: start -->
 
-[![build-test](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test-deploy.yaml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test-deploy.yaml)
+[![build-test](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test-deploy.yml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test-deploy.yml)
 [![codecov](https://codecov.io/gh/jackgisby/ReducedExperiment/graph/badge.svg?token=FHNH7AA6S3)](https://codecov.io/gh/jackgisby/ReducedExperiment)
 [![GitHub
 issues](https://img.shields.io/github/issues/jackgisby/ReducedExperiment)](https://github.com/jackgisby/ReducedExperiment/issues)
@@ -169,7 +169,7 @@ print(citation("ReducedExperiment"), bibtex = TRUE)
 #>   doi:10.18129/B9.bioc.ReducedExperiment
 #>   <https://doi.org/10.18129/B9.bioc.ReducedExperiment>,
 #>   https://github.com/jackgisby/ReducedExperiment/ReducedExperiment - R
-#>   package version 0.1.2,
+#>   package version 0.1.3,
 #>   <http://www.bioconductor.org/packages/ReducedExperiment>.
 #> 
 #> A BibTeX entry for LaTeX users is
@@ -179,7 +179,7 @@ print(citation("ReducedExperiment"), bibtex = TRUE)
 #>     author = {{jackgisby}},
 #>     year = {2024},
 #>     url = {http://www.bioconductor.org/packages/ReducedExperiment},
-#>     note = {https://github.com/jackgisby/ReducedExperiment/ReducedExperiment - R package version 0.1.2},
+#>     note = {https://github.com/jackgisby/ReducedExperiment/ReducedExperiment - R package version 0.1.3},
 #>     doi = {10.18129/B9.bioc.ReducedExperiment},
 #>   }
 ```
