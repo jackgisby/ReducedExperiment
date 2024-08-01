@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReducedExperiment</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.0</span>
       </span>
     </div>
 
@@ -75,7 +75,53 @@
 <dd><p>New value to replace existing dendrogram.</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>Returns a dendrogram describing relationships between genes.
+Usually produced through hierarchical clustering using the
+<a href="https://rdrr.io/pkg/WGCNA/man/blockwiseModules.html" class="external-link">blockwiseModules</a> function.</p>
+    </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create ModularExperiment with random data (100 features, 50 samples,</span></span></span>
+<span class="r-in"><span><span class="co"># 10 modules)</span></span></span>
+<span class="r-in"><span><span class="va">me</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.createRandomisedModularExperiment</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">me</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: ModularExperiment </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 100 50 10 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): normal</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(100): gene_1 gene_2 ... gene_99 gene_100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(50): sample_1 sample_2 ... sample_49 sample_50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 components</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The dendrogram is usually produced during module discovery, but we can</span></span></span>
+<span class="r-in"><span><span class="co"># assign any dendrogram to the slot. Let's do hierarchical clustering on the</span></span></span>
+<span class="r-in"><span><span class="co"># features in our object and assign it</span></span></span>
+<span class="r-in"><span><span class="fu">dendrogram</span><span class="op">(</span><span class="va">me</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">me</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">dendrogram</span><span class="op">(</span><span class="va">me</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> hclust(d = dist(assay(me)))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cluster method   : complete </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Distance         : euclidean </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of objects: 100 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Can use default plotting approach</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">dendrogram</span><span class="op">(</span><span class="va">me</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="module_dendrogram-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Or class method that calls WGCNA::plotDendroAndColors</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="plotDendro.html">plotDendro</a></span><span class="op">(</span><span class="va">me</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="module_dendrogram-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

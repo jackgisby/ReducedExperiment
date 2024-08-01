@@ -19,7 +19,7 @@ transposed newdata are multiplied by the original loadings matrix."><!-- mathjax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReducedExperiment</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.0</span>
       </span>
     </div>
 
@@ -181,43 +181,43 @@ object will be created containing this matrix in its <code>reduced</code> slot.<
 <span class="r-in"><span><span class="co"># Project the fe_1 factors for the samples in X_2</span></span></span>
 <span class="r-in"><span><span class="va">fe_2</span> <span class="op">&lt;-</span> <span class="fu">projectData</span><span class="op">(</span><span class="va">fe_1</span>, <span class="va">X_2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fe_2</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           factor_1    factor_2    factor_3     factor_4     factor_5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_1  -0.32089121  0.50091679 -0.73909549 -1.487062524 -1.332300278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_2  -0.11508979 -1.17965809 -0.42471352  0.025753917  0.523295716</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_3   2.35481392  0.66746397  1.68895676  0.254717521  1.326862496</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_4  -1.92288290 -0.71744797 -1.28944961 -0.602101594  0.350901839</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_5   0.20127208 -0.71356105  0.83418762  0.003414226 -0.813930493</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_6  -0.64518717  2.42860949  0.59729494  0.428479638  0.971940191</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_7  -0.40461079 -0.88121125  1.50845882 -0.073387619  2.547963779</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_8  -0.40320631 -0.05379185 -0.02900451  0.500469218 -0.144202217</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_9  -0.43058484 -0.33857455 -1.58976325  0.463858479  0.765627232</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_10  0.64636627 -0.68858142  0.09645581  0.508654350 -0.463177255</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_11  0.34769529  0.19780081  0.46797180  0.419339930 -0.731241052</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_12  0.53208603  0.10331776 -1.11989450  1.909513073  0.717142809</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_13 -0.66311605  0.60228707 -0.64724944 -0.857406839 -0.787395608</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_14  2.37851337  0.62011989 -0.20164333  0.089969276  1.351843427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_15 -0.18140249 -0.72904957 -0.81524096 -0.319343526 -0.482686859</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_16 -2.26105568 -1.02418218  0.33684480  1.539661534  0.286381160</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_17  1.14453438  1.44894884 -1.19168952 -2.115435563 -0.482124352</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_18 -0.64920107 -1.77062242  2.06165684 -2.065761540 -0.003165474</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_19  0.53275668  2.26238624  1.07698154  0.008878318  0.567214851</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_20  0.78146984  0.54136032 -0.34443754  0.161654766 -0.820240846</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_21  1.19945293  0.74027165  0.88241237  0.426093043  0.809781299</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_22  0.74047889  0.32774275 -0.95184248  2.700405896 -0.137702795</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_23 -0.28591006  0.61332070 -0.77545519  0.512343818  0.034020170</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_24 -0.25792152 -1.08261355  0.69749459 -0.859276338 -1.271268531</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_25 -0.92124585 -0.24282958 -0.82521065  0.345004363 -0.259813142</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_26 -0.44758994 -0.55062522 -0.81456288 -0.390544096  0.816478696</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_27 -0.70647591 -0.14462002  1.22516196 -0.030700738 -1.068843905</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_28  0.28716147 -1.55240032 -1.14210870 -0.559730658  0.082208592</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_29 -0.46028487 -0.14640140  1.09542005 -0.203310218 -2.619566302</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> obs_30 -0.06994472  0.76162415  0.33206365 -0.734150113  0.265996853</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           factor_1    factor_2     factor_3    factor_4    factor_5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_1  -0.75142772  1.22934845  1.491161947  0.41995879  1.23464213</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_2  -0.94974739 -1.12103954 -0.737929624 -0.18503363 -0.90249423</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_3   0.19579826 -0.04991248  1.688584505 -1.08425420  1.52127033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_4  -0.13060838  1.03617299  0.283630800 -0.62578413 -0.35044129</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_5  -0.84179365 -0.57068591 -0.001650678  0.38976534  0.08645931</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_6   0.47546329  0.09823512  0.269654760  1.48086621 -1.09617714</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_7  -0.36705084 -0.33415556  0.885119248  1.05653849 -0.60352472</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_8  -0.36324086  0.02716619  0.759439550 -1.38485091 -1.04411031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_9   0.75640104  1.46352235  1.744232346 -1.03202373  1.82598773</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_10 -0.13479786 -0.44336946 -0.865512198 -0.07508680 -1.04407088</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_11  3.63934458  0.91422819  1.652744746 -0.55484990 -1.65824118</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_12  0.37489455  0.90800744 -0.912003883  1.23475749 -1.16319110</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_13  0.21955717 -0.27482615 -1.595212979  0.25651957  2.13449174</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_14 -0.23186945  0.01864409 -1.914622497  0.15964090 -0.99894099</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_15 -1.17783130 -0.14084892 -1.338294262 -0.52205771 -0.01704784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_16  0.72411983  0.69241618 -0.510034377  0.49780302 -0.13592077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_17  0.76648816  0.78304278  0.010145891 -0.79164041 -0.64590474</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_18 -1.88269131 -2.25519637 -0.348554977 -0.05413372  0.11249905</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_19  0.07312326  0.96319863 -0.439295555 -1.32021892  0.10467044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_20 -1.45148747 -2.61497889 -1.572386452 -0.54810218  0.09513870</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_21  0.77376395 -0.69157644  0.427245273  1.25824973  1.61848769</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_22  0.50442170  0.70972004 -0.496388032 -1.51102045  1.17116200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_23 -0.52624060  0.47312955 -0.915248744 -1.04055080 -0.43504365</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_24  0.09941124  0.56454242  0.568988128  1.19639546 -0.32720760</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_25 -1.37341727  1.11685447  0.638742554  0.96743572  1.32835734</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_26  0.92019797 -0.95285183  0.258434429 -1.19917297  0.09227722</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_27  0.25933263 -0.43447643 -0.191893213  1.08900724  0.15952940</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_28  0.27444980 -1.53300383 -0.316753833  2.21122669 -0.93899276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_29 -0.03641805 -0.21661717  0.447457526 -0.77063140  0.07167503</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> obs_30  0.16185472  0.63531012  1.030199601  0.48124722 -0.19533890</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"scaled:center")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   factor_1   factor_2   factor_3   factor_4   factor_5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0.2155157 -3.5493432  1.0707011  5.1815125  2.7168901 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -0.9774443 -4.8242451  2.0609709  2.0958302  1.2591979 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"scaled:scale")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  factor_1  factor_2  factor_3  factor_4  factor_5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8.987805  7.896590 11.344058 10.665775 11.783163 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7.782658  8.907760 12.289916 11.481097  8.243686 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

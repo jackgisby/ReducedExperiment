@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReducedExperiment</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.0</span>
       </span>
     </div>
 
@@ -163,11 +163,12 @@ wave of COVID-19 (early-mid 2020) and another for the second (early
 2021). In this vignette, we will mainly use the first cohort, whereas
 the second cohort will be used as a validation set.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># TODO: Implement data loading best practices and document</span></span>
-<span><span class="va">wave1_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"wave1.rds"</span>,</span>
+<code class="sourceCode R"><span><span class="va">wave1_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
+<span>    <span class="st">"extdata"</span>, <span class="st">"wave1.rds"</span>,</span>
 <span>    package <span class="op">=</span> <span class="st">"ReducedExperiment"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">wave2_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"wave2.rds"</span>,</span>
+<span><span class="va">wave2_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
+<span>    <span class="st">"extdata"</span>, <span class="st">"wave2.rds"</span>,</span>
 <span>    package <span class="op">=</span> <span class="st">"ReducedExperiment"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -212,6 +213,7 @@ between 30-40 components, so we move forward with 35 components.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_stability.html">plot_stability</a></span><span class="op">(</span><span class="va">stability_res</span>, plot_path <span class="op">=</span> <span class="st">"tempOutput/stability.png"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="../inst/stability.png"></p>
 <p>Now we run the factor analysis with these components. We additionally
 set a stability threshold of 0.25 to remove components with low
 stability. This results in the identification of 34 factors.</p>
@@ -899,7 +901,7 @@ document was compiled:</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] ggplot2_3.5.1               ReducedExperiment_0.1.3    </span></span>
+<span><span class="co">##  [1] ggplot2_3.5.1               ReducedExperiment_0.99.0   </span></span>
 <span><span class="co">##  [3] SummarizedExperiment_1.34.0 Biobase_2.64.0             </span></span>
 <span><span class="co">##  [5] GenomicRanges_1.56.1        GenomeInfoDb_1.40.1        </span></span>
 <span><span class="co">##  [7] IRanges_2.38.1              S4Vectors_0.42.1           </span></span>
