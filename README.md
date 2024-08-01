@@ -6,7 +6,7 @@
 <!-- <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" /> -->
 <!-- badges: start -->
 
-[![build-test](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test.yaml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test.yaml)
+[![build-test](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test-deploy.yaml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test-deploy.yaml)
 [![codecov](https://codecov.io/gh/jackgisby/ReducedExperiment/graph/badge.svg?token=FHNH7AA6S3)](https://codecov.io/gh/jackgisby/ReducedExperiment)
 [![GitHub
 issues](https://img.shields.io/github/issues/jackgisby/ReducedExperiment)](https://github.com/jackgisby/ReducedExperiment/issues)

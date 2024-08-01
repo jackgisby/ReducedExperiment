@@ -254,6 +254,7 @@ jobs:
   # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
   test-coverage:
     runs-on: ubuntu-latest
+    needs: build-test
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
