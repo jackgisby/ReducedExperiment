@@ -6,8 +6,7 @@
 <!-- <img src="inst/ReducedExperiment_hex.png" align="right" height="174" width="150" /> -->
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/jackgisby/ReducedExperiment/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/R-CMD-check.yaml)
-<!-- [![check-bioc](https://github.com/jackgisby/ReducedExperiment/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/check-bioc.yml) -->
+[![build-test](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test.yaml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/build-test.yaml)
 [![codecov](https://codecov.io/gh/jackgisby/ReducedExperiment/graph/badge.svg?token=FHNH7AA6S3)](https://codecov.io/gh/jackgisby/ReducedExperiment)
 [![GitHub
 issues](https://img.shields.io/github/issues/jackgisby/ReducedExperiment)](https://github.com/jackgisby/ReducedExperiment/issues)
@@ -15,6 +14,7 @@ issues](https://img.shields.io/github/issues/jackgisby/ReducedExperiment)](https
 pulls](https://img.shields.io/github/issues-pr/jackgisby/ReducedExperiment)](https://github.com/jackgisby/ReducedExperiment/pulls)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- [![check-bioc](https://github.com/jackgisby/ReducedExperiment/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/jackgisby/ReducedExperiment/actions/workflows/check-bioc.yml) -->
 <!-- [![Bioc release status](http://www.bioconductor.org/shields/build/release/bioc/ReducedExperiment.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/ReducedExperiment) -->
 <!-- [![Bioc devel status](http://www.bioconductor.org/shields/build/devel/bioc/ReducedExperiment.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/ReducedExperiment) -->
 <!-- [![Bioc downloads rank](https://bioconductor.org/shields/downloads/release/ReducedExperiment.svg)](http://bioconductor.org/packages/stats/bioc/ReducedExperiment/) -->
