@@ -72,7 +72,7 @@
       <h1 data-toc-skip>ReducedExperiment</h1>
                         <h4 data-toc-skip class="author">Jack Gisby</h4>
             
-            <h4 data-toc-skip class="date">2024-08-01</h4>
+            <h4 data-toc-skip class="date">2024-08-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jackgisby/ReducedExperiment/blob/devel/vignettes/ReducedExperiment.Rmd" class="external-link"><code>vignettes/ReducedExperiment.Rmd</code></a></small>
       <div class="hidden name"><code>ReducedExperiment.Rmd</code></div>
@@ -91,10 +91,10 @@
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># if (!requireNamespace("BiocManager", quietly = TRUE))  {</span></span>
-<span><span class="co">#     install.packages("BiocManager")</span></span>
-<span><span class="co"># }</span></span>
-<span><span class="co">#</span></span>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
 <span><span class="co"># BiocManager::install("ReducedExperiment")</span></span>
 <span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jackgisby/ReducedExperiment"</span><span class="op">)</span></span></code></pre></div>
@@ -157,11 +157,12 @@ repository: <a href="https://zenodo.org/records/6497251" class="external-link ur
 <p>The data were normalised with edgeR’s TMM method and transformed to
 log-counts per million. Genes with low counts were removed before
 further filtering to select high-variance genes. For the purposes of
-this example, only ~2000 genes were retained.</p>
+this example, only 500 genes were retained and we downsampled the
+patients.</p>
 <p>The COVID-19 data are split up into two cohorts, one for the first
 wave of COVID-19 (early-mid 2020) and another for the second (early
 2021). In this vignette, we will mainly use the first cohort, whereas
-the second cohort will be used as a validation set.</p>
+the second cohort will be used as a validation dataset.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wave1_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
 <span>    <span class="st">"extdata"</span>, <span class="st">"wave1.rds"</span>,</span>
@@ -172,21 +173,18 @@ the second cohort will be used as a validation set.</p>
 <span>    package <span class="op">=</span> <span class="st">"ReducedExperiment"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">wave1_se</span>, <span class="st">"normal"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">wave1_se</span>, <span class="st">"cpm"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">wave2_se</span>, <span class="st">"normal"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">wave2_se</span>, <span class="st">"cpm"</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">wave1_se</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: SummarizedExperiment </span></span>
-<span><span class="co">## dim: 2184 234 </span></span>
+<span><span class="co">## dim: 500 83 </span></span>
 <span><span class="co">## metadata(0):</span></span>
-<span><span class="co">## assays(2): cpm normal</span></span>
-<span><span class="co">## rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
-<span><span class="co">##   ENSG00000288700</span></span>
-<span><span class="co">## rowData names(3): gencode_id ensembl_id gene_id</span></span>
-<span><span class="co">## colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13</span></span>
-<span><span class="co">##   C99_positive_16</span></span>
-<span><span class="co">## colData names(19): sample_id individual_id ...</span></span>
-<span><span class="co">##   time_from_first_positive_swab time_from_first_x</span></span></code></pre>
+<span><span class="co">## assays(1): normal</span></span>
+<span><span class="co">## rownames(500): ENSG00000004799 ENSG00000007038 ... ENSG00000287935</span></span>
+<span><span class="co">##   ENSG00000288049</span></span>
+<span><span class="co">## rowData names(2): ensembl_id gene_id</span></span>
+<span><span class="co">## colnames(83): C37_positive_9 C48_positive_4 ... C85_negative</span></span>
+<span><span class="co">##   C89_negative</span></span>
+<span><span class="co">## colData names(8): sample_id individual_id ... case_control</span></span>
+<span><span class="co">##   time_from_first_x</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="factor-analysis">Factor analysis<a class="anchor" aria-label="anchor" href="#factor-analysis"></a>
@@ -200,20 +198,36 @@ could change the <code>BPPARAM</code> term of
 <code>estimate_stability</code> to run the analysis in parallel.</p>
 <p>The component estimation procedure is based on the maximally stable
 transcriptome dimension approach, described here: <a href="https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-4112-9" class="external-link uri">https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-4112-9</a></p>
-<p>We can see the stability of the factors as a function of the number
-of components. We ideally want to pick the maximal number of components
-with acceptable stability. There is an apparent elbow in the first curve
-between 30-40 components, so we move forward with 35 components.</p>
+<p>Using this method, we can plot the stability of the factors as a
+function of the number of components. The plot on the left shows a line
+for each run. We perform ICA for a sequence of components from 10 to 60,
+increasing the number of components by two each time. So, we run ICA for
+10, 12, 14, etc. components and each of these runs produces a line in
+the plot. The plot on the right displays a single line displaying
+stability averaged over the runs.</p>
+<p>We ideally want to pick the maximal number of components with
+acceptable stability. Between 30-40 components, the component stability
+appears to drop off, so we move forward with 35 components.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">stability_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_stability.html">estimate_stability</a></span><span class="op">(</span></span>
 <span>    <span class="va">wave1_se</span>,</span>
-<span>    n_runs <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>    n_runs <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>    min_components <span class="op">=</span> <span class="fl">10</span>, max_components <span class="op">=</span> <span class="fl">60</span>, by <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>    mean_stability_threshold <span class="op">=</span> <span class="fl">0.85</span></span>
+<span>    mean_stability_threshold <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/plot_stability.html">plot_stability</a></span><span class="op">(</span><span class="va">stability_res</span>, plot_path <span class="op">=</span> <span class="st">"tempOutput/stability.png"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../inst/stability.png"></p>
+<span><span class="va">stability_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_stability.html">plot_stability</a></span><span class="op">(</span><span class="va">stability_res</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">stability_plot</span><span class="op">$</span><span class="va">combined_plot</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ReducedExperiment_files/figure-html/estimate_stability-1.png" width="700"></p>
+<p>These plots were made for a small test dataset. For standard datasets
+with thousands of genes, you might see a stability profile more like the
+one plotted below. You’ll commonly observe an elbow in the stability
+plot on the left, which in this case appears around 30-40
+components.</p>
+<div class="float">
+<img src="https://raw.githubusercontent.com/jackgisby/ReducedExperiment/devel/inst/stability.png" alt="Stability plot for the full dataset"><div class="figcaption">Stability plot for the full dataset</div>
+</div>
 <p>Now we run the factor analysis with these components. We additionally
 set a stability threshold of 0.25 to remove components with low
 stability. This results in the identification of 34 factors.</p>
@@ -228,16 +242,16 @@ stability. This results in the identification of 34 factors.</p>
 <span></span>
 <span><span class="va">wave1_fe</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: FactorisedExperiment </span></span>
-<span><span class="co">## dim: 2184 234 34 </span></span>
+<span><span class="co">## dim: 500 83 34 </span></span>
 <span><span class="co">## metadata(0):</span></span>
-<span><span class="co">## assays(3): cpm normal transformed</span></span>
-<span><span class="co">## rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
-<span><span class="co">##   ENSG00000288700</span></span>
-<span><span class="co">## rowData names(3): gencode_id ensembl_id gene_id</span></span>
-<span><span class="co">## colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13</span></span>
-<span><span class="co">##   C99_positive_16</span></span>
-<span><span class="co">## colData names(19): sample_id individual_id ...</span></span>
-<span><span class="co">##   time_from_first_positive_swab time_from_first_x</span></span>
+<span><span class="co">## assays(2): normal transformed</span></span>
+<span><span class="co">## rownames(500): ENSG00000004799 ENSG00000007038 ... ENSG00000287935</span></span>
+<span><span class="co">##   ENSG00000288049</span></span>
+<span><span class="co">## rowData names(2): ensembl_id gene_id</span></span>
+<span><span class="co">## colnames(83): C37_positive_9 C48_positive_4 ... C85_negative</span></span>
+<span><span class="co">##   C89_negative</span></span>
+<span><span class="co">## colData names(8): sample_id individual_id ... case_control</span></span>
+<span><span class="co">##   time_from_first_x</span></span>
 <span><span class="co">## 34 components</span></span></code></pre>
 <p>The output of factor analysis is a FactorisedExperiment object. This
 is not dissimilar from a SummarizedExperiment object, with some
@@ -248,22 +262,22 @@ for the factor loadings (i.e., genes vs. factors).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get reduced data for first 5 samples and factors</span></span>
 <span><span class="fu"><a href="../reference/reduced.html">reduced</a></span><span class="op">(</span><span class="va">wave1_fe</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##                   factor_1   factor_2  factor_3   factor_4   factor_5</span></span>
-<span><span class="co">## C10_positive_18  1.5180393 -0.3564923 0.6765928 -2.4734445 -0.8471436</span></span>
-<span><span class="co">## C10_positive_21  1.9441281 -0.8337002 1.1680499 -2.3656378 -0.3685632</span></span>
-<span><span class="co">## C10_positive_30  1.8288148 -1.1336467 1.7159102 -1.4465670  0.3229994</span></span>
-<span><span class="co">## C101_negative   -0.4675281  0.4745177 0.4328461  0.8217160  0.7254073</span></span>
-<span><span class="co">## C103_negative   -0.3306406  0.8009269 1.1553160  0.8646545  0.8284281</span></span></code></pre>
+<pre><code><span><span class="co">##                   factor_1   factor_2   factor_3    factor_4   factor_5</span></span>
+<span><span class="co">## C37_positive_9  -1.8687217 -0.0784997 -0.6005532 -0.11896352  1.3977933</span></span>
+<span><span class="co">## C48_positive_4  -0.3831680 -1.3411414  0.2787547 -0.28788257  2.6585240</span></span>
+<span><span class="co">## C65_positive_15  0.8684700  1.4484009 -1.5822968 -0.23966104 -0.1890555</span></span>
+<span><span class="co">## C99_positive_13  0.5901544  0.9296502  2.3017122 -0.84994289  1.7407356</span></span>
+<span><span class="co">## C114_positive_9  0.7907290 -1.3273954  1.0318233 -0.01713736  0.5008551</span></span></code></pre>
 <p>And we get the factor loadings below:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get loadings for first 5 genes and factors</span></span>
 <span><span class="fu"><a href="../reference/loadings.html">loadings</a></span><span class="op">(</span><span class="va">wave1_fe</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##                   factor_1    factor_2   factor_3   factor_4   factor_5</span></span>
-<span><span class="co">## ENSG00000002587 0.39998025  0.09798871  0.3637519 -0.2747486 -0.3858414</span></span>
-<span><span class="co">## ENSG00000002726 0.05393444 -0.09272279 -0.9878628  0.2259438  2.1636703</span></span>
-<span><span class="co">## ENSG00000002745 0.71063379 -1.55536371 -0.8739797  1.0337614 -1.4207246</span></span>
-<span><span class="co">## ENSG00000002933 0.77564649  0.38695579  0.2691808  0.2071796  0.9940963</span></span>
-<span><span class="co">## ENSG00000004799 0.61527306  1.07995246  1.4477569  0.1130890  0.4696846</span></span></code></pre>
+<pre><code><span><span class="co">##                   factor_1     factor_2   factor_3   factor_4   factor_5</span></span>
+<span><span class="co">## ENSG00000004799 -0.7767031 -0.002569488 -1.7032980 -2.6880719 -0.7073711</span></span>
+<span><span class="co">## ENSG00000007038 -1.1752972  0.026723763 -1.0958651 -0.6361328 -0.9807684</span></span>
+<span><span class="co">## ENSG00000008516  0.2054489  0.175968993 -0.2311265 -0.9679804 -0.1348655</span></span>
+<span><span class="co">## ENSG00000009950 -0.8386991 -0.966437474 -0.7504235 -1.5886722 -0.3977219</span></span>
+<span><span class="co">## ENSG00000011201 -0.4836468  1.005590626  0.7752032  0.1310340 -0.2479004</span></span></code></pre>
 <p>Most of the normal operations that can be performed on
 SummarizedExperiment objects can also be performed on
 FactorisedExperiments. We can slice them by samples, features and
@@ -279,71 +293,52 @@ components, like so:</p>
 <p>Similarly, we can run a module analysis using the weighted gene
 correlation network analysis (WGCNA) package: <a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559" class="external-link uri">https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559</a></p>
 <p>The ReducedExperiment package provides wrapper functions for running
-such an analysis, before packaging them into a ModularExperiment
-class.</p>
+such an analysis, before packaging them into a ModularExperiment class.
+Since for this example we’ve filtered out most of the genes that were in
+the original dataset, we allow for the identification of smaller modules
+of genes (10).</p>
 <p>The dendrogram is also stored in this object, allowing us to plot the
 clusters of genes that are identified.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">WGCNA</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/WGCNA/man/allowWGCNAThreads.html" class="external-link">disableWGCNAThreads</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wave1_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/identify_modules.html">identify_modules</a></span><span class="op">(</span><span class="va">wave1_se</span>, verbose <span class="op">=</span> <span class="fl">0</span>, powers <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##    Power SFT.R.sq  slope truncated.R.sq  mean.k. median.k.   max.k.</span></span>
-<span><span class="co">## 1      1    0.461  29.40          0.812 1.16e+02  1.16e+02 118.0000</span></span>
-<span><span class="co">## 2      2    0.878 -25.10          0.851 5.99e+01  5.94e+01  63.7000</span></span>
-<span><span class="co">## 3      3    0.701 -10.90          0.797 3.19e+01  3.16e+01  36.6000</span></span>
-<span><span class="co">## 4      4    0.732  -6.03          0.900 1.76e+01  1.72e+01  22.2000</span></span>
-<span><span class="co">## 5      5    0.679  -3.93          0.883 9.98e+00  9.65e+00  14.2000</span></span>
-<span><span class="co">## 6      6    0.668  -3.09          0.853 5.84e+00  5.58e+00   9.4200</span></span>
-<span><span class="co">## 7      7    0.696  -2.51          0.907 3.52e+00  3.33e+00   6.5000</span></span>
-<span><span class="co">## 8      8    0.697  -2.26          0.877 2.18e+00  2.02e+00   4.6400</span></span>
-<span><span class="co">## 9      9    0.748  -2.14          0.856 1.39e+00  1.26e+00   3.4000</span></span>
-<span><span class="co">## 10    10    0.788  -2.10          0.895 9.14e-01  8.13e-01   2.5600</span></span>
-<span><span class="co">## 11    11    0.815  -1.95          0.897 6.16e-01  5.25e-01   1.9800</span></span>
-<span><span class="co">## 12    12    0.863  -1.89          0.927 4.26e-01  3.50e-01   1.5600</span></span>
-<span><span class="co">## 13    13    0.850  -1.81          0.880 3.02e-01  2.35e-01   1.2500</span></span>
-<span><span class="co">## 14    14    0.848  -1.68          0.863 2.19e-01  1.63e-01   1.0100</span></span>
-<span><span class="co">## 15    15    0.852  -1.73          0.842 1.62e-01  1.13e-01   0.8360</span></span>
-<span><span class="co">## 16    16    0.934  -1.67          0.941 1.23e-01  7.82e-02   0.6970</span></span>
-<span><span class="co">## 17    17    0.918  -1.64          0.913 9.45e-02  5.65e-02   0.5860</span></span>
-<span><span class="co">## 18    18    0.924  -1.58          0.915 7.40e-02  4.10e-02   0.4960</span></span>
-<span><span class="co">## 19    19    0.923  -1.55          0.906 5.88e-02  3.05e-02   0.4230</span></span>
-<span><span class="co">## 20    20    0.878  -1.51          0.846 4.73e-02  2.30e-02   0.3620</span></span>
-<span><span class="co">## 21    21    0.879  -1.45          0.847 3.84e-02  1.70e-02   0.3110</span></span>
-<span><span class="co">## 22    22    0.882  -1.43          0.851 3.15e-02  1.29e-02   0.2680</span></span>
-<span><span class="co">## 23    23    0.923  -1.37          0.902 2.61e-02  9.62e-03   0.2320</span></span>
-<span><span class="co">## 24    24    0.885  -1.37          0.854 2.18e-02  7.33e-03   0.2010</span></span>
-<span><span class="co">## 25    25    0.868  -1.34          0.831 1.83e-02  5.68e-03   0.1750</span></span>
-<span><span class="co">## 26    26    0.870  -1.31          0.833 1.54e-02  4.42e-03   0.1520</span></span>
-<span><span class="co">## 27    27    0.891  -1.29          0.860 1.30e-02  3.37e-03   0.1320</span></span>
-<span><span class="co">## 28    28    0.872  -1.29          0.840 1.11e-02  2.55e-03   0.1150</span></span>
-<span><span class="co">## 29    29    0.935  -1.21          0.917 9.47e-03  1.94e-03   0.1010</span></span>
-<span><span class="co">## 30    30    0.877  -1.20          0.842 8.11e-03  1.44e-03   0.0878</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">wave1_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/identify_modules.html">identify_modules</a></span><span class="op">(</span></span>
+<span>    <span class="va">wave1_se</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    powers <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    minModuleSize <span class="op">=</span> <span class="fl">10</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   Power SFT.R.sq slope truncated.R.sq mean.k. median.k. max.k.</span></span>
+<span><span class="co">## 1    10     0.81 -2.18           0.87   0.254     0.224  0.631</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotDendro.html">plotDendro</a></span><span class="op">(</span><span class="va">wave1_me</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
-<p>In this case we only identify 10 modules, far fewer than that
-identified in the original paper: <a href="https://www.nature.com/articles/s41467-022-35454-4#Fig4" class="external-link uri">https://www.nature.com/articles/s41467-022-35454-4#Fig4</a></p>
-<p>This is likely because we are only using a subset of genes and we
-have allowed the <code>identify_modules</code> to automatically select
-the soft thresholding power. In general, it is recommended more careful
-consider the parameters used to generate modules, which can be aided by
-functions in the WGCNA package that allow for the creating of diagnostic
-plots. For now, however, we will move forward with our 10 modules.</p>
+<p>In this case we only identify 8 modules (module_0 is not a module
+itself, but rather represents the unclustered genes, and is coloured in
+gray in the plot above). Far more modules were identified in the
+original paper: <a href="https://www.nature.com/articles/s41467-022-35454-4#Fig4" class="external-link uri">https://www.nature.com/articles/s41467-022-35454-4#Fig4</a></p>
+<p>This is likely because we are only using a subset of samples and
+genes, and we’ve used a different soft thresholding power. While
+<code>identify_modules</code> can suggest a soft thresholding power
+automatically, it is generally recommended that the user carefully
+consider the parameters used to generate modules (e.g., by considering
+the output of WGCNA::pickSoftThreshold). For now, however, we will move
+forward with our 8 modules.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wave1_me</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: ModularExperiment </span></span>
-<span><span class="co">## dim: 2184 234 6 </span></span>
+<span><span class="co">## dim: 500 83 9 </span></span>
 <span><span class="co">## metadata(0):</span></span>
-<span><span class="co">## assays(3): cpm normal transformed</span></span>
-<span><span class="co">## rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
-<span><span class="co">##   ENSG00000288700</span></span>
-<span><span class="co">## rowData names(3): gencode_id ensembl_id gene_id</span></span>
-<span><span class="co">## colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13</span></span>
-<span><span class="co">##   C99_positive_16</span></span>
-<span><span class="co">## colData names(19): sample_id individual_id ...</span></span>
-<span><span class="co">##   time_from_first_positive_swab time_from_first_x</span></span>
-<span><span class="co">## 6 components</span></span></code></pre>
+<span><span class="co">## assays(2): normal transformed</span></span>
+<span><span class="co">## rownames(500): ENSG00000004799 ENSG00000007038 ... ENSG00000287935</span></span>
+<span><span class="co">##   ENSG00000288049</span></span>
+<span><span class="co">## rowData names(2): ensembl_id gene_id</span></span>
+<span><span class="co">## colnames(83): C37_positive_9 C48_positive_4 ... C85_negative</span></span>
+<span><span class="co">##   C89_negative</span></span>
+<span><span class="co">## colData names(8): sample_id individual_id ... case_control</span></span>
+<span><span class="co">##   time_from_first_x</span></span>
+<span><span class="co">## 9 components</span></span></code></pre>
 <p>The ModularExperiment functions much like a FactorisedExperiment,
 with a slot for the dimensionally-reduced data (samples vs. modules) and
 loadings (a vector containing a value for each gene). There is
@@ -352,26 +347,26 @@ additionally a slot for the module assignments.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get reduced data for first 5 samples and factors</span></span>
 <span><span class="fu"><a href="../reference/reduced.html">reduced</a></span><span class="op">(</span><span class="va">wave1_me</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##                   module_0   module_1   module_2   module_3   module_4</span></span>
-<span><span class="co">## C10_positive_18 -2.3070429  0.8374160  0.9817508 -1.4290146 -0.3793866</span></span>
-<span><span class="co">## C10_positive_21 -2.3077994  0.8472858  0.4102342 -1.5055763 -0.5623632</span></span>
-<span><span class="co">## C10_positive_30 -1.7675281 -0.2063378 -0.9272871 -0.8044500  0.5440462</span></span>
-<span><span class="co">## C101_negative    0.8713345 -1.2871892 -1.5405546  0.3077991 -0.7347361</span></span>
-<span><span class="co">## C103_negative    0.1656519 -0.7980786 -0.4987395  1.2893444  0.9095729</span></span></code></pre>
+<pre><code><span><span class="co">##                   module_0    module_1    module_2    module_3   module_4</span></span>
+<span><span class="co">## C37_positive_9  -1.4372803  1.74584676  2.68249418 -2.05218267 -0.5620659</span></span>
+<span><span class="co">## C48_positive_4  -0.9789977 -0.07603203  1.45808435 -0.59951088 -0.4690700</span></span>
+<span><span class="co">## C65_positive_15 -0.8749101  2.43559668  0.21685748 -0.75181911  0.3359459</span></span>
+<span><span class="co">## C99_positive_13 -1.2964743  1.39787060  1.47771311 -0.52519733  2.2728971</span></span>
+<span><span class="co">## C114_positive_9 -0.6704433  0.35729219 -0.02886774 -0.01761435 -0.3241905</span></span></code></pre>
 <p>The module assignments:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get assignments for first 5 genes</span></span>
 <span><span class="fu"><a href="../reference/module_assignments.html">assignments</a></span><span class="op">(</span><span class="va">wave1_me</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##          module_0          module_1          module_0          module_0 </span></span>
-<span><span class="co">## "ENSG00000002587" "ENSG00000002726" "ENSG00000002745" "ENSG00000002933" </span></span>
+<pre><code><span><span class="co">##          module_0          module_0          module_2          module_4 </span></span>
+<span><span class="co">## "ENSG00000004799" "ENSG00000007038" "ENSG00000008516" "ENSG00000009950" </span></span>
 <span><span class="co">##          module_0 </span></span>
-<span><span class="co">## "ENSG00000004799"</span></span></code></pre>
+<span><span class="co">## "ENSG00000011201"</span></span></code></pre>
 <p>And the loadings:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get loadings for first 5 genes</span></span>
 <span><span class="fu"><a href="../reference/loadings.html">loadings</a></span><span class="op">(</span><span class="va">wave1_me</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">## ENSG00000002587 ENSG00000002726 ENSG00000002745 ENSG00000002933 ENSG00000004799 </span></span>
-<span><span class="co">##      0.01671898      0.03420756      0.02899456     -0.01206232     -0.06285365</span></span></code></pre>
+<pre><code><span><span class="co">## ENSG00000004799 ENSG00000007038 ENSG00000008516 ENSG00000009950 ENSG00000011201 </span></span>
+<span><span class="co">##     -0.06747985      0.15280700      0.14381448      0.05915689     -0.03541538</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="identifying-factor-and-module-associations">Identifying factor and module associations<a class="anchor" aria-label="anchor" href="#identifying-factor-and-module-associations"></a>
@@ -382,86 +377,34 @@ are associated with disease outcomes. We can do this with the
 sample-level data available in the <code>SummarizedExperiment</code>
 container.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">wave1_se</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## DataFrame with 234 rows and 19 columns</span></span>
-<span><span class="co">##                       sample_id individual_id   ethnicity         sex  calc_age</span></span>
-<span><span class="co">##                     &lt;character&gt;   &lt;character&gt; &lt;character&gt; &lt;character&gt; &lt;integer&gt;</span></span>
-<span><span class="co">## C10_positive_18 C10_positive_18           C10       black           F        84</span></span>
-<span><span class="co">## C10_positive_21 C10_positive_21           C10       black           F        84</span></span>
-<span><span class="co">## C10_positive_30 C10_positive_30           C10       black           F        84</span></span>
-<span><span class="co">## C101_negative     C101_negative          C101       asian           M        61</span></span>
-<span><span class="co">## C103_negative     C103_negative          C103       asian           M        66</span></span>
-<span><span class="co">## ...                         ...           ...         ...         ...       ...</span></span>
-<span><span class="co">## C93_positive_10 C93_positive_10           C93       white           M        87</span></span>
-<span><span class="co">## C93_positive_13 C93_positive_13           C93       white           M        87</span></span>
-<span><span class="co">## C93_positive_15 C93_positive_15           C93       white           M        87</span></span>
-<span><span class="co">## C99_positive_13 C99_positive_13           C99       white           M        60</span></span>
-<span><span class="co">## C99_positive_16 C99_positive_16           C99       white           M        60</span></span>
-<span><span class="co">##                                 ihd previous_vte        copd    diabetes</span></span>
-<span><span class="co">##                         &lt;character&gt;  &lt;character&gt; &lt;character&gt; &lt;character&gt;</span></span>
-<span><span class="co">## C10_positive_18 yes.no.intervention           no          no      yes.T2</span></span>
-<span><span class="co">## C10_positive_21 yes.no.intervention           no          no      yes.T2</span></span>
-<span><span class="co">## C10_positive_30 yes.no.intervention           no          no      yes.T2</span></span>
-<span><span class="co">## C101_negative              yes.cabg           no          no      yes.T2</span></span>
-<span><span class="co">## C103_negative                    no           no          no      yes.T2</span></span>
-<span><span class="co">## ...                             ...          ...         ...         ...</span></span>
-<span><span class="co">## C93_positive_10             unknown           no          no      yes.T2</span></span>
-<span><span class="co">## C93_positive_13             unknown           no          no      yes.T2</span></span>
-<span><span class="co">## C93_positive_15             unknown           no          no      yes.T2</span></span>
-<span><span class="co">## C99_positive_13            yes.cabg           no          no      yes.T2</span></span>
-<span><span class="co">## C99_positive_16            yes.cabg           no          no      yes.T2</span></span>
-<span><span class="co">##                     smoking          cause_eskd WHO_severity WHO_temp_severity</span></span>
-<span><span class="co">##                 &lt;character&gt;         &lt;character&gt;  &lt;character&gt;       &lt;character&gt;</span></span>
-<span><span class="co">## C10_positive_18 not.current DN (bx or presumed)       severe          moderate</span></span>
-<span><span class="co">## C10_positive_21 not.current DN (bx or presumed)       severe          moderate</span></span>
-<span><span class="co">## C10_positive_30 not.current DN (bx or presumed)       severe              mild</span></span>
-<span><span class="co">## C101_negative   not.current DN (bx or presumed)           NA          NEGATIVE</span></span>
-<span><span class="co">## C103_negative   not.current       GN/Autoimmune           NA          NEGATIVE</span></span>
-<span><span class="co">## ...                     ...                 ...          ...               ...</span></span>
-<span><span class="co">## C93_positive_10 not.current             Unknown     moderate              mild</span></span>
-<span><span class="co">## C93_positive_13 not.current             Unknown     moderate          moderate</span></span>
-<span><span class="co">## C93_positive_15 not.current             Unknown     moderate              mild</span></span>
-<span><span class="co">## C99_positive_13 not.current DN (bx or presumed)     critical          critical</span></span>
-<span><span class="co">## C99_positive_16 not.current DN (bx or presumed)     critical            severe</span></span>
-<span><span class="co">##                 fatal_disease case_control radiology_evidence_covid</span></span>
-<span><span class="co">##                     &lt;logical&gt;  &lt;character&gt;              &lt;character&gt;</span></span>
-<span><span class="co">## C10_positive_18         FALSE     POSITIVE                      cxr</span></span>
-<span><span class="co">## C10_positive_21         FALSE     POSITIVE                      cxr</span></span>
-<span><span class="co">## C10_positive_30         FALSE     POSITIVE                      cxr</span></span>
-<span><span class="co">## C101_negative              NA     NEGATIVE                       NA</span></span>
-<span><span class="co">## C103_negative              NA     NEGATIVE                       NA</span></span>
-<span><span class="co">## ...                       ...          ...                      ...</span></span>
-<span><span class="co">## C93_positive_10         FALSE     POSITIVE                      cxr</span></span>
-<span><span class="co">## C93_positive_13         FALSE     POSITIVE                      cxr</span></span>
-<span><span class="co">## C93_positive_15         FALSE     POSITIVE                      cxr</span></span>
-<span><span class="co">## C99_positive_13         FALSE     POSITIVE                      cxr</span></span>
-<span><span class="co">## C99_positive_16         FALSE     POSITIVE                      cxr</span></span>
-<span><span class="co">##                 time_from_first_symptoms time_from_first_positive_swab</span></span>
-<span><span class="co">##                                &lt;integer&gt;                     &lt;integer&gt;</span></span>
-<span><span class="co">## C10_positive_18                       18                            18</span></span>
-<span><span class="co">## C10_positive_21                       21                            21</span></span>
-<span><span class="co">## C10_positive_30                       30                            30</span></span>
-<span><span class="co">## C101_negative                         NA                            NA</span></span>
-<span><span class="co">## C103_negative                         NA                            NA</span></span>
-<span><span class="co">## ...                                  ...                           ...</span></span>
-<span><span class="co">## C93_positive_10                       10                            10</span></span>
-<span><span class="co">## C93_positive_13                       13                            13</span></span>
-<span><span class="co">## C93_positive_15                       15                            15</span></span>
-<span><span class="co">## C99_positive_13                       13                             3</span></span>
-<span><span class="co">## C99_positive_16                       16                             6</span></span>
-<span><span class="co">##                 time_from_first_x</span></span>
-<span><span class="co">##                         &lt;integer&gt;</span></span>
-<span><span class="co">## C10_positive_18                18</span></span>
-<span><span class="co">## C10_positive_21                21</span></span>
-<span><span class="co">## C10_positive_30                30</span></span>
-<span><span class="co">## C101_negative                  NA</span></span>
-<span><span class="co">## C103_negative                  NA</span></span>
-<span><span class="co">## ...                           ...</span></span>
-<span><span class="co">## C93_positive_10                10</span></span>
-<span><span class="co">## C93_positive_13                13</span></span>
-<span><span class="co">## C93_positive_15                15</span></span>
-<span><span class="co">## C99_positive_13                13</span></span>
-<span><span class="co">## C99_positive_16                16</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">wave1_se</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample_id"</span>, <span class="st">"individual_id"</span>, <span class="st">"case_control"</span>, <span class="st">"sex"</span>, <span class="st">"calc_age"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## DataFrame with 83 rows and 5 columns</span></span>
+<span><span class="co">##                       sample_id individual_id case_control         sex</span></span>
+<span><span class="co">##                     &lt;character&gt;   &lt;character&gt;  &lt;character&gt; &lt;character&gt;</span></span>
+<span><span class="co">## C37_positive_9   C37_positive_9           C37     POSITIVE           F</span></span>
+<span><span class="co">## C48_positive_4   C48_positive_4           C48     POSITIVE           M</span></span>
+<span><span class="co">## C65_positive_15 C65_positive_15           C65     POSITIVE           M</span></span>
+<span><span class="co">## C99_positive_13 C99_positive_13           C99     POSITIVE           M</span></span>
+<span><span class="co">## C114_positive_9 C114_positive_9          C114     POSITIVE           M</span></span>
+<span><span class="co">## ...                         ...           ...          ...         ...</span></span>
+<span><span class="co">## C257_negative     C257_negative          C257     NEGATIVE           F</span></span>
+<span><span class="co">## C64_negative       C64_negative           C64     NEGATIVE           M</span></span>
+<span><span class="co">## C69_negative       C69_negative           C69     NEGATIVE           M</span></span>
+<span><span class="co">## C85_negative       C85_negative           C85     NEGATIVE           F</span></span>
+<span><span class="co">## C89_negative       C89_negative           C89     NEGATIVE           F</span></span>
+<span><span class="co">##                  calc_age</span></span>
+<span><span class="co">##                 &lt;integer&gt;</span></span>
+<span><span class="co">## C37_positive_9         82</span></span>
+<span><span class="co">## C48_positive_4         72</span></span>
+<span><span class="co">## C65_positive_15        73</span></span>
+<span><span class="co">## C99_positive_13        60</span></span>
+<span><span class="co">## C114_positive_9        68</span></span>
+<span><span class="co">## ...                   ...</span></span>
+<span><span class="co">## C257_negative          68</span></span>
+<span><span class="co">## C64_negative           61</span></span>
+<span><span class="co">## C69_negative           79</span></span>
+<span><span class="co">## C85_negative           74</span></span>
+<span><span class="co">## C89_negative           70</span></span></code></pre>
 <p>In this case, we will focus on the <code>case_control</code>
 variable, indicating whether patients are COVID-19 positive or negative.
 We also adjust for sex, age and ethnicity in these models. In this
@@ -470,128 +413,44 @@ repeated measurements from the same individuals, we use the “lmer”
 method (i.e., a linear mixed model) and include a random intercept for
 the individual in the model formula.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="st">"~ case_control + sex + calc_age + ethnicity + (1|individual_id)"</span></span>
+<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="st">"~ case_control + sex + calc_age"</span></span>
 <span></span>
-<span><span class="va">associations_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave1_me</span>, method <span class="op">=</span> <span class="st">"lmer"</span>, formula <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span>
-<span><span class="va">associations_fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave1_fe</span>, method <span class="op">=</span> <span class="st">"lmer"</span>, formula <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span></code></pre></div>
-<p>Below is a table for the associations of factors with our
-<code>case_control</code> variable, encoding COVID-19 infection
+<span><span class="va">associations_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave1_me</span>, method <span class="op">=</span> <span class="st">"lm"</span>, formula <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span>
+<span><span class="va">associations_fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave1_fe</span>, method <span class="op">=</span> <span class="st">"lm"</span>, formula <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span></code></pre></div>
+<p>Below is a table for the significant associations between the factors
+and the <code>case_control</code> variable, encoding COVID-19 infection
 status.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">associations_fe</span><span class="op">$</span><span class="va">summaries</span><span class="op">[</span></span>
-<span>    <span class="va">associations_fe</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">term</span> <span class="op">==</span> <span class="st">"case_controlPOSITIVE"</span>,</span>
+<span>    <span class="va">associations_fe</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">term</span> <span class="op">==</span> <span class="st">"case_controlPOSITIVE"</span> <span class="op">&amp;</span></span>
+<span>        <span class="va">associations_fe</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">adj_pvalue</span> <span class="op">&lt;</span> <span class="fl">0.05</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"term"</span>, <span class="st">"component"</span>, <span class="st">"estimate"</span>, <span class="st">"stderr"</span>, <span class="st">"adj_pvalue"</span><span class="op">)</span></span>
 <span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                    estimate     stderr       df      tvalue</span></span>
-<span><span class="co">## factor_1_case_controlPOSITIVE  -0.042393060 0.04949920 127.8282 -0.85643933</span></span>
-<span><span class="co">## factor_2_case_controlPOSITIVE  -0.774370726 0.15207409 138.5073 -5.09206219</span></span>
-<span><span class="co">## factor_3_case_controlPOSITIVE  -0.814056129 0.16243869 127.3423 -5.01146707</span></span>
-<span><span class="co">## factor_4_case_controlPOSITIVE  -0.607365247 0.16360257 143.2438 -3.71244314</span></span>
-<span><span class="co">## factor_5_case_controlPOSITIVE  -0.567242767 0.16334977 126.6254 -3.47256537</span></span>
-<span><span class="co">## factor_6_case_controlPOSITIVE   0.309182073 0.18223674 154.2572  1.69659575</span></span>
-<span><span class="co">## factor_7_case_controlPOSITIVE   0.619514592 0.16324013 122.0630  3.79511202</span></span>
-<span><span class="co">## factor_8_case_controlPOSITIVE   0.201939199 0.18571294 121.3870  1.08737280</span></span>
-<span><span class="co">## factor_9_case_controlPOSITIVE  -0.787295558 0.15718892 137.2877 -5.00859444</span></span>
-<span><span class="co">## factor_10_case_controlPOSITIVE  0.272871518 0.09620937 155.7362  2.83622611</span></span>
-<span><span class="co">## factor_11_case_controlPOSITIVE -0.045694512 0.13197709 158.9475 -0.34623064</span></span>
-<span><span class="co">## factor_12_case_controlPOSITIVE -0.070793238 0.12374285 156.8451 -0.57209963</span></span>
-<span><span class="co">## factor_13_case_controlPOSITIVE  0.101195122 0.14185130 159.7778  0.71338873</span></span>
-<span><span class="co">## factor_14_case_controlPOSITIVE -0.126540414 0.11963616 169.3937 -1.05771047</span></span>
-<span><span class="co">## factor_15_case_controlPOSITIVE -0.014309853 0.13321058 168.2545 -0.10742280</span></span>
-<span><span class="co">## factor_16_case_controlPOSITIVE -0.148731289 0.14181278 156.2399 -1.04878622</span></span>
-<span><span class="co">## factor_17_case_controlPOSITIVE  0.110184930 0.13847784 180.1712  0.79568635</span></span>
-<span><span class="co">## factor_18_case_controlPOSITIVE -0.434167386 0.12849602 160.3830 -3.37883919</span></span>
-<span><span class="co">## factor_19_case_controlPOSITIVE  0.499023773 0.15459735 136.1691  3.22789349</span></span>
-<span><span class="co">## factor_20_case_controlPOSITIVE  0.368350683 0.17127238 134.3173  2.15067183</span></span>
-<span><span class="co">## factor_21_case_controlPOSITIVE -0.166665224 0.12599112 151.6568 -1.32283310</span></span>
-<span><span class="co">## factor_22_case_controlPOSITIVE  0.331924930 0.12135330 163.3108  2.73519491</span></span>
-<span><span class="co">## factor_23_case_controlPOSITIVE -0.277217602 0.13216912 160.8696 -2.09744607</span></span>
-<span><span class="co">## factor_24_case_controlPOSITIVE -0.390168301 0.14672122 143.9638 -2.65924927</span></span>
-<span><span class="co">## factor_25_case_controlPOSITIVE -0.103595672 0.14107282 152.8349 -0.73434181</span></span>
-<span><span class="co">## factor_26_case_controlPOSITIVE -0.227413693 0.14955832 146.0425 -1.52056865</span></span>
-<span><span class="co">## factor_27_case_controlPOSITIVE -0.054739644 0.12596397 175.8937 -0.43456589</span></span>
-<span><span class="co">## factor_28_case_controlPOSITIVE -0.496492367 0.14903960 133.5951 -3.33127829</span></span>
-<span><span class="co">## factor_29_case_controlPOSITIVE  0.006104271 0.14007510 154.1932  0.04357856</span></span>
-<span><span class="co">## factor_30_case_controlPOSITIVE  0.293427784 0.15472369 130.0355  1.89646320</span></span>
-<span><span class="co">## factor_31_case_controlPOSITIVE -0.430928320 0.14513619 134.7727 -2.96913069</span></span>
-<span><span class="co">## factor_32_case_controlPOSITIVE  0.160097916 0.13791956 138.1964  1.16080643</span></span>
-<span><span class="co">## factor_33_case_controlPOSITIVE -0.117262276 0.12665094 155.2244 -0.92586975</span></span>
-<span><span class="co">## factor_34_case_controlPOSITIVE  0.556291492 0.14037994 144.1638  3.96275635</span></span>
-<span><span class="co">##                                      pvalue                 term component</span></span>
-<span><span class="co">## factor_1_case_controlPOSITIVE  3.933575e-01 case_controlPOSITIVE  factor_1</span></span>
-<span><span class="co">## factor_2_case_controlPOSITIVE  1.135491e-06 case_controlPOSITIVE  factor_2</span></span>
-<span><span class="co">## factor_3_case_controlPOSITIVE  1.766397e-06 case_controlPOSITIVE  factor_3</span></span>
-<span><span class="co">## factor_4_case_controlPOSITIVE  2.931938e-04 case_controlPOSITIVE  factor_4</span></span>
-<span><span class="co">## factor_5_case_controlPOSITIVE  7.059514e-04 case_controlPOSITIVE  factor_5</span></span>
-<span><span class="co">## factor_6_case_controlPOSITIVE  9.179008e-02 case_controlPOSITIVE  factor_6</span></span>
-<span><span class="co">## factor_7_case_controlPOSITIVE  2.311261e-04 case_controlPOSITIVE  factor_7</span></span>
-<span><span class="co">## factor_8_case_controlPOSITIVE  2.790265e-01 case_controlPOSITIVE  factor_8</span></span>
-<span><span class="co">## factor_9_case_controlPOSITIVE  1.656407e-06 case_controlPOSITIVE  factor_9</span></span>
-<span><span class="co">## factor_10_case_controlPOSITIVE 5.172040e-03 case_controlPOSITIVE factor_10</span></span>
-<span><span class="co">## factor_11_case_controlPOSITIVE 7.296273e-01 case_controlPOSITIVE factor_11</span></span>
-<span><span class="co">## factor_12_case_controlPOSITIVE 5.680735e-01 case_controlPOSITIVE factor_12</span></span>
-<span><span class="co">## factor_13_case_controlPOSITIVE 4.766459e-01 case_controlPOSITIVE factor_13</span></span>
-<span><span class="co">## factor_14_case_controlPOSITIVE 2.916935e-01 case_controlPOSITIVE factor_14</span></span>
-<span><span class="co">## factor_15_case_controlPOSITIVE 9.145816e-01 case_controlPOSITIVE factor_15</span></span>
-<span><span class="co">## factor_16_case_controlPOSITIVE 2.958962e-01 case_controlPOSITIVE factor_16</span></span>
-<span><span class="co">## factor_17_case_controlPOSITIVE 4.272614e-01 case_controlPOSITIVE factor_17</span></span>
-<span><span class="co">## factor_18_case_controlPOSITIVE 9.138764e-04 case_controlPOSITIVE factor_18</span></span>
-<span><span class="co">## factor_19_case_controlPOSITIVE 1.562573e-03 case_controlPOSITIVE factor_19</span></span>
-<span><span class="co">## factor_20_case_controlPOSITIVE 3.329234e-02 case_controlPOSITIVE factor_20</span></span>
-<span><span class="co">## factor_21_case_controlPOSITIVE 1.878821e-01 case_controlPOSITIVE factor_21</span></span>
-<span><span class="co">## factor_22_case_controlPOSITIVE 6.923482e-03 case_controlPOSITIVE factor_22</span></span>
-<span><span class="co">## factor_23_case_controlPOSITIVE 3.751753e-02 case_controlPOSITIVE factor_23</span></span>
-<span><span class="co">## factor_24_case_controlPOSITIVE 8.718640e-03 case_controlPOSITIVE factor_24</span></span>
-<span><span class="co">## factor_25_case_controlPOSITIVE 4.638656e-01 case_controlPOSITIVE factor_25</span></span>
-<span><span class="co">## factor_26_case_controlPOSITIVE 1.305302e-01 case_controlPOSITIVE factor_26</span></span>
-<span><span class="co">## factor_27_case_controlPOSITIVE 6.644102e-01 case_controlPOSITIVE factor_27</span></span>
-<span><span class="co">## factor_28_case_controlPOSITIVE 1.118122e-03 case_controlPOSITIVE factor_28</span></span>
-<span><span class="co">## factor_29_case_controlPOSITIVE 9.652967e-01 case_controlPOSITIVE factor_29</span></span>
-<span><span class="co">## factor_30_case_controlPOSITIVE 6.011716e-02 case_controlPOSITIVE factor_30</span></span>
-<span><span class="co">## factor_31_case_controlPOSITIVE 3.535996e-03 case_controlPOSITIVE factor_31</span></span>
-<span><span class="co">## factor_32_case_controlPOSITIVE 2.477219e-01 case_controlPOSITIVE factor_32</span></span>
-<span><span class="co">## factor_33_case_controlPOSITIVE 3.559509e-01 case_controlPOSITIVE factor_33</span></span>
-<span><span class="co">## factor_34_case_controlPOSITIVE 1.161340e-04 case_controlPOSITIVE factor_34</span></span>
-<span><span class="co">##                                  adj_pvalue</span></span>
-<span><span class="co">## factor_1_case_controlPOSITIVE  5.143905e-01</span></span>
-<span><span class="co">## factor_2_case_controlPOSITIVE  2.001917e-05</span></span>
-<span><span class="co">## factor_3_case_controlPOSITIVE  2.001917e-05</span></span>
-<span><span class="co">## factor_4_case_controlPOSITIVE  1.661432e-03</span></span>
-<span><span class="co">## factor_5_case_controlPOSITIVE  3.428907e-03</span></span>
-<span><span class="co">## factor_6_case_controlPOSITIVE  1.733813e-01</span></span>
-<span><span class="co">## factor_7_case_controlPOSITIVE  1.571658e-03</span></span>
-<span><span class="co">## factor_8_case_controlPOSITIVE  4.191862e-01</span></span>
-<span><span class="co">## factor_9_case_controlPOSITIVE  2.001917e-05</span></span>
-<span><span class="co">## factor_10_case_controlPOSITIVE 1.465411e-02</span></span>
-<span><span class="co">## factor_11_case_controlPOSITIVE 7.752290e-01</span></span>
-<span><span class="co">## factor_12_case_controlPOSITIVE 6.438167e-01</span></span>
-<span><span class="co">## factor_13_case_controlPOSITIVE 5.588263e-01</span></span>
-<span><span class="co">## factor_14_case_controlPOSITIVE 4.191862e-01</span></span>
-<span><span class="co">## factor_15_case_controlPOSITIVE 9.422961e-01</span></span>
-<span><span class="co">## factor_16_case_controlPOSITIVE 4.191862e-01</span></span>
-<span><span class="co">## factor_17_case_controlPOSITIVE 5.380329e-01</span></span>
-<span><span class="co">## factor_18_case_controlPOSITIVE 3.883975e-03</span></span>
-<span><span class="co">## factor_19_case_controlPOSITIVE 5.312747e-03</span></span>
-<span><span class="co">## factor_20_case_controlPOSITIVE 7.546265e-02</span></span>
-<span><span class="co">## factor_21_case_controlPOSITIVE 3.193995e-01</span></span>
-<span><span class="co">## factor_22_case_controlPOSITIVE 1.810757e-02</span></span>
-<span><span class="co">## factor_23_case_controlPOSITIVE 7.972475e-02</span></span>
-<span><span class="co">## factor_24_case_controlPOSITIVE 2.117384e-02</span></span>
-<span><span class="co">## factor_25_case_controlPOSITIVE 5.588263e-01</span></span>
-<span><span class="co">## factor_26_case_controlPOSITIVE 2.335804e-01</span></span>
-<span><span class="co">## factor_27_case_controlPOSITIVE 7.287080e-01</span></span>
-<span><span class="co">## factor_28_case_controlPOSITIVE 4.224017e-03</span></span>
-<span><span class="co">## factor_29_case_controlPOSITIVE 9.652967e-01</span></span>
-<span><span class="co">## factor_30_case_controlPOSITIVE 1.202343e-01</span></span>
-<span><span class="co">## factor_31_case_controlPOSITIVE 1.092944e-02</span></span>
-<span><span class="co">## factor_32_case_controlPOSITIVE 4.010735e-01</span></span>
-<span><span class="co">## factor_33_case_controlPOSITIVE 4.840932e-01</span></span>
-<span><span class="co">## factor_34_case_controlPOSITIVE 9.871388e-04</span></span></code></pre>
+<pre><code><span><span class="co">##                                                term component   estimate</span></span>
+<span><span class="co">## factor_5_case_controlPOSITIVE  case_controlPOSITIVE  factor_5  1.0293647</span></span>
+<span><span class="co">## factor_7_case_controlPOSITIVE  case_controlPOSITIVE  factor_7 -0.5612027</span></span>
+<span><span class="co">## factor_8_case_controlPOSITIVE  case_controlPOSITIVE  factor_8 -0.7726678</span></span>
+<span><span class="co">## factor_9_case_controlPOSITIVE  case_controlPOSITIVE  factor_9  0.8705476</span></span>
+<span><span class="co">## factor_15_case_controlPOSITIVE case_controlPOSITIVE factor_15 -0.5601174</span></span>
+<span><span class="co">## factor_21_case_controlPOSITIVE case_controlPOSITIVE factor_21 -0.5792382</span></span>
+<span><span class="co">## factor_23_case_controlPOSITIVE case_controlPOSITIVE factor_23  1.3016112</span></span>
+<span><span class="co">## factor_24_case_controlPOSITIVE case_controlPOSITIVE factor_24 -0.5570154</span></span>
+<span><span class="co">## factor_28_case_controlPOSITIVE case_controlPOSITIVE factor_28 -0.6590222</span></span>
+<span><span class="co">##                                   stderr   adj_pvalue</span></span>
+<span><span class="co">## factor_5_case_controlPOSITIVE  0.1924201 1.422063e-05</span></span>
+<span><span class="co">## factor_7_case_controlPOSITIVE  0.2150907 4.445964e-02</span></span>
+<span><span class="co">## factor_8_case_controlPOSITIVE  0.2065510 2.940897e-03</span></span>
+<span><span class="co">## factor_9_case_controlPOSITIVE  0.2009812 4.885357e-04</span></span>
+<span><span class="co">## factor_15_case_controlPOSITIVE 0.2157825 4.445964e-02</span></span>
+<span><span class="co">## factor_21_case_controlPOSITIVE 0.2161301 4.445964e-02</span></span>
+<span><span class="co">## factor_23_case_controlPOSITIVE 0.1696121 1.275411e-09</span></span>
+<span><span class="co">## factor_24_case_controlPOSITIVE 0.2159924 4.445964e-02</span></span>
+<span><span class="co">## factor_28_case_controlPOSITIVE 0.2130407 1.860012e-02</span></span></code></pre>
 <p>We can plot out these results. In the plot below, factors that are
 “upregulated” in COVID-19 patients are shown in red, whereas
 “downregulated” factors are in blue. The vertical line indicates
-significance (i.e., adjusted p-values less than 0.05).</p>
-<p>We can see a number of factors that are significantly downregulated
-in COVID-19 patients. Factor 7, on the other hand, is up-regulated in
+significance (i.e., adjusted p-values less than 0.05). There are a
+number of factors that are significantly up- or down-regulated in
 COVID-19.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
@@ -610,7 +469,8 @@ COVID-19.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/plot_factor_associations-1.png" width="700"></p>
 <p>A similar plot for our modules shows significant upregulation of
-modules 1, 8, 2 and 9, along with down-regulation of 3 modules.</p>
+modules 1, 2, 7 and 8, along with down-regulation of modules 3 and
+5.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>    <span class="va">associations_me</span><span class="op">$</span><span class="va">summaries</span><span class="op">[</span></span>
@@ -640,21 +500,14 @@ also identify the genes that are highly aligned with each factor, as
 follows:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aligned_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getAlignedFeatures.html">getAlignedFeatures</a></span><span class="op">(</span><span class="va">wave1_fe</span>, format <span class="op">=</span> <span class="st">"data.frame"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aligned_features</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                 component         feature      value loadings_centered</span></span>
-<span><span class="co">## ENSG00000229807  factor_1 ENSG00000229807  17.044760             FALSE</span></span>
-<span><span class="co">## ENSG00000215580  factor_1 ENSG00000215580 -14.080152             FALSE</span></span>
-<span><span class="co">## ENSG00000270641  factor_1 ENSG00000270641  13.459039             FALSE</span></span>
-<span><span class="co">## ENSG00000165246  factor_1 ENSG00000165246 -11.061738             FALSE</span></span>
-<span><span class="co">## ENSG00000288049  factor_1 ENSG00000288049  -9.266439             FALSE</span></span>
-<span><span class="co">## ENSG00000226918  factor_1 ENSG00000226918  -8.580916             FALSE</span></span>
-<span><span class="co">##                 loading_threshold proportional_threshold</span></span>
-<span><span class="co">## ENSG00000229807               0.5                   0.01</span></span>
-<span><span class="co">## ENSG00000215580               0.5                   0.01</span></span>
-<span><span class="co">## ENSG00000270641               0.5                   0.01</span></span>
-<span><span class="co">## ENSG00000165246               0.5                   0.01</span></span>
-<span><span class="co">## ENSG00000288049               0.5                   0.01</span></span>
-<span><span class="co">## ENSG00000226918               0.5                   0.01</span></span></code></pre>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aligned_features</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"component"</span>, <span class="st">"feature"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##                 component         feature     value</span></span>
+<span><span class="co">## ENSG00000165246  factor_1 ENSG00000165246 11.402347</span></span>
+<span><span class="co">## ENSG00000288049  factor_1 ENSG00000288049  8.807747</span></span>
+<span><span class="co">## ENSG00000276747 factor_10 ENSG00000276747  6.661316</span></span>
+<span><span class="co">## ENSG00000278558 factor_10 ENSG00000278558 -4.054259</span></span>
+<span><span class="co">## ENSG00000267320 factor_11 ENSG00000267320  8.516985</span></span>
+<span><span class="co">## ENSG00000011201 factor_11 ENSG00000011201  4.552404</span></span></code></pre>
 <p>This shows the value of the loadings for the genes most highly
 associated with each factor. Some factors display moderate associations
 with many genes, whereas others show strong associations with just a few
@@ -665,16 +518,17 @@ clusterProfiler package. By default, we run gene set enrichment analysis
 for the factors, whereas we use a simple overrepresentation analysis for
 the modules.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">factor_enrich</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enrichment.html">runEnrich</a></span><span class="op">(</span><span class="va">wave1_fe</span>, as_dataframe <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># We run GSEA for module 5 only as an example</span></span>
+<span><span class="va">factor_enrich</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enrichment.html">runEnrich</a></span><span class="op">(</span><span class="va">wave1_fe</span><span class="op">[</span>, , <span class="fl">5</span><span class="op">]</span>, as_dataframe <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># We run overrepresentation analysis for all the modules</span></span>
 <span><span class="va">module_enrich</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enrichment.html">runEnrich</a></span><span class="op">(</span><span class="va">wave1_me</span>, as_dataframe <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>We can again plot summaries of these results. For instance, we see
-that factor 2, that was downregulated in COVID-19 patients, and is
-enriched for pathways related to IL4, -13 and -18 signaling and platelet
-activation..</p>
+that factor 5 is enriched for the pathway
+“WP_NETWORK_MAP_OF_SARSCOV2_SIGNALING_PATHWAY”.</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
-<span>    <span class="va">factor_enrich</span><span class="op">[</span><span class="va">factor_enrich</span><span class="op">$</span><span class="va">component</span> <span class="op">==</span> <span class="st">"factor_2"</span> <span class="op">&amp;</span></span>
-<span>        <span class="va">factor_enrich</span><span class="op">$</span><span class="va">p.adjust</span> <span class="op">&lt;</span> <span class="fl">0.05</span>, <span class="op">]</span>,</span>
+<span>    <span class="va">factor_enrich</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="op">]</span>,</span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
 <span>        <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">ID</span>, <span class="fl">1</span>, <span class="fl">45</span><span class="op">)</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -685,21 +539,21 @@ activation..</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Pathway name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expand_limits.html" class="external-link">expand_limits</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/example_factor_enrichment-1.png" width="700"></p>
 <p>Module 1 was upregulated in COVID-19 patients, and we see that it is
-enriched for pathways related to histone-encoding genes (as was noted in
-the original publication) in addition to cytokine pathways and terms
-related to cell replication.</p>
+primarily enriched for pathways related to complement.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
-<span>    <span class="va">module_enrich</span><span class="op">[</span><span class="va">module_enrich</span><span class="op">$</span><span class="va">component</span> <span class="op">==</span> <span class="st">"module_2"</span> <span class="op">&amp;</span></span>
-<span>        <span class="va">module_enrich</span><span class="op">$</span><span class="va">p.adjust</span> <span class="op">&lt;</span> <span class="fl">0.05</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">15</span>, <span class="op">]</span>,</span>
+<span>    <span class="va">module_enrich</span><span class="op">[</span><span class="va">module_enrich</span><span class="op">$</span><span class="va">component</span> <span class="op">==</span> <span class="st">"module_1"</span> <span class="op">&amp;</span> <span class="va">module_enrich</span><span class="op">$</span><span class="va">p.adjust</span> <span class="op">&lt;</span> <span class="fl">0.05</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">15</span>, <span class="op">]</span>,</span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">ID</span>, <span class="fl">1</span>, <span class="fl">45</span><span class="op">)</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">p.adjust</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Pathway name (ordered by p-value)"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Pathway name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expand_limits.html" class="external-link">expand_limits</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/example_module_enrichment-1.png" width="700"></p>
 </div>
 <div class="section level2">
@@ -733,47 +587,51 @@ datasets were processed and normalised in the same way.</p>
 <span></span>
 <span><span class="va">wave2_me</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: ModularExperiment </span></span>
-<span><span class="co">## dim: 2184 119 6 </span></span>
+<span><span class="co">## dim: 500 65 9 </span></span>
 <span><span class="co">## metadata(0):</span></span>
-<span><span class="co">## assays(2): cpm normal</span></span>
-<span><span class="co">## rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
-<span><span class="co">##   ENSG00000288700</span></span>
-<span><span class="co">## rowData names(3): gencode_id ensembl_id gene_id</span></span>
-<span><span class="co">## colnames(119): C101_positive_4 C101_positive_6 ... C58_positive_5</span></span>
-<span><span class="co">##   C58_positive_9</span></span>
-<span><span class="co">## colData names(19): sample_id individual_id ...</span></span>
-<span><span class="co">##   time_from_first_positive_swab time_from_first_x</span></span>
-<span><span class="co">## 6 components</span></span></code></pre>
+<span><span class="co">## assays(1): normal</span></span>
+<span><span class="co">## rownames(500): ENSG00000004799 ENSG00000007038 ... ENSG00000287935</span></span>
+<span><span class="co">##   ENSG00000288049</span></span>
+<span><span class="co">## rowData names(2): ensembl_id gene_id</span></span>
+<span><span class="co">## colnames(65): C147_positive_11 C33_positive_11 ... C33_negative</span></span>
+<span><span class="co">##   C58_negative</span></span>
+<span><span class="co">## colData names(8): sample_id individual_id ... case_control</span></span>
+<span><span class="co">##   time_from_first_x</span></span>
+<span><span class="co">## 9 components</span></span></code></pre>
 <p>The new ModularExperiment created by projecting the wave 2 data
 (above) has the same genes (2184) and modules (10) as the original
 ModularExperiment (below), but with different samples (119 vs. 234).</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wave1_me</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: ModularExperiment </span></span>
-<span><span class="co">## dim: 2184 234 6 </span></span>
+<span><span class="co">## dim: 500 83 9 </span></span>
 <span><span class="co">## metadata(0):</span></span>
-<span><span class="co">## assays(3): cpm normal transformed</span></span>
-<span><span class="co">## rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
-<span><span class="co">##   ENSG00000288700</span></span>
-<span><span class="co">## rowData names(3): gencode_id ensembl_id gene_id</span></span>
-<span><span class="co">## colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13</span></span>
-<span><span class="co">##   C99_positive_16</span></span>
-<span><span class="co">## colData names(19): sample_id individual_id ...</span></span>
-<span><span class="co">##   time_from_first_positive_swab time_from_first_x</span></span>
-<span><span class="co">## 6 components</span></span></code></pre>
+<span><span class="co">## assays(2): normal transformed</span></span>
+<span><span class="co">## rownames(500): ENSG00000004799 ENSG00000007038 ... ENSG00000287935</span></span>
+<span><span class="co">##   ENSG00000288049</span></span>
+<span><span class="co">## rowData names(2): ensembl_id gene_id</span></span>
+<span><span class="co">## colnames(83): C37_positive_9 C48_positive_4 ... C85_negative</span></span>
+<span><span class="co">##   C89_negative</span></span>
+<span><span class="co">## colData names(8): sample_id individual_id ... case_control</span></span>
+<span><span class="co">##   time_from_first_x</span></span>
+<span><span class="co">## 9 components</span></span></code></pre>
 <p>While we will avoid directly comparing the dimensionally-reduced data
 from the two cohorts, we can calculate associations between the factors
-and modules and COVID-19 status, as we did in the original cohort.</p>
+and modules and COVID-19 status, as we did in the original cohort. In
+this dataset there are multiple samples for each patient, so we use a
+linear mixed model (<code>method = "lmer"</code>) rather than a standard
+linear model (<code>method = "lm"</code>). We also add a random
+intercept for the patient ID in the model formula.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">replication_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave2_me</span>, method <span class="op">=</span> <span class="st">"lmer"</span>, formula <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span>
-<span><span class="va">replication_fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave2_fe</span>, method <span class="op">=</span> <span class="st">"lmer"</span>, formula <span class="op">=</span> <span class="va">f</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">replication_me</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave2_me</span>, method <span class="op">=</span> <span class="st">"lmer"</span>, formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">" + (1|individual_id)"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">replication_fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/associate_components.html">associate_components</a></span><span class="op">(</span><span class="va">wave2_fe</span>, method <span class="op">=</span> <span class="st">"lmer"</span>, formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">" + (1|individual_id)"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>While there are differences in the most significantly associated
 modules between the wave 1 and 2 cohorts, the results are broadly
 similar. Modules 1, 8, 2 and 9 remain positively associated with
 COVID-19 status, whereas modules 0, 5 and 4 remain negatively
 associated.</p>
-<p>It’s worth noting, however, that module 0 is not truly a module in
-itself, but rather represents all of the unclustered genes.</p>
+<p>upregulation of modules 1, 2, 7 and 8 remain positively associated
+with COVID-19 status, and modules 3 and 5 are still downregulated.</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>    <span class="va">replication_me</span><span class="op">$</span><span class="va">summaries</span><span class="op">[</span></span>
@@ -789,13 +647,14 @@ itself, but rather represents all of the unclustered genes.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"-log10(p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Module name (ordered by p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expand_limits.html" class="external-link">expand_limits</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ReducedExperiment_files/figure-html/plotting_replicated_associations-1.png" width="700"></p>
 <p>And, as we see in the following chunk, the estimated associations
 between the modules and COVID-19 status (positive vs. negative) have a
 strong positive correlation.</p>
 <p>Differences in the estimated associations between modules and
-COVID-19 status can be explained by differences in the cohorts. For
+COVID-19 status may be explained by differences in the cohorts. For
 instance, different SARS-CoV-2 variants were in prevalent at the time
 the cohorts were sampled, and there were more treatments available for
 the 2021 (wave 2) cohort.</p>
@@ -812,13 +671,13 @@ the 2021 (wave 2) cohort.</p>
 <span><span class="co">##  Pearson's product-moment correlation</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## data:  original_estimates and replication_estimates</span></span>
-<span><span class="co">## t = 3.6047, df = 4, p-value = 0.02266</span></span>
+<span><span class="co">## t = 4.6261, df = 7, p-value = 0.002409</span></span>
 <span><span class="co">## alternative hypothesis: true correlation is not equal to 0</span></span>
 <span><span class="co">## 95 percent confidence interval:</span></span>
-<span><span class="co">##  0.2165109 0.9861591</span></span>
+<span><span class="co">##  0.4815534 0.9718899</span></span>
 <span><span class="co">## sample estimates:</span></span>
 <span><span class="co">##       cor </span></span>
-<span><span class="co">## 0.8744253</span></span></code></pre>
+<span><span class="co">## 0.8680606</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="vignette-references">Vignette references<a class="anchor" aria-label="anchor" href="#vignette-references"></a>
@@ -915,8 +774,8 @@ document was compiled:</p>
 <span><span class="co">##  [10] fastcluster_1.2.6       doParallel_1.0.17       lattice_0.22-6         </span></span>
 <span><span class="co">##  [13] MASS_7.3-61             backports_1.5.0         magrittr_2.0.3         </span></span>
 <span><span class="co">##  [16] Hmisc_5.1-3             sass_0.4.9              rmarkdown_2.27         </span></span>
-<span><span class="co">##  [19] jquerylib_0.1.4         yaml_2.3.10             cowplot_1.1.3          </span></span>
-<span><span class="co">##  [22] DBI_1.2.3               minqa_1.2.7             RColorBrewer_1.1-3     </span></span>
+<span><span class="co">##  [19] jquerylib_0.1.4         yaml_2.3.10             RColorBrewer_1.1-3     </span></span>
+<span><span class="co">##  [22] cowplot_1.1.3           DBI_1.2.3               minqa_1.2.7            </span></span>
 <span><span class="co">##  [25] abind_1.4-5             zlibbioc_1.50.0         purrr_1.0.2            </span></span>
 <span><span class="co">##  [28] ggraph_2.2.1            msigdbr_7.5.1           yulab.utils_0.1.5      </span></span>
 <span><span class="co">##  [31] nnet_7.3-19             tweenr_2.0.3            rappdirs_0.3.3         </span></span>
@@ -943,26 +802,27 @@ document was compiled:</p>
 <span><span class="co">##  [94] htmlwidgets_1.6.4       S4Arrays_1.4.1          scatterpie_0.2.3       </span></span>
 <span><span class="co">##  [97] pkgconfig_2.0.3         gtable_0.3.5            blob_1.2.4             </span></span>
 <span><span class="co">## [100] impute_1.78.0           XVector_0.44.0          shadowtext_0.1.4       </span></span>
-<span><span class="co">## [103] clusterProfiler_4.12.2  htmltools_0.5.8.1       bookdown_0.40          </span></span>
-<span><span class="co">## [106] fgsea_1.30.0            scales_1.3.0            png_0.1-8              </span></span>
-<span><span class="co">## [109] ggfun_0.1.5             knitr_1.48              rstudioapi_0.16.0      </span></span>
-<span><span class="co">## [112] reshape2_1.4.4          checkmate_2.3.2         nlme_3.1-165           </span></span>
-<span><span class="co">## [115] curl_5.2.1              nloptr_2.1.1            cachem_1.1.0           </span></span>
-<span><span class="co">## [118] stringr_1.5.1           parallel_4.4.1          HDO.db_0.99.1          </span></span>
-<span><span class="co">## [121] foreign_0.8-87          AnnotationDbi_1.66.0    desc_1.4.3             </span></span>
-<span><span class="co">## [124] pillar_1.9.0            grid_4.4.1              vctrs_0.6.5            </span></span>
-<span><span class="co">## [127] dbplyr_2.5.0            cluster_2.1.6           htmlTable_2.4.3        </span></span>
-<span><span class="co">## [130] evaluate_0.24.0         cli_3.6.3               compiler_4.4.1         </span></span>
-<span><span class="co">## [133] rlang_1.1.4             crayon_1.5.3            labeling_0.4.3         </span></span>
-<span><span class="co">## [136] plyr_1.8.9              fs_1.6.4                stringi_1.8.4          </span></span>
-<span><span class="co">## [139] viridisLite_0.4.2       WGCNA_1.72-5            BiocParallel_1.38.0    </span></span>
-<span><span class="co">## [142] babelgene_22.9          lmerTest_3.1-3          munsell_0.5.1          </span></span>
-<span><span class="co">## [145] Biostrings_2.72.1       lazyeval_0.2.2          GOSemSim_2.30.0        </span></span>
-<span><span class="co">## [148] Matrix_1.7-0            hms_1.1.3               patchwork_1.2.0        </span></span>
-<span><span class="co">## [151] bit64_4.0.5             KEGGREST_1.44.1         highr_0.11             </span></span>
-<span><span class="co">## [154] igraph_2.0.3            memoise_2.0.1           bslib_0.8.0            </span></span>
-<span><span class="co">## [157] ggtree_3.12.0           fastmatch_1.1-4         bit_4.0.5              </span></span>
-<span><span class="co">## [160] gson_0.1.0              ape_5.8</span></span></code></pre>
+<span><span class="co">## [103] clusterProfiler_4.12.2  htmltools_0.5.8.1       carData_3.0-5          </span></span>
+<span><span class="co">## [106] bookdown_0.40           fgsea_1.30.0            scales_1.3.0           </span></span>
+<span><span class="co">## [109] png_0.1-8               ggfun_0.1.5             knitr_1.48             </span></span>
+<span><span class="co">## [112] rstudioapi_0.16.0       reshape2_1.4.4          checkmate_2.3.2        </span></span>
+<span><span class="co">## [115] nlme_3.1-165            curl_5.2.1              nloptr_2.1.1           </span></span>
+<span><span class="co">## [118] cachem_1.1.0            stringr_1.5.1           parallel_4.4.1         </span></span>
+<span><span class="co">## [121] HDO.db_0.99.1           foreign_0.8-87          AnnotationDbi_1.66.0   </span></span>
+<span><span class="co">## [124] desc_1.4.3              pillar_1.9.0            grid_4.4.1             </span></span>
+<span><span class="co">## [127] vctrs_0.6.5             car_3.1-2               dbplyr_2.5.0           </span></span>
+<span><span class="co">## [130] cluster_2.1.6           htmlTable_2.4.3         evaluate_0.24.0        </span></span>
+<span><span class="co">## [133] cli_3.6.3               compiler_4.4.1          rlang_1.1.4            </span></span>
+<span><span class="co">## [136] crayon_1.5.3            labeling_0.4.3          plyr_1.8.9             </span></span>
+<span><span class="co">## [139] fs_1.6.4                stringi_1.8.4           viridisLite_0.4.2      </span></span>
+<span><span class="co">## [142] WGCNA_1.72-5            BiocParallel_1.38.0     babelgene_22.9         </span></span>
+<span><span class="co">## [145] lmerTest_3.1-3          munsell_0.5.1           Biostrings_2.72.1      </span></span>
+<span><span class="co">## [148] lazyeval_0.2.2          GOSemSim_2.30.0         Matrix_1.7-0           </span></span>
+<span><span class="co">## [151] hms_1.1.3               patchwork_1.2.0         bit64_4.0.5            </span></span>
+<span><span class="co">## [154] KEGGREST_1.44.1         highr_0.11              igraph_2.0.3           </span></span>
+<span><span class="co">## [157] memoise_2.0.1           bslib_0.8.0             ggtree_3.12.0          </span></span>
+<span><span class="co">## [160] fastmatch_1.1-4         bit_4.0.5               gson_0.1.0             </span></span>
+<span><span class="co">## [163] ape_5.8</span></span></code></pre>
 </div>
   </div>
 
@@ -976,7 +836,7 @@ document was compiled:</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Jack Gisby, Mike Barnes.</p>
+<p>Developed by Jack Gisby, Michael Barnes.</p>
 </div>
 
 <div class="pkgdown">

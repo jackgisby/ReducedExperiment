@@ -101,18 +101,22 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">"SummarizedExperiment"</a></span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"wave1.rds"</span>,</span>
+<span>    package <span class="op">=</span> <span class="st">"ReducedExperiment"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">se</span></span>
 <span><span class="co">#&gt; class: SummarizedExperiment </span></span>
-<span><span class="co">#&gt; dim: 2184 234 </span></span>
+<span><span class="co">#&gt; dim: 500 83 </span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
 <span><span class="co">#&gt; assays(1): normal</span></span>
-<span><span class="co">#&gt; rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
-<span><span class="co">#&gt;   ENSG00000288700</span></span>
-<span><span class="co">#&gt; rowData names(3): gencode_id ensembl_id gene_id</span></span>
-<span><span class="co">#&gt; colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13</span></span>
-<span><span class="co">#&gt;   C99_positive_16</span></span>
-<span><span class="co">#&gt; colData names(19): sample_id individual_id ...</span></span>
-<span><span class="co">#&gt;   time_from_first_positive_swab time_from_first_x</span></span></code></pre></div>
+<span><span class="co">#&gt; rownames(500): ENSG00000004799 ENSG00000007038 ... ENSG00000287935</span></span>
+<span><span class="co">#&gt;   ENSG00000288049</span></span>
+<span><span class="co">#&gt; rowData names(2): ensembl_id gene_id</span></span>
+<span><span class="co">#&gt; colnames(83): C37_positive_9 C48_positive_4 ... C85_negative</span></span>
+<span><span class="co">#&gt;   C89_negative</span></span>
+<span><span class="co">#&gt; colData names(8): sample_id individual_id ... case_control</span></span>
+<span><span class="co">#&gt;   time_from_first_x</span></span></code></pre></div>
 <p>The <code>SummarizedExperiment</code> has two dimensions, representing the features (2,184) and samples (234).</p>
 <p>We can perform a factor analysis on these data, the result of which is a set of reduced components and feature loadings.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -122,16 +126,16 @@
 <span></span>
 <span><span class="va">fe</span></span>
 <span><span class="co">#&gt; class: FactorisedExperiment </span></span>
-<span><span class="co">#&gt; dim: 2184 234 35 </span></span>
+<span><span class="co">#&gt; dim: 500 83 35 </span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
 <span><span class="co">#&gt; assays(2): normal transformed</span></span>
-<span><span class="co">#&gt; rownames(2184): ENSG00000002587 ENSG00000002726 ... ENSG00000288600</span></span>
-<span><span class="co">#&gt;   ENSG00000288700</span></span>
-<span><span class="co">#&gt; rowData names(3): gencode_id ensembl_id gene_id</span></span>
-<span><span class="co">#&gt; colnames(234): C10_positive_18 C10_positive_21 ... C99_positive_13</span></span>
-<span><span class="co">#&gt;   C99_positive_16</span></span>
-<span><span class="co">#&gt; colData names(19): sample_id individual_id ...</span></span>
-<span><span class="co">#&gt;   time_from_first_positive_swab time_from_first_x</span></span>
+<span><span class="co">#&gt; rownames(500): ENSG00000004799 ENSG00000007038 ... ENSG00000287935</span></span>
+<span><span class="co">#&gt;   ENSG00000288049</span></span>
+<span><span class="co">#&gt; rowData names(2): ensembl_id gene_id</span></span>
+<span><span class="co">#&gt; colnames(83): C37_positive_9 C48_positive_4 ... C85_negative</span></span>
+<span><span class="co">#&gt;   C89_negative</span></span>
+<span><span class="co">#&gt; colData names(8): sample_id individual_id ... case_control</span></span>
+<span><span class="co">#&gt;   time_from_first_x</span></span>
 <span><span class="co">#&gt; 35 components</span></span></code></pre></div>
 <p>This <code>FactorisedExperiment</code> object has an additional dimension representing the 35 factors. It also has additional slots, including: - <code>reduced</code> - A samples by factors matrix containing the dimensionally-reduced data. - <code>loadings</code> - Contains a features by factors matrix containing the loadings.</p>
 <p>The <code>ReducedExperiment</code> objects allow users to simultaneously slice and modify the <code>assays</code>, <code>rowData</code>, <code>colData</code>, <code>reduced</code> and <code>loadings</code> matrices. Here, we provided a <code>SummarizedExperiment</code> object to <code>estimate_factors</code>, but we could just have easily provided a simple expression matrix.</p>
@@ -210,7 +214,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Jack Gisby <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-0511-8123" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Mike Barnes <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-9097-7381" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Michael Barnes <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-9097-7381" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
@@ -231,7 +235,7 @@
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Jack Gisby, Mike Barnes.</p>
+<p>Developed by Jack Gisby, Michael Barnes.</p>
 </div>
 
 <div class="pkgdown">

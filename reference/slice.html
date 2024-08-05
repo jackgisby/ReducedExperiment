@@ -61,11 +61,20 @@ objects.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for class 'FactorisedExperiment,ANY,ANY,ANY'</span></span>
 <span><span class="va">x</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span>, <span class="va">k</span>, <span class="va">...</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
 <span></span>
+<span><span class="co"># S4 method for class 'FactorisedExperiment,ANY,ANY,FactorisedExperiment'</span></span>
+<span><span class="va">x</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span>, <span class="va">k</span>, <span class="va">...</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
 <span><span class="co"># S4 method for class 'ModularExperiment,ANY,ANY,ANY'</span></span>
 <span><span class="va">x</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span>, <span class="va">k</span>, <span class="va">...</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
 <span></span>
+<span><span class="co"># S4 method for class 'ModularExperiment,ANY,ANY,ModularExperiment'</span></span>
+<span><span class="va">x</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span>, <span class="va">k</span>, <span class="va">...</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
 <span><span class="co"># S4 method for class 'ReducedExperiment,ANY,ANY,ANY'</span></span>
-<span><span class="va">x</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span>, <span class="va">k</span>, <span class="va">...</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></code></pre></div>
+<span><span class="va">x</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span>, <span class="va">k</span>, <span class="va">...</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'ReducedExperiment,ANY,ANY,ReducedExperiment'</span></span>
+<span><span class="va">x</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span>, <span class="va">k</span>, <span class="va">...</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -95,11 +104,15 @@ objects.</p>
 <dt id="arg-drop">drop<a class="anchor" aria-label="anchor" href="#arg-drop"></a></dt>
 <dd><p>Included for consistency with other slicing methods.</p></dd>
 
+
+<dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
+<dd><p>Value to be used to replace part of the object.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <a href="reduced_experiment.html">ReducedExperiment</a> object sliced by
-rows (<code>i</code>), columns (<code>j</code>) and components (<code>k</code>).</p>
+    <p>A <a href="reduced_experiment.html">ReducedExperiment</a> object, potentially
+sliced by rows (<code>i</code>), columns (<code>j</code>) and components (<code>k</code>).</p>
     </div>
 
     <div id="ref-examples">
@@ -120,7 +133,8 @@ rows (<code>i</code>), columns (<code>j</code>) and components (<code>k</code>).
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Slice our object by rows (1:50), columns (1:20) and components (1:5)</span></span></span>
 <span class="r-in"><span><span class="co"># re[i, j, k, ...]</span></span></span>
-<span class="r-in"><span><span class="va">re</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">sliced_re</span> <span class="op">&lt;-</span> <span class="va">re</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">sliced_re</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: ReducedExperiment </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 50 20 5 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
@@ -130,6 +144,19 @@ rows (<code>i</code>), columns (<code>j</code>) and components (<code>k</code>).
 <span class="r-out co"><span class="r-pr">#&gt;</span> colnames(20): sample_1 sample_2 ... sample_19 sample_20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colData names(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 components</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># We can also assign our subsetted object back to the original</span></span></span>
+<span class="r-in"><span><span class="va">re</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">sliced_re</span></span></span>
+<span class="r-in"><span><span class="va">re</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: ReducedExperiment </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 300 100 10 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): normal</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(300): gene_1 gene_2 ... gene_299 gene_300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(100): sample_1 sample_2 ... sample_99 sample_100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 components</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -141,7 +168,7 @@ rows (<code>i</code>), columns (<code>j</code>) and components (<code>k</code>).
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jack Gisby, Mike Barnes.</p>
+  <p></p><p>Developed by Jack Gisby, Michael Barnes.</p>
 </div>
 
 <div class="pkgdown">

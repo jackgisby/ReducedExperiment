@@ -62,9 +62,9 @@
         </td>
         <td><p>Calculate eigengenes for new data</p></td>
       </tr><tr><td>
-          <p><code><a href="cbind.html">cbind(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="cbind.html">cbind(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="cbind.html">cbind(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
+          <p><code><a href="cbind_rbind.html">cbind(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="cbind_rbind.html">rbind(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="cbind_rbind.html">cbind(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="cbind_rbind.html">rbind(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="cbind_rbind.html">cbind(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="cbind_rbind.html">rbind(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Combine ReducedExperiment objects by columns</p></td>
+        <td><p>Combine ReducedExperiment objects by columns or rows</p></td>
       </tr><tr><td>
           <p><code><a href="component_names.html">`componentNames&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="component_names.html">`componentNames&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="component_names.html">moduleNames(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="component_names.html">`moduleNames&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="component_names.html">componentNames(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="component_names.html">`componentNames&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
         </td>
@@ -94,7 +94,7 @@
         </td>
         <td><p>FactorisedExperiment: A container for the results of factor analysis</p></td>
       </tr><tr><td>
-          <p><code><a href="feature_names.html">`names&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`featureNames&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`rownames&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`names&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`featureNames&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`rownames&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">featureNames(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`names&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`rownames&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`featureNames&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
+          <p><code><a href="feature_names.html">`names&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`featureNames&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`rownames&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`names&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`featureNames&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`rownames&lt;-`(<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">featureNames(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`names&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`rownames&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`ROWNAMES&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="feature_names.html">`featureNames&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
         </td>
         <td><p>Get feature names</p></td>
       </tr><tr><td>
@@ -182,7 +182,7 @@
         </td>
         <td><p>Run WGCNA for a data matrix</p></td>
       </tr><tr><td>
-          <p><code><a href="sample_names.html">sampleNames(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="sample_names.html">`sampleNames&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
+          <p><code><a href="sample_names.html">sampleNames(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="sample_names.html">`sampleNames&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> <code><a href="sample_names.html">`colnames&lt;-`(<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
         </td>
         <td><p>Get sample names</p></td>
       </tr><tr><td>
@@ -190,7 +190,7 @@
         </td>
         <td><p>Prints a summary of a ReducedExperiment object</p></td>
       </tr><tr><td>
-          <p><code><a href="slice.html">`[`(<i>&lt;FactorisedExperiment&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="slice.html">`[`(<i>&lt;ModularExperiment&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="slice.html">`[`(<i>&lt;ReducedExperiment&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> </p>
+          <p><code><a href="slice.html">`[`(<i>&lt;FactorisedExperiment&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="slice.html">`[&lt;-`(<i>&lt;FactorisedExperiment&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;FactorisedExperiment&gt;</i>)</a></code> <code><a href="slice.html">`[`(<i>&lt;ModularExperiment&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="slice.html">`[&lt;-`(<i>&lt;ModularExperiment&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ModularExperiment&gt;</i>)</a></code> <code><a href="slice.html">`[`(<i>&lt;ReducedExperiment&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="slice.html">`[&lt;-`(<i>&lt;ReducedExperiment&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ReducedExperiment&gt;</i>)</a></code> </p>
         </td>
         <td><p>Extract and replace parts of ReducedExperiment objects</p></td>
       </tr><tr><td>
@@ -206,7 +206,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jack Gisby, Mike Barnes.</p>
+  <p></p><p>Developed by Jack Gisby, Michael Barnes.</p>
 </div>
 
 <div class="pkgdown">

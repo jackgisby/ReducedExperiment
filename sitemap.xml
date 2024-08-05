@@ -10,7 +10,7 @@
 <url><loc>/news/index.html</loc></url>
 <url><loc>/reference/associate_components.html</loc></url>
 <url><loc>/reference/calcEigengenes.html</loc></url>
-<url><loc>/reference/cbind.html</loc></url>
+<url><loc>/reference/cbind_rbind.html</loc></url>
 <url><loc>/reference/component_names.html</loc></url>
 <url><loc>/reference/dim-ReducedExperiment-method.html</loc></url>
 <url><loc>/reference/dollar_names.html</loc></url>
