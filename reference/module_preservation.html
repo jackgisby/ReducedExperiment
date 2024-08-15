@@ -151,57 +151,20 @@ as a .RData file. See <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.
     <p>A <code>data.frame</code> containing preservation statistics, as described
 by <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="external-link">modulePreservation</a>.</p>
     </div>
+    <div id="author">
+    <h2>Author</h2>
+    <p>Jack Gisby</p>
+    </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get random matrices with rnorm, with 100 rows (features)</span></span></span>
-<span class="r-in"><span><span class="co"># and 20 columns (observations)</span></span></span>
-<span class="r-in"><span><span class="va">X_1</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.makeRandomData</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, <span class="st">"feature"</span>, <span class="st">"obs"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">X_2</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.makeRandomData</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, <span class="st">"feature"</span>, <span class="st">"obs"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get random ModularExperiments with rnorm, with 100 rows (features),</span></span></span>
+<span class="r-in"><span><span class="co"># 20 columns (observations) and 5/10 modules</span></span></span>
+<span class="r-in"><span><span class="va">me_1</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.createRandomisedModularExperiment</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">me_2</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.createRandomisedModularExperiment</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, <span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Estimate 5 factors based on the data matrix</span></span></span>
-<span class="r-in"><span><span class="va">me_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="identify_modules.html">identify_modules</a></span><span class="op">(</span><span class="va">X_1</span>, nc <span class="op">=</span> <span class="fl">5</span>, verbose <span class="op">=</span> <span class="fl">0</span>, powers <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Power SFT.R.sq slope truncated.R.sq mean.k. median.k. max.k.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     5    0.182 -82.4        -0.0322   0.493     0.496  0.522</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>blockwiseModules: mergeCloseModules failed with the following error message:</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>      Error in mergeCloseModules(datExpr, colors[gsg$goodGenes], cutHeight = mergeCutHeight,  : </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Error in moduleEigengenes(expr = exprData[[set]]$data, colors = setColors,  : </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Color levels are empty. Possible reason: the only color is grey and grey module is excluded from the calculation.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> --&gt; returning unmerged colors.</span>
-<span class="r-in"><span><span class="va">me_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="identify_modules.html">identify_modules</a></span><span class="op">(</span><span class="va">X_2</span>, nc <span class="op">=</span> <span class="fl">5</span>, verbose <span class="op">=</span> <span class="fl">0</span>, powers <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Power SFT.R.sq slope truncated.R.sq mean.k. median.k. max.k.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     5   0.0628 -61.5        -0.0775   0.501     0.498  0.528</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      mergeCloseModules: less than two proper modules.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       ..color levels are grey, turquoise</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       ..there is nothing to merge.</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Test module preservation</span></span></span>
-<span class="r-in"><span><span class="va">mp</span> <span class="op">&lt;-</span> <span class="fu">module_preservation</span><span class="op">(</span><span class="va">me_1</span>, <span class="va">me_2</span>, verbose <span class="op">=</span> <span class="fl">10</span>, nPermutations <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..checking data for excessive amounts of missing data..</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Flagging genes and samples with too many missing values...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       ..step 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Flagging genes and samples with too many missing values...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       ..step 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..unassigned 'module' name: module_0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..all network sample 'module' name: random</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..calculating observed preservation values</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      ..working on reference network reference</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        ..working on test network test</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..calculating permutation Z scores</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ..Working with set 1 as reference set</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  *+*+*+*+* Reference set contains a single module.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   A permutation analysis is not meaningful for a single module; skipping.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in WGCNA::modulePreservation(multi_data, list(reference = stats::setNames(names(module_assignments),     module_assignments)), dataIsExpr = TRUE, networkType = networkType,     corFnc = corFnc, goldName = goldName, greyName = greyName,     savePermutedStatistics = savePermutedStatistics, ...):</span> object 'connSummaryInd' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Plot the results</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="plot_module_preservation.html">plot_module_preservation</a></span><span class="op">(</span><span class="va">mp</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'mp' not found</span>
+<span class="r-in"><span><span class="co"># Test module preservation (test modules from dataset 1 in dataset 2)</span></span></span>
+<span class="r-in"><span><span class="va">mp</span> <span class="op">&lt;-</span> <span class="fu">module_preservation</span><span class="op">(</span><span class="va">me_1</span>, <span class="va">me_2</span>, verbose <span class="op">=</span> <span class="fl">0</span>, nPermutations <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

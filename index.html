@@ -76,19 +76,13 @@
 <!-- badges: start -->
 
 <!-- badges: end -->
-<p>ReducedExperiment provides SummarizedExperiment-like containers for storing and manipulating dimensionally-reduced assay data. The ReducedExperiment classes allow users to simultaneously manipulate their original dataset and their decomposed data, in addition to other method-specific outputs like feature loadings. Implements utilities and specialised classes for the application of stabilised independent component analysis (sICA) and weighted gene correlation network analysis (WGCNA).</p>
+<p>ReducedExperiment provides containers for storing and manipulating dimensionally-reduced assay data. The ReducedExperiment classes allow users to simultaneously manipulate their original dataset and their decomposed data, in addition to other method-specific outputs like feature loadings. Implements utilities and specialised classes for the application of stabilised independent component analysis (sICA) and weighted gene correlation network analysis (WGCNA).</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Get the latest stable <code>R</code> release from <a href="http://cran.r-project.org/" class="external-link">CRAN</a>. Then install <code>ReducedExperiment</code> from <a href="http://bioconductor.org/" class="external-link">Bioconductor</a> using the following code:</p>
+<!-- Get the latest stable `R` release from [CRAN](http://cran.r-project.org/). Then install `ReducedExperiment` from [Bioconductor](http://bioconductor.org/) using the following code: -->
+<p>The development version of ReducedExperiment is available from <a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ReducedExperiment"</span><span class="op">)</span></span></code></pre></div>
-<p>And the development version from <a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">GitHub</a> with:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jackgisby/ReducedExperiment"</span><span class="op">)</span></span></code></pre></div>
 <p>The development version of the package is also available as a container on <a href="https://hub.docker.com/repository/docker/jackgisby/reducedexperiment/" class="external-link">DockerHub</a>.</p>
 </div>
@@ -96,12 +90,22 @@
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
 <p><code>ReducedExperiment</code> objects are derived from <code>SummarizedExperiment</code> objects, with additional slots designed to store and manipulate the outputs of common dimensionality reduction techniques.</p>
-<p>As an example, the <code>SummarizedExperiment</code> described below contains gene expression data from individuals with COVID-19. It contains the following slots: - <code>assays</code> - A features by samples matrix containing the expression data. - <code>colData</code> - Contains a row for each sample containing phenotype data. - <code>rowData</code> - Contains a row for each feature containing gene IDs.</p>
+<p>As an example, the <code>SummarizedExperiment</code> described below contains gene expression data from individuals with COVID-19. It contains the following slots:</p>
+<ul>
+<li>
+<code>assays</code> - A features by samples matrix containing the expression data.</li>
+<li>
+<code>colData</code> - Contains a row for each sample containing phenotype data.</li>
+<li>
+<code>rowData</code> - Contains a row for each feature containing gene IDs.</li>
+</ul>
 <p>The <code>SummarizedExperiment</code> objects are convenient because, when we slice the rows or columns of the expression matrix, the metadata for the rows and columns are sliced accordingly.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">"SummarizedExperiment"</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"wave1.rds"</span>,</span>
+<span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
+<span>    <span class="st">"extdata"</span>,</span>
+<span>    <span class="st">"wave1.rds"</span>,</span>
 <span>    package <span class="op">=</span> <span class="st">"ReducedExperiment"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -119,11 +123,10 @@
 <span><span class="co">#&gt;   time_from_first_x</span></span></code></pre></div>
 <p>The <code>SummarizedExperiment</code> has two dimensions, representing the features (2,184) and samples (234).</p>
 <p>We can perform a factor analysis on these data, the result of which is a set of reduced components and feature loadings.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">"ReducedExperiment"</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/estimate_factors.html">estimate_factors</a></span><span class="op">(</span><span class="va">se</span>, nc <span class="op">=</span> <span class="fl">35</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">fe</span></span>
 <span><span class="co">#&gt; class: FactorisedExperiment </span></span>
 <span><span class="co">#&gt; dim: 500 83 35 </span></span>
@@ -137,14 +140,60 @@
 <span><span class="co">#&gt; colData names(8): sample_id individual_id ... case_control</span></span>
 <span><span class="co">#&gt;   time_from_first_x</span></span>
 <span><span class="co">#&gt; 35 components</span></span></code></pre></div>
-<p>This <code>FactorisedExperiment</code> object has an additional dimension representing the 35 factors. It also has additional slots, including: - <code>reduced</code> - A samples by factors matrix containing the dimensionally-reduced data. - <code>loadings</code> - Contains a features by factors matrix containing the loadings.</p>
+<p>This <code>FactorisedExperiment</code> object has an additional dimension representing the 35 factors. It also has additional slots, including:</p>
+<ul>
+<li>
+<code>reduced</code> - A samples by factors matrix containing the dimensionally-reduced data.</li>
+<li>
+<code>loadings</code> - Contains a features by factors matrix containing the loadings.</li>
+</ul>
 <p>The <code>ReducedExperiment</code> objects allow users to simultaneously slice and modify the <code>assays</code>, <code>rowData</code>, <code>colData</code>, <code>reduced</code> and <code>loadings</code> matrices. Here, we provided a <code>SummarizedExperiment</code> object to <code>estimate_factors</code>, but we could just have easily provided a simple expression matrix.</p>
+<p>Alternatively, you may have already applied dimensionality reduction to your data and simply wish to package it into a <code>ReducedExperiment</code> container. For instance, below we apply principal components analysis, and construct a <code>FactorisedExperiment</code> object from the results.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">prcomp_res</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span><span class="op">)</span>, center <span class="op">=</span> <span class="cn">TRUE</span>, scale. <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fe_prcomp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/factorised_experiment.html">FactorisedExperiment</a></span><span class="op">(</span></span>
+<span>    <span class="va">se</span>,</span>
+<span>    reduced <span class="op">=</span> <span class="va">prcomp_res</span><span class="op">$</span><span class="va">x</span>,</span>
+<span>    loadings <span class="op">=</span> <span class="va">prcomp_res</span><span class="op">$</span><span class="va">rotation</span>,</span>
+<span>    stability <span class="op">=</span> <span class="va">prcomp_res</span><span class="op">$</span><span class="va">sdev</span>,</span>
+<span>    center <span class="op">=</span> <span class="va">prcomp_res</span><span class="op">$</span><span class="va">center</span>,</span>
+<span>    scale <span class="op">=</span> <span class="va">prcomp_res</span><span class="op">$</span><span class="va">scale</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fe_prcomp</span></span>
+<span><span class="co">#&gt; class: FactorisedExperiment </span></span>
+<span><span class="co">#&gt; dim: 500 83 83 </span></span>
+<span><span class="co">#&gt; metadata(0):</span></span>
+<span><span class="co">#&gt; assays(1): ''</span></span>
+<span><span class="co">#&gt; rownames(500): ENSG00000004799 ENSG00000007038 ... ENSG00000287935</span></span>
+<span><span class="co">#&gt;   ENSG00000288049</span></span>
+<span><span class="co">#&gt; rowData names(0):</span></span>
+<span><span class="co">#&gt; colnames(83): C37_positive_9 C48_positive_4 ... C85_negative</span></span>
+<span><span class="co">#&gt;   C89_negative</span></span>
+<span><span class="co">#&gt; colData names(0):</span></span>
+<span><span class="co">#&gt; 83 components</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="functionality">Functionality<a class="anchor" aria-label="anchor" href="#functionality"></a>
 </h2>
-<p>The package currently provides three types of container: - <code>ReducedExperiment</code> - A basic container that can store dimensionally-reduced components. - <code>FactorisedExperiment</code> - A container based on <code>ReducedExperiment</code> designed for working with the results of factor analysis. It can contain feature loadings and factor stability values. - <code>ModularExperiment</code> - A container based on <code>ReducedExperiment</code> designed for working with modules of features (usually genes), as is produced by the popular Weighted Gene Correlation Network Analysis (WGCNA) approach. It contains the mapping of features to modules</p>
-<p>Various tools are provided by the package for applying dimensionality reduction and manipulating their results. These include: - Workflows for applying independent component analysis (ICA) and WGCNA. We additionally developed an R implementation of the stabilised ICA algorithm. - Methods for applying pathway enrichment analysis to factors and modules. - Functions for identifying associations between factors/modules and sample-level variables. - Methods for applying identified factors or modules to new datasets. - Other approach-specific plots and utilities, such as factor stability plots and module preservation plots.</p>
+<p>The package currently provides three types of container:</p>
+<ul>
+<li>
+<code>ReducedExperiment</code> - A basic container that can store dimensionally-reduced components.</li>
+<li>
+<code>FactorisedExperiment</code> - A container based on <code>ReducedExperiment</code> designed for working with the results of factor analysis. It can contain feature loadings and factor stability values.</li>
+<li>
+<code>ModularExperiment</code> - A container based on <code>ReducedExperiment</code> designed for working with modules of features (usually genes), as is produced by the popular Weighted Gene Correlation Network Analysis (WGCNA) approach. It contains the mapping of features to modules</li>
+</ul>
+<p>Various tools are provided by the package for applying dimensionality reduction and manipulating their results. These include:</p>
+<ul>
+<li>Workflows for applying independent component analysis (ICA) and WGCNA. We additionally developed an R implementation of the stabilised ICA algorithm.</li>
+<li>Methods for applying pathway enrichment analysis to factors and modules.</li>
+<li>Functions for identifying associations between factors/modules and sample-level variables.</li>
+<li>Methods for applying identified factors or modules to new datasets.</li>
+<li>Other approach-specific plots and utilities, such as factor stability plots and module preservation plots.</li>
+</ul>
 <p>Many of these are demonstrated in more detail in the <a href="https://jackgisby.github.io/ReducedExperiment/articles/ReducedExperiment.html" class="external-link">package’s vignette</a>.</p>
 <p>The containers implemented in <code>ReducedExperiment</code> are designed to be extensible. We encourage the development of children classes with additional, or alternative, slots and methods.</p>
 </div>

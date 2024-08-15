@@ -120,6 +120,10 @@ number of components.</p></dd>
 
 
 </dl></div>
+    <div id="author">
+    <h2>Author</h2>
+    <p>Jack Gisby</p>
+    </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
@@ -128,19 +132,12 @@ number of components.</p></dd>
 <span class="r-in"><span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.makeRandomData</span><span class="op">(</span><span class="fl">200</span>, <span class="fl">100</span>, <span class="st">"feature"</span>, <span class="st">"obs"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Estimate stability across 10 to 30 components</span></span></span>
-<span class="r-in"><span><span class="va">stab_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_stability.html">estimate_stability</a></span><span class="op">(</span><span class="va">X</span>, min_components <span class="op">=</span> <span class="fl">10</span>, max_components <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">stab_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_stability.html">estimate_stability</a></span><span class="op">(</span><span class="va">X</span>, min_components <span class="op">=</span> <span class="fl">10</span>, max_components <span class="op">=</span> <span class="fl">30</span>, n_runs <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">plot_stability</span><span class="op">(</span><span class="va">stab_res</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $combined_plot</span>
+<span class="r-in"><span><span class="co"># Intracluster stability similar to extracluster since this is random data</span></span></span>
+<span class="r-in"><span><span class="fu">plot_stability</span><span class="op">(</span><span class="va">stab_res</span><span class="op">)</span><span class="op">$</span><span class="va">combined_plot</span></span></span>
 <span class="r-plt img"><img src="plot_stability-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $stability_plot</span>
-<span class="r-plt img"><img src="plot_stability-2.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $mean_plot</span>
-<span class="r-plt img"><img src="plot_stability-3.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
