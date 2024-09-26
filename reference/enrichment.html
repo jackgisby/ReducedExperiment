@@ -90,14 +90,14 @@
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>The method to use for identifying enriched pathways. One of
-"overrepresentation" or "gsea". The overrepresentation method calls
+<code>"overrepresentation"</code> or <code>"gsea"</code>. The overrepresentation method calls
 <a href="https://rdrr.io/pkg/clusterProfiler/man/enricher.html" class="external-link">enricher</a> whereas the gsea method calls
 <a href="https://rdrr.io/pkg/clusterProfiler/man/GSEA.html" class="external-link">GSEA</a>. Note that GSEA is not available for modules.</p></dd>
 
 
 <dt id="arg-feature-id-col">feature_id_col<a class="anchor" aria-label="anchor" href="#arg-feature-id-col"></a></dt>
 <dd><p>The column in <code>rowData(object)</code> that will be used as a
-feature ID. Setting this to "rownames" (default) instead uses
+feature ID. Setting this to <code>"rownames"</code> (default) instead uses
 <code>rownames(object)</code>.</p></dd>
 
 
@@ -117,7 +117,7 @@ analysis will be based on absolute loadings.</p></dd>
 <dt id="arg-loading-threshold">loading_threshold<a class="anchor" aria-label="anchor" href="#arg-loading-threshold"></a></dt>
 <dd><p>Factors only: See
 <a href="getAlignedFeatures.html">getAlignedFeatures</a>. Only relevant for
-overresentation analysis.</p></dd>
+overrepresentation analysis.</p></dd>
 
 
 <dt id="arg-proportional-threshold">proportional_threshold<a class="anchor" aria-label="anchor" href="#arg-proportional-threshold"></a></dt>
@@ -199,13 +199,20 @@ pathways that are overrepresented in the tails of this distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY             KEGG_MAPK_SIGNALING_PATHWAY</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM                   REACTOME_NEURONAL_SYSTEM</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA WP_MALIGNANT_PLEURAL_MESOTHELIOMA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                            GeneRatio BgRatio      pvalue</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED              4/11 52/1010 0.001579609</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                         4/11 69/1010 0.004572905</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY              3/13 22/1010 0.002231104</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY            3/13 24/1010 0.002888557</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM               3/13 31/1010 0.006085876</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA      3/13 39/1010 0.011649264</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            GeneRatio BgRatio RichFactor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED              4/11 52/1010 0.07692308</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                         4/11 69/1010 0.05797101</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY              3/13 22/1010 0.13636364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY            3/13 24/1010 0.12500000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM               3/13 31/1010 0.09677419</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA      3/13 39/1010 0.07692308</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            FoldEnrichment   zScore      pvalue</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED               7.062937 4.708268 0.001579609</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                          5.322793 3.901695 0.004572905</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MAPK_SIGNALING_PATHWAY              10.594406 5.193027 0.002231104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.KEGG_MAPK_SIGNALING_PATHWAY             9.711538 4.929827 0.002888557</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.REACTOME_NEURONAL_SYSTEM                7.518610 4.207404 0.006085876</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> factor_2.WP_MALIGNANT_PLEURAL_MESOTHELIOMA       5.976331 3.617443 0.011649264</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                               p.adjust qvalue</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME_ASSOCIATED         0.003159217     NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> factor_1.NABA_MATRISOME                    0.004572905     NA</span>
@@ -305,7 +312,7 @@ pathways that are overrepresented in the tails of this distribution.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>

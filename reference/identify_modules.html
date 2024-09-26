@@ -60,6 +60,7 @@ Calls <a href="run_wgcna.html">run_wgcna</a> to perform the analysis.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">identify_modules</span><span class="op">(</span></span>
 <span>  <span class="va">X</span>,</span>
+<span>  <span class="va">power</span>,</span>
 <span>  center_X <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  scale_X <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  assay_name <span class="op">=</span> <span class="st">"normal"</span>,</span>
@@ -75,6 +76,13 @@ Calls <a href="run_wgcna.html">run_wgcna</a> to perform the analysis.</p>
 <dd><p>Either a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object
 or a matrix containing data to be subject to WGCNA. <code>X</code> should have rows as
 features and columns as samples.</p></dd>
+
+
+<dt id="arg-power">power<a class="anchor" aria-label="anchor" href="#arg-power"></a></dt>
+<dd><p>An integer representing the soft-thresholding power to be
+used to define modules. See the
+<a href="assess_soft_threshold.html">assess_soft_threshold</a> function for aid in
+selecting this parameter.</p></dd>
 
 
 <dt id="arg-center-x">center_X<a class="anchor" aria-label="anchor" href="#arg-center-x"></a></dt>
@@ -125,14 +133,47 @@ on the arguments given to <code>identify_modules</code>.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">airway_se</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.get_airway_data</span><span class="op">(</span>n_features <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Identify modules in the airway data</span></span></span>
+<span class="r-in"><span><span class="co"># Select soft-thresholding power to use</span></span></span>
 <span class="r-in"><span><span class="fu">WGCNA</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/WGCNA/man/allowWGCNAThreads.html" class="external-link">disableWGCNAThreads</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">me_1</span> <span class="op">&lt;-</span> <span class="fu">identify_modules</span><span class="op">(</span><span class="va">airway_se</span>, verbose <span class="op">=</span> <span class="fl">0</span>, powers <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Power SFT.R.sq slope truncated.R.sq mean.k. median.k. max.k.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     5   0.0131 -6.35        -0.0484    0.17     0.156  0.226</span>
+<span class="r-in"><span><span class="va">fit_indices</span> <span class="op">&lt;-</span> <span class="fu"><a href="assess_soft_threshold.html">assess_soft_threshold</a></span><span class="op">(</span><span class="va">airway_se</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Power SFT.R.sq   slope truncated.R.sq mean.k. median.k. max.k.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      1   0.9740  4.3700         0.9770   352.0     369.0  408.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      2   0.9670  1.9700         0.9690   268.0     286.0  348.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      3   0.9540  1.1200         0.9690   213.0     228.0  304.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      4   0.9210  0.6790         0.9630   175.0     188.0  270.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      5   0.6400  0.3900         0.6710   147.0     156.0  244.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      6   0.5540  0.2090         0.6850   126.0     132.0  223.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      7   0.0498  0.0600        -0.0944   109.0     113.0  205.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      8   0.0348 -0.0448        -0.1660    95.8      97.7  189.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      9   0.2320 -0.1320         0.0503    84.9      84.6  176.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10    10   0.4040 -0.2010         0.2430    75.8      73.7  165.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11    11   0.5010 -0.2730         0.3590    68.2      64.8  155.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12    12   0.6120 -0.3300         0.5010    61.7      57.0  146.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13    13   0.6910 -0.3620         0.6040    56.2      50.6  138.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14    14   0.8100 -0.4130         0.7560    51.4      45.2  130.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15    15   0.7550 -0.4760         0.6910    47.1      40.6  124.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16    16   0.7960 -0.5050         0.7450    43.4      36.4  118.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17    17   0.7930 -0.5310         0.7470    40.2      32.7  112.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18    18   0.7640 -0.5600         0.7170    37.3      29.5  107.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19    19   0.7940 -0.5790         0.7620    34.7      26.8  103.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20    20   0.8250 -0.5990         0.8040    32.3      24.3   98.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21    21   0.8500 -0.6250         0.8300    30.2      22.2   94.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22    22   0.8720 -0.6610         0.8600    28.3      20.3   90.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23    23   0.8700 -0.6850         0.8550    26.6      18.6   87.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24    24   0.8700 -0.7000         0.8570    25.0      17.0   84.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25    25   0.8670 -0.7270         0.8520    23.6      15.6   81.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26    26   0.8740 -0.7410         0.8690    22.3      14.5   78.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27    27   0.8620 -0.7590         0.8560    21.1      13.4   75.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28    28   0.8740 -0.7700         0.8720    19.9      12.4   72.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29    29   0.8830 -0.7850         0.8770    18.9      11.5   70.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30    30   0.9040 -0.7980         0.9030    18.0      10.7   68.3</span>
+<span class="r-in"><span><span class="va">estimated_power</span> <span class="op">&lt;-</span> <span class="va">fit_indices</span><span class="op">$</span><span class="va">Power</span><span class="op">[</span><span class="va">fit_indices</span><span class="op">$</span><span class="va">estimated_power</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Identify modules using WGCNA</span></span></span>
+<span class="r-in"><span><span class="va">me_1</span> <span class="op">&lt;-</span> <span class="fu">identify_modules</span><span class="op">(</span><span class="va">airway_se</span>, verbose <span class="op">=</span> <span class="fl">0</span>, power <span class="op">=</span> <span class="va">estimated_power</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">me_1</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: ModularExperiment </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 500 8 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 500 8 6 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(1): ''</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> assays(3): counts normal transformed</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rownames(500): ENSG00000186523 ENSG00000203871 ... ENSG00000147439</span>
@@ -140,7 +181,7 @@ on the arguments given to <code>identify_modules</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(10): gene_id gene_name ... seq_coord_system symbol</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colnames(8): SRR1039508 SRR1039509 ... SRR1039520 SRR1039521</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colData names(9): SampleName cell ... Sample BioSample</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 components</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 components</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -156,7 +197,7 @@ on the arguments given to <code>identify_modules</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>

@@ -118,7 +118,7 @@ after calculation.</p></dd>
 
 <dt id="arg-scale-newdata">scale_newdata<a class="anchor" aria-label="anchor" href="#arg-scale-newdata"></a></dt>
 <dd><p>Controls whether the <code>newdata</code> are scaled. If NULL,
-performs scaling based on the <a href="factorised_experiment.html">FactorisedExperiment</a>
+performs scaling based on the <code>FactorisedExperiment</code>
 object's <code>scale</code> slot. The value of this argument will be passed to the
 <code>scale</code> argument of <a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a>.</p></dd>
 
@@ -126,7 +126,7 @@ object's <code>scale</code> slot. The value of this argument will be passed to t
 <dt id="arg-center-newdata">center_newdata<a class="anchor" aria-label="anchor" href="#arg-center-newdata"></a></dt>
 <dd><p>Controls whether the <code>newdata</code> are centered If NULL,
 performs centering based on the
-<a href="factorised_experiment.html">FactorisedExperiment</a> object's <code>center</code> slot. The
+<code>FactorisedExperiment</code> object's <code>center</code> slot. The
 value of this argument will be passed to the <code>center</code> argument of
 <a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a>.</p></dd>
 
@@ -147,12 +147,21 @@ projectData.</p></dd>
     <p>Calculates a matrix with samples as rows and factors as columns. If
 <code>newdata</code> was a <code>matrix</code> or <code>data.frame</code>, this will be returned as a matrix.
 If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object was passed
-instead, then a If a <a href="factorised_experiment.html">FactorisedExperiment</a>
+instead, then a If a <code>FactorisedExperiment</code>
 object will be created containing this matrix in its <code>reduced</code> slot.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>If <code>scale_newdata</code> and <code>center_newdata</code> are left as <code>NULL</code>, then the
+projection method assumes that the <code>newdata</code> are on the same scale as the
+original data of the <code>object</code>. It will therefore use the values of the
+<code>center</code> and <code>scale</code> slots of the <code>object</code>. For instance, if the <code>scale</code> slot
+is <code>TRUE</code>, the <code>newdata</code> will be scaled. If the <code>scale</code> slot is a vector,
+the values of this vector will be applied to scale the <code>newdata</code>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p><code><a href="calcEigengenes.html">calcEigengenes</a></code></p></div>
+    <div class="dont-index"><p><code><a href="calcEigengenes.html">calcEigengenes</a></code>, <a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">stats::prcomp</a></p></div>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -183,8 +192,8 @@ object will be created containing this matrix in its <code>reduced</code> slot.<
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 components</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Project the fe_1 factors for the samples in X_2</span></span></span>
-<span class="r-in"><span><span class="va">fe_2</span> <span class="op">&lt;-</span> <span class="fu">projectData</span><span class="op">(</span><span class="va">fe_1</span>, <span class="va">X_2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">fe_2</span></span></span>
+<span class="r-in"><span><span class="va">projected_data</span> <span class="op">&lt;-</span> <span class="fu">projectData</span><span class="op">(</span><span class="va">fe_1</span>, <span class="va">X_2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">projected_data</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            factor_1    factor_2    factor_3    factor_4    factor_5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> obs_1   0.489478464 -0.37522361  0.17907264  0.24298617 -0.82650780</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> obs_2   1.650091796 -1.66195220 -0.60840212 -1.09985491 -1.16535403</span>
@@ -237,7 +246,7 @@ object will be created containing this matrix in its <code>reduced</code> slot.<
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>

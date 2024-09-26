@@ -192,6 +192,15 @@ If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExper
 instead, then a If a <a href="modular_experiment.html">ModularExperiment</a>
 object will be created containing this matrix in its <code>reduced</code> slot.</p>
     </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>If <code>scale_newdata</code> and <code>center_newdata</code> are left as <code>NULL</code>, then the
+projection method assumes that the <code>newdata</code> are on the same scale as the
+original data of the <code>object</code>. It will therefore use the values of the
+<code>center</code> and <code>scale</code> slots of the <code>object</code>. For instance, if the <code>scale</code> slot
+is <code>TRUE</code>, the <code>newdata</code> will be scaled. If the <code>scale</code> slot is a vector,
+the values of this vector will be applied to scale the <code>newdata</code>.</p>
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p><code><a href="projectData.html">projectData</a></code>,
@@ -207,16 +216,6 @@ object will be created containing this matrix in its <code>reduced</code> slot.<
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create ModularExperiment with random data (100 features, 50 samples,</span></span></span>
 <span class="r-in"><span><span class="co"># 10 modules)</span></span></span>
 <span class="r-in"><span><span class="va">me_1</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.createRandomisedModularExperiment</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">me_1</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> class: ModularExperiment </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 100 50 10 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): normal</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(100): gene_1 gene_2 ... gene_99 gene_100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(50): sample_1 sample_2 ... sample_49 sample_50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 components</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Generate a new dataset with the same features (100 rows) but different</span></span></span>
 <span class="r-in"><span><span class="co"># samples/observations (20 columns)</span></span></span>
@@ -261,7 +260,7 @@ object will be created containing this matrix in its <code>reduced</code> slot.<
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>

@@ -132,8 +132,13 @@ number of components.</p></dd>
 <span class="r-in"><span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.makeRandomData</span><span class="op">(</span><span class="fl">200</span>, <span class="fl">100</span>, <span class="st">"feature"</span>, <span class="st">"obs"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Estimate stability across 10 to 30 components</span></span></span>
-<span class="r-in"><span><span class="va">stab_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_stability.html">estimate_stability</a></span><span class="op">(</span><span class="va">X</span>, min_components <span class="op">=</span> <span class="fl">10</span>, max_components <span class="op">=</span> <span class="fl">30</span>, n_runs <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%</span>
+<span class="r-in"><span><span class="va">stab_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_stability.html">estimate_stability</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">X</span>,</span></span>
+<span class="r-in"><span>    min_components <span class="op">=</span> <span class="fl">10</span>,</span></span>
+<span class="r-in"><span>    max_components <span class="op">=</span> <span class="fl">30</span>,</span></span>
+<span class="r-in"><span>    n_runs <span class="op">=</span> <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Intracluster stability similar to extracluster since this is random data</span></span></span>
 <span class="r-in"><span><span class="fu">plot_stability</span><span class="op">(</span><span class="va">stab_res</span><span class="op">)</span><span class="op">$</span><span class="va">combined_plot</span></span></span>
@@ -153,7 +158,7 @@ number of components.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>

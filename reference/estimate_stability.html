@@ -172,13 +172,13 @@ number of components to be used for ICA. The results of this function
 can be plotted by <a href="plot_stability.html">plot_stability</a>.</p>
 <p>This algorithm is similar to the Most Stable Transcriptome
 Dimension (MSTD) approach
-(https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-4112-9).</p>
+(<a href="https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-4112-9" class="external-link">https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-4112-9</a>).</p>
 <p>The function automatically selects a number of components based on
-<code>mean_stability_threshold</code>. Ideally, this should not be trusted blindly,
-but instead a choice can be made based on visualisation of the
+<code>mean_stability_threshold</code>. This choice can be made based on
+visualisation of the
 stabilities, as created by <a href="plot_stability.html">plot_stability</a>. The
-MSTD paper provides additional context and advice on choosing the number
-of components based on these data.</p>
+aformentioned MSTD paper provides additional context and advice on choosing
+the number of components based on these data.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -196,9 +196,9 @@ of components based on these data.</p>
 <span class="r-in"><span>    <span class="va">X</span>,</span></span>
 <span class="r-in"><span>    min_components <span class="op">=</span> <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>    max_components <span class="op">=</span> <span class="fl">30</span>,</span></span>
-<span class="r-in"><span>    n_runs <span class="op">=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span>    n_runs <span class="op">=</span> <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Convert the data matrix to a SummarizedExperiment, then estimate stability</span></span></span>
 <span class="r-in"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a></span><span class="op">(</span>assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"normal"</span> <span class="op">=</span> <span class="va">X</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -206,9 +206,9 @@ of components based on these data.</p>
 <span class="r-in"><span>    <span class="va">se</span>,</span></span>
 <span class="r-in"><span>    min_components <span class="op">=</span> <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>    max_components <span class="op">=</span> <span class="fl">30</span>,</span></span>
-<span class="r-in"><span>    n_runs <span class="op">=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span>    n_runs <span class="op">=</span> <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -224,7 +224,7 @@ of components based on these data.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
