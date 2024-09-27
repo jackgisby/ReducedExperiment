@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-
+    
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -34,20 +34,20 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/jackgisby/ReducedExperiment/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-
+     
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-
+      
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get and setting the stability values for factors</h1>
-    <small class="dont-index">Source: <a href="https://github.com/jackgisby/ReducedExperiment/blob/devel/R/methods-FactorisedExperiment.R" class="external-link"><code>R/methods-FactorisedExperiment.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/jackgisby/ReducedExperiment/blob/HEAD/R/methods-FactorisedExperiment.R" class="external-link"><code>R/methods-FactorisedExperiment.R</code></a></small>
     <div class="hidden name"><code>stability.Rd</code></div>
     </div>
 
@@ -56,28 +56,28 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for class 'FactorisedExperiment'</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for FactorisedExperiment</span></span>
 <span><span class="fu">stability</span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># S4 method for class 'FactorisedExperiment'</span></span>
+<span><span class="co"># S4 method for FactorisedExperiment</span></span>
 <span><span class="fu">stability</span><span class="op">(</span><span class="va">object</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-
-
-<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
+    <dl><dt>object</dt>
 <dd><p><a href="factorised_experiment.html">FactorisedExperiment</a> object.</p></dd>
 
 
-<dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
+<dt>value</dt>
 <dd><p>New value to replace existing stability vector.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A vector with a value for each factor indicating the factor
+    
+
+<p>A vector with a value for each factor indicating the factor
 stability. More details are available from the
 <a href="estimate_stability.html">estimate_stability</a> help page.</p>
     </div>
@@ -101,12 +101,12 @@ stability. More details are available from the
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">stability</span><span class="op">(</span><span class="va">fe</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  factor_1  factor_2  factor_3  factor_4  factor_5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 0.9166650 0.8508215 0.8242515 0.6314188 0.6278875 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.9323665 0.8646272 0.8462028 0.6237576 0.6066225 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">stability</span><span class="op">(</span><span class="va">fe</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="fu">stability</span><span class="op">(</span><span class="va">fe</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   factor_1   factor_2   factor_3   factor_4   factor_5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0.9166650 10.0000000  0.8242515  0.6314188  0.6278875 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.9323665 10.0000000  0.8462028  0.6237576  0.6066225 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -122,15 +122,15 @@ stability. More details are available from the
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer></div>
 
+  
 
 
-
-
+  
 
   </body></html>
 

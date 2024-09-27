@@ -1,50 +1,144 @@
-<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
-<url><loc>/404.html</loc></url>
-<url><loc>/CONTRIBUTING.html</loc></url>
-<url><loc>/LICENSE.html</loc></url>
-<url><loc>/SUPPORT.html</loc></url>
-<url><loc>/articles/ReducedExperiment.html</loc></url>
-<url><loc>/articles/index.html</loc></url>
-<url><loc>/authors.html</loc></url>
-<url><loc>/index.html</loc></url>
-<url><loc>/news/index.html</loc></url>
-<url><loc>/reference/assess_soft_threshold.html</loc></url>
-<url><loc>/reference/associate_components.html</loc></url>
-<url><loc>/reference/calcEigengenes.html</loc></url>
-<url><loc>/reference/cbind_rbind.html</loc></url>
-<url><loc>/reference/component_names.html</loc></url>
-<url><loc>/reference/dim-ReducedExperiment-method.html</loc></url>
-<url><loc>/reference/dollar_names.html</loc></url>
-<url><loc>/reference/enrichment.html</loc></url>
-<url><loc>/reference/estimate_factors.html</loc></url>
-<url><loc>/reference/estimate_stability.html</loc></url>
-<url><loc>/reference/factorised_experiment.html</loc></url>
-<url><loc>/reference/feature_names.html</loc></url>
-<url><loc>/reference/getAlignedFeatures.html</loc></url>
-<url><loc>/reference/getCentrality.html</loc></url>
-<url><loc>/reference/get_common_features.html</loc></url>
-<url><loc>/reference/get_gene_ids.html</loc></url>
-<url><loc>/reference/get_msigdb_t2g.html</loc></url>
-<url><loc>/reference/identify_modules.html</loc></url>
-<url><loc>/reference/index.html</loc></url>
-<url><loc>/reference/individual_dims.html</loc></url>
-<url><loc>/reference/loadings.html</loc></url>
-<url><loc>/reference/modular_experiment.html</loc></url>
-<url><loc>/reference/module_assignments.html</loc></url>
-<url><loc>/reference/module_dendrogram.html</loc></url>
-<url><loc>/reference/module_preservation.html</loc></url>
-<url><loc>/reference/plotDendro.html</loc></url>
-<url><loc>/reference/plot_common_features.html</loc></url>
-<url><loc>/reference/plot_module_preservation.html</loc></url>
-<url><loc>/reference/plot_stability.html</loc></url>
-<url><loc>/reference/projectData.html</loc></url>
-<url><loc>/reference/reduced.html</loc></url>
-<url><loc>/reference/reduced_experiment.html</loc></url>
-<url><loc>/reference/run_ica.html</loc></url>
-<url><loc>/reference/run_wgcna.html</loc></url>
-<url><loc>/reference/sample_names.html</loc></url>
-<url><loc>/reference/show.html</loc></url>
-<url><loc>/reference/slice.html</loc></url>
-<url><loc>/reference/stability.html</loc></url>
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>/404.html</loc>
+  </url>
+  <url>
+    <loc>/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>/articles/ReducedExperiment.html</loc>
+  </url>
+  <url>
+    <loc>/authors.html</loc>
+  </url>
+  <url>
+    <loc>/CONTRIBUTING.html</loc>
+  </url>
+  <url>
+    <loc>/index.html</loc>
+  </url>
+  <url>
+    <loc>/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>/news/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/assess_soft_threshold.html</loc>
+  </url>
+  <url>
+    <loc>/reference/associate_components.html</loc>
+  </url>
+  <url>
+    <loc>/reference/calcEigengenes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/cbind_rbind.html</loc>
+  </url>
+  <url>
+    <loc>/reference/component_names.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dim-ReducedExperiment-method.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dollar_names.html</loc>
+  </url>
+  <url>
+    <loc>/reference/enrichment.html</loc>
+  </url>
+  <url>
+    <loc>/reference/estimate_factors.html</loc>
+  </url>
+  <url>
+    <loc>/reference/estimate_stability.html</loc>
+  </url>
+  <url>
+    <loc>/reference/factorised_experiment.html</loc>
+  </url>
+  <url>
+    <loc>/reference/feature_names.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getAlignedFeatures.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getCentrality.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_common_features.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_gene_ids.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_msigdb_t2g.html</loc>
+  </url>
+  <url>
+    <loc>/reference/identify_modules.html</loc>
+  </url>
+  <url>
+    <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/individual_dims.html</loc>
+  </url>
+  <url>
+    <loc>/reference/loadings.html</loc>
+  </url>
+  <url>
+    <loc>/reference/modular_experiment.html</loc>
+  </url>
+  <url>
+    <loc>/reference/module_assignments.html</loc>
+  </url>
+  <url>
+    <loc>/reference/module_dendrogram.html</loc>
+  </url>
+  <url>
+    <loc>/reference/module_preservation.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plotDendro.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_common_features.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_module_preservation.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_stability.html</loc>
+  </url>
+  <url>
+    <loc>/reference/projectData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/reduced.html</loc>
+  </url>
+  <url>
+    <loc>/reference/reduced_experiment.html</loc>
+  </url>
+  <url>
+    <loc>/reference/run_ica.html</loc>
+  </url>
+  <url>
+    <loc>/reference/run_wgcna.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sample_names.html</loc>
+  </url>
+  <url>
+    <loc>/reference/show.html</loc>
+  </url>
+  <url>
+    <loc>/reference/slice.html</loc>
+  </url>
+  <url>
+    <loc>/reference/stability.html</loc>
+  </url>
+  <url>
+    <loc>/SUPPORT.html</loc>
+  </url>
 </urlset>
-
