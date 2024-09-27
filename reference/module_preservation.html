@@ -8,7 +8,7 @@ objects."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/ma
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -39,20 +39,20 @@ objects."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/ma
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/jackgisby/ReducedExperiment/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get module preservation statistics</h1>
-    <small class="dont-index">Source: <a href="https://github.com/jackgisby/ReducedExperiment/blob/HEAD/R/features.R" class="external-link"><code>R/features.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/jackgisby/ReducedExperiment/blob/devel/R/features.R" class="external-link"><code>R/features.R</code></a></small>
     <div class="hidden name"><code>module_preservation.Rd</code></div>
     </div>
 
@@ -83,14 +83,16 @@ objects.</p>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>reference_dataset</dt>
+
+
+<dl><dt id="arg-reference-dataset">reference_dataset<a class="anchor" aria-label="anchor" href="#arg-reference-dataset"></a></dt>
 <dd><p>The dataset that was used to define the modules.
 Must be a <code>data.frame</code> or <code>matrix</code> with features as rows and samples as
 columns, or a <a href="modular_experiment.html">ModularExperiment</a> or
 <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object.</p></dd>
 
 
-<dt>test_dataset</dt>
+<dt id="arg-test-dataset">test_dataset<a class="anchor" aria-label="anchor" href="#arg-test-dataset"></a></dt>
 <dd><p>The dataset that will be used to test for module
 preservation. Must be a <code>data.frame</code> or <code>matrix</code> with features as rows and
 samples as columns, or a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>
@@ -98,66 +100,64 @@ object. The features of <code>test_dataset</code> should be the same as
 <code>reference_dataset</code> and in the same order.</p></dd>
 
 
-<dt>reference_assay_name</dt>
+<dt id="arg-reference-assay-name">reference_assay_name<a class="anchor" aria-label="anchor" href="#arg-reference-assay-name"></a></dt>
 <dd><p>If the reference dataset is a
 <a href="modular_experiment.html">ModularExperiment</a> or
 <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object, this argument
 specifies which assay slot was used to define the modules.</p></dd>
 
 
-<dt>test_assay_name</dt>
+<dt id="arg-test-assay-name">test_assay_name<a class="anchor" aria-label="anchor" href="#arg-test-assay-name"></a></dt>
 <dd><p>If the reference dataset is a
 <a href="modular_experiment.html">ModularExperiment</a> or
 <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object, this argument
 specifies which assay slot is to be used in preservation tests.</p></dd>
 
 
-<dt>module_assignments</dt>
+<dt id="arg-module-assignments">module_assignments<a class="anchor" aria-label="anchor" href="#arg-module-assignments"></a></dt>
 <dd><p>If the reference dataset is not a
 <a href="modular_experiment.html">ModularExperiment</a> object, this argument is
 necessary to specify the module assignments.</p></dd>
 
 
-<dt>greyName</dt>
+<dt id="arg-greyname">greyName<a class="anchor" aria-label="anchor" href="#arg-greyname"></a></dt>
 <dd><p>The name of the "module" of unassigned genes. Usually
 "module_0" (ReducedExperiment default) or "grey" (WGCNA default). See
 <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="external-link">modulePreservation</a>.</p></dd>
 
 
-<dt>goldName</dt>
+<dt id="arg-goldname">goldName<a class="anchor" aria-label="anchor" href="#arg-goldname"></a></dt>
 <dd><p>The name to be used for the "gold" module (which is made up
 of a random sample of all network genes). See
 <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="external-link">modulePreservation</a>.</p></dd>
 
 
-<dt>networkType</dt>
+<dt id="arg-networktype">networkType<a class="anchor" aria-label="anchor" href="#arg-networktype"></a></dt>
 <dd><p>A string referring to the type of WGCNA network used for
 the reference and test datasets. One of"unsigned", "signed" or
 "signed hybrid". See <a href="https://rdrr.io/pkg/WGCNA/man/adjacency.html" class="external-link">adjacency</a>. See
 <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="external-link">modulePreservation</a>.</p></dd>
 
 
-<dt>corFnc</dt>
+<dt id="arg-corfnc">corFnc<a class="anchor" aria-label="anchor" href="#arg-corfnc"></a></dt>
 <dd><p>A string referring to the function to be used to calculate
 correlation. One of "cor" or "bicor". See
 <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="external-link">modulePreservation</a>.</p></dd>
 
 
-<dt>savePermutedStatistics</dt>
+<dt id="arg-savepermutedstatistics">savePermutedStatistics<a class="anchor" aria-label="anchor" href="#arg-savepermutedstatistics"></a></dt>
 <dd><p>If <code>TRUE</code>, saves the permutation statistics
 as a .RData file. See <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="external-link">modulePreservation</a>.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments to be passed to
 <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="external-link">modulePreservation</a>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A <code>data.frame</code> containing preservation statistics, as described
+    <p>A <code>data.frame</code> containing preservation statistics, as described
 by <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="external-link">modulePreservation</a>.</p>
     </div>
     <div id="author">
@@ -189,15 +189,15 @@ by <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="extern
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

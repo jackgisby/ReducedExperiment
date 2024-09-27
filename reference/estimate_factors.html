@@ -8,7 +8,7 @@ and outputs."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/lib
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -39,20 +39,20 @@ and outputs."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/lib
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/jackgisby/ReducedExperiment/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Perform dimensionality reduction using Independent Component Analysis</h1>
-    <small class="dont-index">Source: <a href="https://github.com/jackgisby/ReducedExperiment/blob/HEAD/R/factors.R" class="external-link"><code>R/factors.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/jackgisby/ReducedExperiment/blob/devel/R/factors.R" class="external-link"><code>R/factors.R</code></a></small>
     <div class="hidden name"><code>estimate_factors.Rd</code></div>
     </div>
 
@@ -78,44 +78,44 @@ and outputs.</p>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>X</dt>
+
+
+<dl><dt id="arg-x">X<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>Either a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object
 or a matrix containing data to be subject to ICA. <code>X</code> should have rows as
 features and columns as samples.</p></dd>
 
 
-<dt>nc</dt>
+<dt id="arg-nc">nc<a class="anchor" aria-label="anchor" href="#arg-nc"></a></dt>
 <dd><p>The number of components to be identified. See
 <a href="estimate_stability.html">estimate_stability</a> for a method to estimate the
 optimal number of components.</p></dd>
 
 
-<dt>center_X</dt>
+<dt id="arg-center-x">center_X<a class="anchor" aria-label="anchor" href="#arg-center-x"></a></dt>
 <dd><p>If <code>TRUE</code>, X is centered (i.e., features / rows are transformed
 to have a mean of 0) prior to ICA. Generally recommended.</p></dd>
 
 
-<dt>scale_X</dt>
+<dt id="arg-scale-x">scale_X<a class="anchor" aria-label="anchor" href="#arg-scale-x"></a></dt>
 <dd><p>If <code>TRUE</code>, X is scaled (i.e., features / rows are transformed
 to have a standard deviation of 1) before ICA.</p></dd>
 
 
-<dt>assay_name</dt>
+<dt id="arg-assay-name">assay_name<a class="anchor" aria-label="anchor" href="#arg-assay-name"></a></dt>
 <dd><p>If <code>X</code> is a
 <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>, then this should be the
 name of the assay to be subject to ICA.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments to be passed to
 <a href="run_ica.html">run_ica</a>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A <a href="factorised_experiment.html">FactorisedExperiment</a> is returned
+    <p>A <a href="factorised_experiment.html">FactorisedExperiment</a> is returned
 containing the input data (i.e., the original data matrix in addition to
 other slots if a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> was used
 as input). Additionally contains the results of factor analysis, stored in
@@ -179,15 +179,15 @@ to <code>estimate_factors</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 
