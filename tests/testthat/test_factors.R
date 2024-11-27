@@ -25,28 +25,7 @@ test_that("run_ica matches estimate_factors", {
     expect_equal(loadings(airway_fe), airway_ica$S, tolerance = 1e-3)
 })
 
-test_that("Stability ICA", {
-    # Use real data from airway package
-
-    set.seed(2)
-    airway <- .get_airway_data(n_features = 500)
-
-    airway_fe <- estimate_factors(airway, nc = 2, use_stability = TRUE, n_runs = 5)
-
-    expect_equal(reduced(airway_fe)[1, ], c("factor_1" = -1.11680, "factor_2" = 0.00221), tolerance = 1e-3)
-    expect_equal(loadings(airway_fe)[1, ], c("factor_1" = -0.0196, "factor_2" = -0.6465), tolerance = 1e-3)
-    expect_equal(names(stability(airway_fe)), componentNames(airway_fe))
-    expect_true(all(stability(airway_fe) > 0.99))
-
-    airway_fe_bootstrap <- estimate_factors(airway, nc = 2, use_stability = TRUE, n_runs = 5, resample = TRUE)
-
-    expect_equal(reduced(airway_fe_bootstrap)[1, ], c("factor_1" = -0.6462, "factor_2" = -1.2427), tolerance = 1e-2)
-    expect_equal(loadings(airway_fe_bootstrap)[1, ], c("factor_1" = -0.6539, "factor_2" = -0.0837), tolerance = 1e-2)
-    expect_equal(names(stability(airway_fe_bootstrap)), componentNames(airway_fe_bootstrap))
-    expect_true(all(stability(airway_fe_bootstrap) > 0.2))
-})
-
-test_that("Estimate stability", {
+test_that("Stability", {
     # Use real data from airway package
 
     set.seed(2)
@@ -62,4 +41,18 @@ test_that("Estimate stability", {
     expect_equal(colnames(stability_res_bootstrap$stability), colnames(stability_res$stability))
 
     plot_stability(stability_res)
+
+    airway_fe <- estimate_factors(airway, nc = 2, use_stability = TRUE, n_runs = 5)
+
+    expect_equal(reduced(airway_fe)[1, ], c("factor_1" = -1.11680, "factor_2" = 0.00221), tolerance = 1e-3)
+    expect_equal(loadings(airway_fe)[1, ], c("factor_1" = -0.0196, "factor_2" = -0.6465), tolerance = 1e-3)
+    expect_equal(names(stability(airway_fe)), componentNames(airway_fe))
+    expect_true(all(stability(airway_fe) > 0.99))
+
+    airway_fe_bootstrap <- estimate_factors(airway, nc = 2, use_stability = TRUE, n_runs = 5, resample = TRUE)
+
+    expect_equal(reduced(airway_fe_bootstrap)[1, ], c("factor_1" = -0.6462, "factor_2" = -1.2427), tolerance = 1e-2)
+    expect_equal(loadings(airway_fe_bootstrap)[1, ], c("factor_1" = -0.6539, "factor_2" = -0.0837), tolerance = 1e-2)
+    expect_equal(names(stability(airway_fe_bootstrap)), componentNames(airway_fe_bootstrap))
+    expect_true(all(stability(airway_fe_bootstrap) > 0.2))
 })

@@ -200,6 +200,14 @@ test_that("Eigengene calculation / projection / prediction", {
             }
         }
     }
+
+    # Plot and access dendrogram
+    expect_true(dim(airway_me)[1] == length(dendrogram(airway_me)$order))
+
+    plotDendro(airway_me)
+
+    dendrogram(airway_me) <- NULL
+    expect_null(dendrogram(airway_me))
 })
 
 test_that("Combine ModularExperiments with cbind and rbind", {
@@ -246,19 +254,4 @@ test_that("Get module hub genes", {
             cor(assay(rrs)[centrality$feature[i], ], data.frame(reduced(rrs))[[centrality$module[i]]])
         )
     }
-})
-
-test_that("Plot and access dendrogram", {
-    # Use real data from airway package
-
-    set.seed(2)
-    airway <- .get_airway_data(n_features = 500)
-    airway_me <- identify_modules(airway, verbose = 0, power = 21)
-
-    expect_true(dim(airway_me)[1] == length(dendrogram(airway_me)$order))
-
-    plotDendro(airway_me)
-
-    dendrogram(airway_me) <- NULL
-    expect_null(dendrogram(airway_me))
 })

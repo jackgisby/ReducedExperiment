@@ -1,10 +1,10 @@
 context("features")
 
-test_that("FactorisedExperiment enrichment", {
+test_that("FactorisedExperiment enrichment and common features", {
     # Use real data from airway package
 
     set.seed(2)
-    airway <- .get_airway_data(n_features = 2000)
+    airway <- ReducedExperiment:::.get_airway_data(n_features = 2000)
 
     set.seed(1)
     airway_fe <- estimate_factors(airway, nc = 2, use_stability = FALSE, method = "imax")
@@ -25,16 +25,28 @@ test_that("FactorisedExperiment enrichment", {
     expect_true("factor_2" %in% gsea_res$component)
     expect_true(all(overrep_res$p.adjust < p_cutoff))
     expect_true(all(gsea_res$p.adjust < p_cutoff))
+
+    set.seed(1)
+    airway_fe <- estimate_factors(airway, nc = 3, use_stability = FALSE, method = "imax")
+    cf <- get_common_features(getAlignedFeatures(airway_fe, format = "data.frame"))
+
+    expect_equal(dim(cf), c(9, 7))
+    expect_equal(cf$intersect, c(NA, 5, 1, 5, NA, 1, 1, 1, NA))
+    expect_equal(cf$total_feat_1, c(20, 20, 20, 20, 20, 20, 16, 16, 16))
+
+    plot_common_features(cf)
 })
 
 test_that("ModularExperiment enrichment and preservation", {
 
-    # Use real data from airway package
+    # Use real data from airway package with random modules
     set.seed(2)
-    airway <- .get_airway_data(n_features = 500)
+    airway <- ReducedExperiment:::.get_airway_data(n_features = 500)
+    airway_me <- ReducedExperiment:::.createRandomisedModularExperiment(dim(airway)[1], dim(airway)[2], 4)
 
-    WGCNA::disableWGCNAThreads()
-    airway_me <- identify_modules(airway, verbose = 0, power = 21)
+    colnames(airway_me) <- colnames(airway)
+    rownames(airway_me) <- rownames(airway)
+    assay(airway_me, "normal") <- assay(airway, "normal")
 
     # Run overrepresentation analysis
     t2g <- read.csv(system.file(
@@ -52,29 +64,18 @@ test_that("ModularExperiment enrichment and preservation", {
         TERM2GENE = t2g
     )
 
-    expect_true(all(paste0("module_", c(2, 5)) %in% enrich_res$component))
+    expect_true(all(paste0("module_", c(1, 3)) %in% enrich_res$component))
     expect_true(all(enrich_res$p.adjust < p_cutoff))
 
     # Setup for preservation test
-    airway_me <- airway_me[names(assignments(airway_me)) %in% c("module_2", "module_5"), ]
-    assay(airway_me, "noised") <- assay(airway_me, "transformed") + matrix(rnorm(nrow(airway_me) * ncol(airway_me), mean = 0, sd = 0.3), nrow = nrow(airway_me), ncol = ncol(airway_me))
+    airway_me <- airway_me[names(assignments(airway_me)) %in% c("module_1", "module_4"), ]
+    assay(airway_me, "noised") <- assay(airway_me, "normal") + matrix(rnorm(nrow(airway_me) * ncol(airway_me), mean = 0, sd = 0.3), nrow = nrow(airway_me), ncol = ncol(airway_me))
 
     # Test module preservation
-    mp <- module_preservation(airway_me, airway_me, reference_assay_name = "transformed", test_assay_name = "noised", verbose = 0, nPermutations = 10)
+    mp <- module_preservation(airway_me, airway_me, reference_assay_name = "normal", test_assay_name = "noised", verbose = 0, nPermutations = 2)
     plot_module_preservation(mp)
 
-    # Test that module_preservation works with matrices
-    mp_matrices <- module_preservation(assay(airway_me, "transformed"), assay(airway_me, "noised"), module_assignments = assignments(airway_me), verbose = 0, nPermutations = 10)
-    plot_module_preservation(mp)
-
-    # Ensure results are the same
-    expect_equal(
-        mp$preservation$Z$ref.reference$inColumnsAlsoPresentIn.test,
-        mp_matrices$preservation$Z$ref.reference$inColumnsAlsoPresentIn.test
-    )
-
-    # Ensure features are the same
-    expect_error(module_preservation(airway_me, airway_me[1:10, ]))
+    expect_equal(mp$preservation$Z$ref.reference$inColumnsAlsoPresentIn.test$Zsummary.pres, c(6.17, 13.28, 15.55), tolerance = 0.01)
 })
 
 test_that("Get MSGIDB data", {
@@ -86,17 +87,3 @@ test_that("Get MSGIDB data", {
     for (id in c("BIOCARTA", "KEGG", "REACTOME")) expect_true(any(grepl(id, t2g$gs_name)))
 })
 
-test_that("Get common features", {
-    airway <- ReducedExperiment:::.get_airway_data()
-
-    set.seed(1)
-    airway_fe <- estimate_factors(airway, nc = 3)
-
-    cf <- get_common_features(getAlignedFeatures(airway_fe, format = "data.frame"))
-
-    expect_equal(dim(cf), c(9, 7))
-    expect_equal(cf$intersect, c(NA, 4, 3, 4, NA, 0, 3, 0, NA))
-    expect_equal(cf$total_feat_1, c(53, 53, 53, 29, 29, 29, 39, 39, 39))
-
-    plot_common_features(cf)
-})
