@@ -15,7 +15,7 @@ predict method of prcomp."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ReducedExperiment</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,7 +109,7 @@ transformation to the new data. The
 <dt id="arg-newdata">newdata<a class="anchor" aria-label="anchor" href="#arg-newdata"></a></dt>
 <dd><p>New data for eigengenes to be calculated in. Must be a
 <code>data.frame</code> or <code>matrix</code> with features as rows and samples as columns, or a
-<a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object. Assumes that the
+<a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object. Assumes that the
 rows of <code>newdata</code> match those of the
 <a href="modular_experiment.html">ModularExperiment</a> object.</p></dd>
 
@@ -163,7 +163,7 @@ below this threshold.</p></dd>
 
 
 <dt id="arg-assay-name">assay_name<a class="anchor" aria-label="anchor" href="#arg-assay-name"></a></dt>
-<dd><p>If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>
+<dd><p>If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>
 object is passed as new data, this argument indicates which assay should be
 used for projection.</p></dd>
 
@@ -180,7 +180,7 @@ and "loadings" vector (one value per feature). If <code>FALSE</code>, returns on
 reduced matrix.</p>
 <p>The reduced matrix has samples as rows and modules as columns. If
 <code>newdata</code> was a <code>matrix</code> or <code>data.frame</code>, this will be returned as a matrix.
-If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object was passed
+If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object was passed
 instead, then a If a <a href="modular_experiment.html">ModularExperiment</a>
 object will be created containing this matrix in its <code>reduced</code> slot.</p>
     </div>

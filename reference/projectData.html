@@ -11,7 +11,7 @@ transposed newdata are multiplied by the original loadings matrix."></head><body
 
     <a class="navbar-brand me-2" href="../index.html">ReducedExperiment</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +92,7 @@ transformation to the new data.</p></dd>
 <dt id="arg-newdata">newdata<a class="anchor" aria-label="anchor" href="#arg-newdata"></a></dt>
 <dd><p>New data for projection. Must be a <code>data.frame</code> or <code>matrix</code>
 with features as rows and samples as columns, or a
-<a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object. Assumes that the
+<a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object. Assumes that the
 rows of <code>newdata</code> match those of the
 <a href="factorised_experiment.html">FactorisedExperiment</a> object.</p></dd>
 
@@ -119,7 +119,7 @@ value of this argument will be passed to the <code>center</code> argument of
 
 
 <dt id="arg-assay-name">assay_name<a class="anchor" aria-label="anchor" href="#arg-assay-name"></a></dt>
-<dd><p>If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>
+<dd><p>If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>
 object is passed as new data, this argument indicates which assay should be
 used for projection.</p></dd>
 
@@ -133,7 +133,7 @@ used for projection.</p></dd>
     <p>Calculates a matrix with samples as rows and factors as columns. If
 <code>newdata</code> was a <code>matrix</code> or <code>data.frame</code>, this will be returned as a
 <code>matrix</code>.
-If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object was passed
+If a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object was passed
 instead, then a <code>FactorisedExperiment</code>
 object will be created containing this <code>matrix</code> in its <code>reduced</code> slot.</p>
     </div>

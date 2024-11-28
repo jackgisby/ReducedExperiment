@@ -11,7 +11,7 @@ relative to other features. Useful for functional interpretation of factors."></
 
     <a class="navbar-brand me-2" href="../index.html">ReducedExperiment</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,37 +128,37 @@ returning the results.</p>
 <span class="r-in"><span><span class="va">aligned_features</span> <span class="op">&lt;-</span> <span class="fu">getAlignedFeatures</span><span class="op">(</span><span class="va">fe</span>, proportional_threshold <span class="op">=</span> <span class="fl">0.03</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">aligned_features</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_76" "feature_62" "feature_57"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_79" "feature_10" "feature_3" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_10" "feature_58" "feature_3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_76" "feature_57" "feature_62"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_36" "feature_39" "feature_46"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_78" "feature_37" "feature_80"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_23" "feature_37" "feature_29"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_39" "feature_36" "feature_1" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_78" "feature_69" "feature_16"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_23"  "feature_31"  "feature_100"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Can also view as a data.frame</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">getAlignedFeatures</span><span class="op">(</span><span class="va">fe</span>, format <span class="op">=</span> <span class="st">"data.frame"</span>, proportional_threshold <span class="op">=</span> <span class="fl">0.03</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            component    feature     value loadings_centered loading_threshold</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_76  factor_1 feature_76  3.275258             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_62  factor_1 feature_62  2.610766             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_57  factor_1 feature_57 -2.541312             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_10  factor_2 feature_10  1.955697             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_58  factor_2 feature_58 -1.939928             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_3   factor_2  feature_3 -1.938520             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_79  factor_1 feature_79  2.339652             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_10  factor_1 feature_10  2.139263             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_3   factor_1  feature_3 -2.051819             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_76  factor_2 feature_76  3.297872             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_57  factor_2 feature_57 -2.810569             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_62  factor_2 feature_62  2.320441             FALSE               0.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            proportional_threshold</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_76                   0.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_62                   0.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_57                   0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_79                   0.03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> feature_10                   0.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_58                   0.03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> feature_3                    0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_76                   0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_57                   0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_62                   0.03</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

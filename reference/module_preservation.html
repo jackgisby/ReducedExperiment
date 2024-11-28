@@ -17,7 +17,7 @@ objects."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ReducedExperiment</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,7 +49,7 @@ objects."></head><body>
 preserved in the test dataset. Provides a convenient wrapper
 around <a href="https://rdrr.io/pkg/WGCNA/man/modulePreservation.html" class="external-link">modulePreservation</a> for
 <a href="modular_experiment.html">ModularExperiment</a> and
-<a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>
+<a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>
 objects.</p>
     </div>
 
@@ -78,13 +78,13 @@ objects.</p>
 <dd><p>The dataset that was used to define the modules.
 Must be a <code>data.frame</code> or <code>matrix</code> with features as rows and samples as
 columns, or a <a href="modular_experiment.html">ModularExperiment</a> or
-<a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object.</p></dd>
+<a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object.</p></dd>
 
 
 <dt id="arg-test-dataset">test_dataset<a class="anchor" aria-label="anchor" href="#arg-test-dataset"></a></dt>
 <dd><p>The dataset that will be used to test for module
 preservation. Must be a <code>data.frame</code> or <code>matrix</code> with features as rows and
-samples as columns, or a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>
+samples as columns, or a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>
 object. The features of <code>test_dataset</code> should be the same as
 <code>reference_dataset</code> and in the same order.</p></dd>
 
@@ -92,14 +92,14 @@ object. The features of <code>test_dataset</code> should be the same as
 <dt id="arg-reference-assay-name">reference_assay_name<a class="anchor" aria-label="anchor" href="#arg-reference-assay-name"></a></dt>
 <dd><p>If the reference dataset is a
 <a href="modular_experiment.html">ModularExperiment</a> or
-<a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object, this argument
+<a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object, this argument
 specifies which assay slot was used to define the modules.</p></dd>
 
 
 <dt id="arg-test-assay-name">test_assay_name<a class="anchor" aria-label="anchor" href="#arg-test-assay-name"></a></dt>
 <dd><p>If the reference dataset is a
 <a href="modular_experiment.html">ModularExperiment</a> or
-<a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object, this argument
+<a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object, this argument
 specifies which assay slot is to be used in preservation tests.</p></dd>
 
 

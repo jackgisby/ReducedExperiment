@@ -17,7 +17,7 @@ and outputs."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">ReducedExperiment</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@ and outputs.</p>
 
 
 <dl><dt id="arg-x">X<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Either a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object
+<dd><p>Either a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> object
 or a matrix containing data to be subject to ICA. <code>X</code> should have rows as
 features and columns as samples.</p></dd>
 
@@ -93,7 +93,7 @@ to have a standard deviation of 1) before ICA.</p></dd>
 
 <dt id="arg-assay-name">assay_name<a class="anchor" aria-label="anchor" href="#arg-assay-name"></a></dt>
 <dd><p>If <code>X</code> is a
-<a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>, then this should be the
+<a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a>, then this should be the
 name of the assay to be subject to ICA.</p></dd>
 
 
@@ -106,7 +106,7 @@ name of the assay to be subject to ICA.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <a href="factorised_experiment.html">FactorisedExperiment</a> is returned
 containing the input data (i.e., the original data matrix in addition to
-other slots if a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> was used
+other slots if a <a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a> was used
 as input). Additionally contains the results of factor analysis, stored in
 the <code>reduced</code> and <code>loadings</code> slots. The <code>center_X</code>, <code>scale_X</code> and
 <code>stability</code> slots may also be filled depending on the arguments given
@@ -141,7 +141,7 @@ to <code>estimate_factors</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 components</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Convert the data matrix to a SummarizedExperiment, then estimate 5 factors</span></span></span>
-<span class="r-in"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a></span><span class="op">(</span>assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"normal"</span> <span class="op">=</span> <span class="va">X</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment</a></span><span class="op">(</span>assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"normal"</span> <span class="op">=</span> <span class="va">X</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fe_2</span> <span class="op">&lt;-</span> <span class="fu">estimate_factors</span><span class="op">(</span><span class="va">se</span>, nc <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fe_2</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: FactorisedExperiment </span>
