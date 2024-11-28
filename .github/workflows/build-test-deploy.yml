@@ -17,7 +17,7 @@ env:
   run_bioc: 'true'
   run_pkgdown: 'true'
   run_docker: 'true'
-  cache-version: 'cache-v1'
+  cache-version: 'cache-v2'
 
 jobs:
   build-test:
