@@ -63,11 +63,11 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A vector with a value for each factor indicating the factor
 stability. More details are available from the
-<a href="estimate_stability.html">estimate_stability</a> help page.</p>
+<a href="estimateStability.html">estimateStability</a> help page.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="estimate_stability.html">estimate_stability()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="estimateStability.html">estimateStability()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -81,16 +81,16 @@ stability. More details are available from the
 <span class="r-in"><span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.makeRandomData</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, <span class="st">"feature"</span>, <span class="st">"obs"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run stabilised ICA on the data with 5 components</span></span></span>
-<span class="r-in"><span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_factors.html">estimate_factors</a></span><span class="op">(</span><span class="va">X</span>, nc <span class="op">=</span> <span class="fl">5</span>, use_stability <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimateFactors.html">estimateFactors</a></span><span class="op">(</span><span class="va">X</span>, nc <span class="op">=</span> <span class="fl">5</span>, use_stability <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">stability</span><span class="op">(</span><span class="va">fe</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  factor_1  factor_2  factor_3  factor_4  factor_5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 0.9245199 0.8758085 0.8580487 0.6249353 0.5988971 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.9157248 0.8528429 0.8362990 0.8269149 0.5597709 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">stability</span><span class="op">(</span><span class="va">fe</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="fu">stability</span><span class="op">(</span><span class="va">fe</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   factor_1   factor_2   factor_3   factor_4   factor_5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0.9245199 10.0000000  0.8580487  0.6249353  0.5988971 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.9157248 10.0000000  0.8362990  0.8269149  0.5597709 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

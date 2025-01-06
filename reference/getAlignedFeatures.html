@@ -108,7 +108,7 @@ returning the results.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="get_common_features.html">get_common_features()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="getCommonFeatures.html">getCommonFeatures()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -122,43 +122,43 @@ returning the results.</p>
 <span class="r-in"><span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">ReducedExperiment</span><span class="fu">:::</span><span class="fu">.makeRandomData</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, <span class="st">"feature"</span>, <span class="st">"obs"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Estimate 5 factors based on the data matrix</span></span></span>
-<span class="r-in"><span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_factors.html">estimate_factors</a></span><span class="op">(</span><span class="va">X</span>, nc <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimateFactors.html">estimateFactors</a></span><span class="op">(</span><span class="va">X</span>, nc <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get the genes highly aligned with each factor as a list</span></span></span>
 <span class="r-in"><span><span class="va">aligned_features</span> <span class="op">&lt;-</span> <span class="fu">getAlignedFeatures</span><span class="op">(</span><span class="va">fe</span>, proportional_threshold <span class="op">=</span> <span class="fl">0.03</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">aligned_features</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_79" "feature_10" "feature_3" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_59" "feature_32" "feature_68"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_76" "feature_57" "feature_62"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_62" "feature_99" "feature_9" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_78" "feature_37" "feature_80"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_1"  "feature_45" "feature_36"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_39" "feature_36" "feature_1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_32" "feature_40" "feature_31"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $factor_5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_23"  "feature_31"  "feature_100"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "feature_6"  "feature_30" "feature_98"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Can also view as a data.frame</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">getAlignedFeatures</span><span class="op">(</span><span class="va">fe</span>, format <span class="op">=</span> <span class="st">"data.frame"</span>, proportional_threshold <span class="op">=</span> <span class="fl">0.03</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            component    feature     value loadings_centered loading_threshold</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_79  factor_1 feature_79  2.339652             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_10  factor_1 feature_10  2.139263             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_3   factor_1  feature_3 -2.051819             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_76  factor_2 feature_76  3.297872             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_57  factor_2 feature_57 -2.810569             FALSE               0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_62  factor_2 feature_62  2.320441             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_59  factor_1 feature_59 -2.308496             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_32  factor_1 feature_32 -2.115002             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_68  factor_1 feature_68  2.080829             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_62  factor_2 feature_62  3.525867             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_99  factor_2 feature_99  2.947636             FALSE               0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_9   factor_2  feature_9 -2.829348             FALSE               0.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            proportional_threshold</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_79                   0.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_10                   0.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_3                    0.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_76                   0.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> feature_57                   0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_59                   0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_32                   0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_68                   0.03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> feature_62                   0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_99                   0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> feature_9                    0.03</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

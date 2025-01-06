@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Containers and tools for dimensionally-reduced -omics data • ReducedExperiment</title>
+<title>Containers and tools for dimensionally-reduced -omics representations • ReducedExperiment</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Containers and tools for dimensionally-reduced -omics data">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Containers and tools for dimensionally-reduced -omics representations">
 <meta name="description" content="Provides SummarizedExperiment-like containers for storing and manipulating dimensionally-reduced assay data. The ReducedExperiment classes allow users to simultaneously manipulate their original dataset and their decomposed data, in addition to other method-specific outputs like feature loadings. Implements utilities and specialised classes for the application of stabilised independent component analysis (sICA) and weighted gene correlation network analysis (WGCNA).">
 <meta property="og:description" content="Provides SummarizedExperiment-like containers for storing and manipulating dimensionally-reduced assay data. The ReducedExperiment classes allow users to simultaneously manipulate their original dataset and their decomposed data, in addition to other method-specific outputs like feature loadings. Implements utilities and specialised classes for the application of stabilised independent component analysis (sICA) and weighted gene correlation network analysis (WGCNA).">
 </head>
@@ -58,16 +58,18 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Get the latest stable <code>R</code> release from <a href="http://cran.r-project.org/" class="external-link">CRAN</a>. Then install <code>ReducedExperiment</code> from <a href="http://bioconductor.org/" class="external-link">Bioconductor</a> using the following code:</p>
+<p>Get the latest stable <code>R</code> release from <a href="http://cran.r-project.org/" class="external-link">CRAN</a>. Then install <code>ReducedExperiment</code> from <a href="https://bioconductor.org/packages/release/bioc/html/ReducedExperiment.html" class="external-link">Bioconductor</a> using the following code:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ReducedExperiment"</span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, the development version of <code>ReducedExperiment</code> is available from <a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">GitHub</a> with:</p>
+<p>Alternatively, the development version of <code>ReducedExperiment</code> is available from <a href="https://bioconductor.org/packages/devel/bioc/html/ReducedExperiment.html" class="external-link">Bioconductor</a> or <a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jackgisby/ReducedExperiment"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ReducedExperiment"</span>, version <span class="op">=</span> <span class="st">"devel"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jackgisby/ReducedExperiment"</span><span class="op">)</span></span></code></pre></div>
 <p>The development version of the package is also available as a container on <a href="https://hub.docker.com/repository/docker/jackgisby/reducedexperiment/" class="external-link">DockerHub</a>.</p>
 </div>
 <div class="section level2">
@@ -110,7 +112,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/jackgisby/ReducedExperiment" class="external-link">"ReducedExperiment"</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/estimate_factors.html">estimate_factors</a></span><span class="op">(</span><span class="va">se</span>, nc <span class="op">=</span> <span class="fl">35</span><span class="op">)</span></span>
+<span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/estimateFactors.html">estimateFactors</a></span><span class="op">(</span><span class="va">se</span>, nc <span class="op">=</span> <span class="fl">35</span><span class="op">)</span></span>
 <span><span class="va">fe</span></span>
 <span><span class="co">#&gt; class: FactorisedExperiment </span></span>
 <span><span class="co">#&gt; dim: 500 83 35 </span></span>
@@ -131,7 +133,7 @@
 <li>
 <code>loadings</code> - Contains a features by factors matrix containing the loadings.</li>
 </ul>
-<p>The <code>ReducedExperiment</code> objects allow users to simultaneously slice and modify the <code>assays</code>, <code>rowData</code>, <code>colData</code>, <code>reduced</code> and <code>loadings</code> matrices. Here, we provided a <code>SummarizedExperiment</code> object to <code>estimate_factors</code>, but we could just have easily provided a simple expression matrix.</p>
+<p>The <code>ReducedExperiment</code> objects allow users to simultaneously slice and modify the <code>assays</code>, <code>rowData</code>, <code>colData</code>, <code>reduced</code> and <code>loadings</code> matrices. Here, we provided a <code>SummarizedExperiment</code> object to <code>estimateFactors</code>, but we could just have easily provided a simple expression matrix.</p>
 <p>Alternatively, you may have already applied dimensionality reduction to your data and simply wish to package it into a <code>ReducedExperiment</code> container. For instance, below we apply principal components analysis, and construct a <code>FactorisedExperiment</code> object from the results.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prcomp_res</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span><span class="op">)</span>, center <span class="op">=</span> <span class="cn">TRUE</span>, scale. <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -189,10 +191,10 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"ReducedExperiment"</span><span class="op">)</span>, bibtex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; To cite package 'ReducedExperiment' in publications use:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Gisby JS, Barnes MR (2024). _ReducedExperiment: Containers and tools</span></span>
+<span><span class="co">#&gt;   Gisby JS, Barnes MR (2025). _ReducedExperiment: Containers and tools</span></span>
 <span><span class="co">#&gt;   for dimensionally-reduced -omics data_.</span></span>
 <span><span class="co">#&gt;   doi:10.18129/B9.bioc.ReducedExperiment</span></span>
-<span><span class="co">#&gt;   &lt;https://doi.org/10.18129/B9.bioc.ReducedExperiment&gt;, v0.99.0,</span></span>
+<span><span class="co">#&gt;   &lt;https://doi.org/10.18129/B9.bioc.ReducedExperiment&gt;, v0.99.3,</span></span>
 <span><span class="co">#&gt;   &lt;http://www.bioconductor.org/packages/ReducedExperiment&gt;.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
@@ -200,9 +202,9 @@
 <span><span class="co">#&gt;   @Manual{,</span></span>
 <span><span class="co">#&gt;     title = {ReducedExperiment: Containers and tools for dimensionally-reduced -omics data},</span></span>
 <span><span class="co">#&gt;     author = {Jack S. Gisby and Michael R. Barnes},</span></span>
-<span><span class="co">#&gt;     year = {2024},</span></span>
+<span><span class="co">#&gt;     year = {2025},</span></span>
 <span><span class="co">#&gt;     url = {http://www.bioconductor.org/packages/ReducedExperiment},</span></span>
-<span><span class="co">#&gt;     note = {v0.99.0},</span></span>
+<span><span class="co">#&gt;     note = {v0.99.3},</span></span>
 <span><span class="co">#&gt;     doi = {10.18129/B9.bioc.ReducedExperiment},</span></span>
 <span><span class="co">#&gt;   }</span></span></code></pre></div>
 <p>The <code>ReducedExperiment</code> package relies on many software packages and development tools. The packages used are listed in the vignette and relevant papers are cited.</p>
