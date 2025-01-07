@@ -109,29 +109,29 @@ used to analyse transcriptomic datasets.
 Several Bioconductor packages provide functionality for storing reduced 
 dimensional representations alongside experimental data. These include 
 packages designed for single-cell analysis, proteomics data, and other 
-high-dimensional omics data types. Among these, the SingleCellExperiment 
-package is particularly notable as it provides the `reducedDims` slot for 
-storing dimensionality reduction results.
+high-dimensional omics data types. These include the `SingleCellExperiment` 
+Bioconductor package, which provides a `reducedDims` slot for 
+storing multiple low-dimensional representations.
 
-While there is some overlap in capabilities, ReducedExperiment serves 
+While there is some overlap in capabilities, `ReducedExperiment` serves 
 different use cases than existing frameworks:
 
 - **Purpose**: Most existing packages use dimensionality reduction primarily 
-to enable visualisation and facilitate downstream analyses like clustering. 
-SingleCellExperiment, for example, is designed for single-cell workflows 
+to enable visualisation and facilitate downstream analyses, like clustering. 
+`SingleCellExperiment`, for example, is designed for single-cell workflows 
 where reduced dimensions help manage technical noise and enable cell type 
-identification. In contrast, ReducedExperiment focuses on methods where 
+identification. In contrast, `ReducedExperiment` focuses on methods where 
 interpreting the components themselves is the primary goal, such as 
 Independent Component Analysis or gene module analysis.
 
-- **Structure**: While packages like SingleCellExperiment allow storage of 
+- **Structure**: While packages like `SingleCellExperiment` allow storage of 
 multiple dimensionality reduction results with minimal assumptions about their 
-generation method, ReducedExperiment implements method-specific containers 
+generation method, `ReducedExperiment` implements method-specific containers 
 (e.g., `FactorisedExperiment`, `ModularExperiment`) that enforce strict 
 relationships between features, samples, and components to enable
 specialised analyses.
 
-- **Analysis Methods**: ReducedExperiment provides integrated workflows for 
+- **Analysis Methods**: `ReducedExperiment` provides integrated workflows for 
 specific analysis approaches. For example, when working with ICA, 
 it offers methods for assessing component stability and interpreting 
 feature loadings. Some methods, like enrichment analysis, are available for
@@ -140,7 +140,7 @@ multiple analysis types, with specific considerations for each.
 For workflows focused primarily on visualisation, clustering, or other 
 downstream analyses, other Bioconductor containers may be more 
 appropriate depending on your data type and analysis goals. 
-ReducedExperiment is best suited for analyses where the interpretation of 
+`ReducedExperiment` is best suited for analyses where the interpretation of 
 the components themselves (such as ICA factors or gene modules) is 
 central to the research question.
 
@@ -239,7 +239,7 @@ img_path <- system.file("stability.png", package = "ReducedExperiment")
 if (file.exists(img_path)) {
   knitr::include_graphics(img_path)
 } else {
-  knitr::include_graphics("figures/stability.png")
+  knitr::include_graphics("../figures/stability.png")
 }
 ```
 
@@ -253,15 +253,16 @@ wave1_fe <- estimateFactors(
     nc = 35,
     use_stability = TRUE,
     n_runs = 30,
-    stability_threshold = 0.25
+    stability_threshold = 0.25, 
+    BPPARAM = BiocParallel::SerialParam(RNGseed = 1)
 )
 
 wave1_fe
 ```
 
-The output of factor analysis is a FactorisedExperiment object. This is not
-dissimilar from a SummarizedExperiment object, with some additional slots.
-The FactorisedExperiment contains an additional matrix for the 
+The output of factor analysis is a `FactorisedExperiment` object. This is not
+dissimilar from a `SummarizedExperiment` object, with some additional slots.
+The `FactorisedExperiment` contains an additional matrix for the 
 dimensionally-reduced data (i.e., samples vs. factors) and one for the factor
 loadings (i.e., genes vs. factors).
 
@@ -279,9 +280,9 @@ And we get the factor loadings below.
 loadings(wave1_fe)[1:5, 1:5]
 ```
 
-Most of the normal operations that can be performed on SummarizedExperiment 
+Most of the normal operations that can be performed on `SummarizedExperiment` 
 objects
-can also be performed on FactorisedExperiments. We can slice them by samples,
+can also be performed on `FactorisedExperiment`s. We can slice them by samples,
 features and components, like so.
 
 ```{r slice-fe}
@@ -294,15 +295,15 @@ Similarly, we can run a module analysis using the weighted gene correlation
 network analysis (WGCNA) package: 
 https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559
 
-The ReducedExperiment package provides wrapper functions for running 
-such an analysis, before packaging them into a ModularExperiment
+The `ReducedExperiment` package provides wrapper functions for running 
+such an analysis, before packaging them into a `ModularExperiment`
 class. 
 
 First, we use the `assessSoftThreshold` function to determine the 
 soft-thresholding power appropriate for our dataset. By default, the function
 selects the minimal power satisfying a minimal scale free topology fitting
 index of `0.85` and a maximal average connectivity of `100`. See
-WGCNA's `pickSoftThreshold` function for more details.
+WGCNA's `WGCNA::pickSoftThreshold` function for more details.
 
 ```{r assess-threshold}
 WGCNA::disableWGCNAThreads()
@@ -343,14 +344,14 @@ and we've used a different soft thresholding power. While `identifyModules`
 can suggest a soft thresholding power automatically, it is generally recommended
 that the user carefully consider the parameters used
 to generate modules (e.g., by considering the output of 
-WGCNA::pickSoftThreshold). For now, however, we will move 
+`WGCNA::pickSoftThreshold`). For now, however, we will move 
 forward with our 8 modules.
 
 ```{r print-me}
 wave1_me
 ```
 
-The ModularExperiment functions much like a FactorisedExperiment, with a slot 
+The `ModularExperiment` functions much like a `FactorisedExperiment`, with a slot 
 for the dimensionally-reduced data (samples vs. modules) and loadings (a vector 
 containing a value for each gene). There is additionally a slot for the module 
 assignments. 
@@ -473,7 +474,7 @@ we want to know more about the genes and pathways that are associated
 with our factors.
 
 As shown before, we know which genes belong to each module by accessing
-the module assignments in the ModularExperiment object. We can also estimate
+the module assignments in the `ModularExperiment` object. We can also estimate
 the centrality of the genes in the module, based on the `WGCNA::signedKME` 
 function.
 
@@ -506,8 +507,8 @@ for factor 5 and module 1.
 
 TERM2GENE <- getMsigdbT2G()
 
-factor_6_enrich <- runEnrich(
-    wave1_fe[, , "factor_6"], 
+factor_5_enrich <- runEnrich(
+    wave1_fe[, , "factor_5"], 
     method = "overrepresentation", 
     as_dataframe = TRUE,
     TERM2GENE = TERM2GENE
@@ -521,12 +522,12 @@ module_1_enrich <- runEnrich(
 )
 ```
 
-Factor 6 is enriched for the pathway
+Factor 5 is enriched for the pathway
 "WP_NETWORK_MAP_OF_SARSCOV2_SIGNALING_PATHWAY".
 
 ```{r example-factor-enrichment}
-rownames(factor_6_enrich) <- NULL
-factor_6_enrich[, c("ID", "pvalue", "p.adjust", "geneID")]
+rownames(factor_5_enrich) <- NULL
+factor_5_enrich[, c("ID", "pvalue", "p.adjust", "geneID")]
 ```
 
 Module 1 was upregulated in COVID-19 patients, and we see that it is
@@ -550,7 +551,7 @@ ggplot(
 
 Sometimes, we might want to calculate sample-level values of our factors and
 modules in a new dataset. In this instance, we have a second cohort that we
-might want to validate our results in. The ReducedExperiment package has
+might want to validate our results in. The `ReducedExperiment` package has
 methods for projecting new data into the factor-space defined
 previously and for recalculating eigengenes in new data.
 
@@ -581,8 +582,7 @@ wave2_fe
 
 The new `FactorisedExperiment` created by projecting the wave 2 data (above) 
 has the same genes (500) and factors (34) as the original 
-`FactorisedExperiment` (below),
-but with different samples (83 vs. 65). 
+`FactorisedExperiment` (below), but with different samples (83 vs. 65). 
 
 ```{r reprint-original}
 wave1_fe
@@ -621,7 +621,7 @@ ggplot(
 ) +
     geom_point(pch = 21, size = 3) +
     xlab("-log10(adjusted p-value)") +
-    ylab("Module nafe (ordered by adjusted p-value)") +
+    ylab("Module name (ordered by adjusted p-value)") +
     geom_vline(xintercept = -log10(0.05)) +
     scale_fill_gradient2(low = "#3A3A98", high = "#832424") +
     expand_limits(x = 0)
@@ -782,6 +782,7 @@ rotation(my_pca_experiment)[1:5, 1:5]
 ```
 
 And to change the values of the `rotation` matrix we must also define a setter:
+
 ```{r set-rotation}
 setGeneric("rotation<-", function(x, ..., value) standardGeneric("rotation<-"))
 
