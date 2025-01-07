@@ -1,7 +1,7 @@
 Package: ReducedExperiment
 Type: Package
 Title: Containers and tools for dimensionally-reduced -omics representations
-Version: 0.99.3
+Version: 0.99.4
 Authors@R: c(
     person("Jack", "Gisby", , "jackgisby@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-0511-8123")),
