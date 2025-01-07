@@ -239,7 +239,7 @@ img_path <- system.file("stability.png", package = "ReducedExperiment")
 if (file.exists(img_path)) {
   knitr::include_graphics(img_path)
 } else {
-  knitr::include_graphics("../stability.png")
+  knitr::include_graphics("figures/stability.png")
 }
 ```
 

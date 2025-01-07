@@ -208,8 +208,8 @@ jobs:
       - name: Prepare pkgdown figures
         if: github.ref == 'refs/heads/devel' && env.run_pkgdown == 'true' && runner.os == 'Linux'
         run: |
-          ls -la
-          cp inst/stability.png vignettes/figures/stability.png
+            mkdir vignettes/figures
+            cp inst/stability.png vignettes/figures/stability.png
         shell: bash
 
       - name: Build pkgdown site
