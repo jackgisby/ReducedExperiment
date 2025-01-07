@@ -235,7 +235,12 @@ print(stability_plot$combined_plot)
 ```
 ```{r stability-image, echo=FALSE}
 #| fig.cap = "Stability of components as a function of the number of components."
-knitr::include_graphics(system.file("stability.png", package = "ReducedExperiment"))
+img_path <- system.file("stability.png", package = "ReducedExperiment")
+if (file.exists(img_path)) {
+  knitr::include_graphics(img_path)
+} else {
+  knitr::include_graphics("../stability.png")
+}
 ```
 
 Now we run the factor analysis with these components. We additionally set a 
