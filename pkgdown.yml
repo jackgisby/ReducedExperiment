@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   ReducedExperiment: ReducedExperiment.html
-last_built: 2025-01-07T11:47Z
+last_built: 2025-01-07T12:54Z
 urls:
   reference: https://jackgisby.github.io/ReducedExperiment/reference
   article: https://jackgisby.github.io/ReducedExperiment/articles
