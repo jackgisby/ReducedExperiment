@@ -128,41 +128,44 @@ used to analyse transcriptomic datasets.</p>
 <p>Several Bioconductor packages provide functionality for storing
 reduced dimensional representations alongside experimental data. These
 include packages designed for single-cell analysis, proteomics data, and
-other high-dimensional omics data types. Among these, the
-SingleCellExperiment package is particularly notable as it provides the
-<code>reducedDims</code> slot for storing dimensionality reduction
-results.</p>
-<p>While there is some overlap in capabilities, ReducedExperiment serves
-different use cases than existing frameworks:</p>
+other high-dimensional omics data types. These include the
+<code>SingleCellExperiment</code> Bioconductor package, which provides a
+<code>reducedDims</code> slot for storing multiple low-dimensional
+representations.</p>
+<p>While there is some overlap in capabilities,
+<code>ReducedExperiment</code> serves different use cases than existing
+frameworks:</p>
 <ul>
 <li><p><strong>Purpose</strong>: Most existing packages use
 dimensionality reduction primarily to enable visualisation and
-facilitate downstream analyses like clustering. SingleCellExperiment,
-for example, is designed for single-cell workflows where reduced
-dimensions help manage technical noise and enable cell type
-identification. In contrast, ReducedExperiment focuses on methods where
-interpreting the components themselves is the primary goal, such as
-Independent Component Analysis or gene module analysis.</p></li>
+facilitate downstream analyses, like clustering.
+<code>SingleCellExperiment</code>, for example, is designed for
+single-cell workflows where reduced dimensions help manage technical
+noise and enable cell type identification. In contrast,
+<code>ReducedExperiment</code> focuses on methods where interpreting the
+components themselves is the primary goal, such as Independent Component
+Analysis or gene module analysis.</p></li>
 <li><p><strong>Structure</strong>: While packages like
-SingleCellExperiment allow storage of multiple dimensionality reduction
-results with minimal assumptions about their generation method,
-ReducedExperiment implements method-specific containers (e.g.,
-<code>FactorisedExperiment</code>, <code>ModularExperiment</code>) that
-enforce strict relationships between features, samples, and components
-to enable specialised analyses.</p></li>
-<li><p><strong>Analysis Methods</strong>: ReducedExperiment provides
-integrated workflows for specific analysis approaches. For example, when
-working with ICA, it offers methods for assessing component stability
-and interpreting feature loadings. Some methods, like enrichment
-analysis, are available for multiple analysis types, with specific
-considerations for each.</p></li>
+<code>SingleCellExperiment</code> allow storage of multiple
+dimensionality reduction results with minimal assumptions about their
+generation method, <code>ReducedExperiment</code> implements
+method-specific containers (e.g., <code>FactorisedExperiment</code>,
+<code>ModularExperiment</code>) that enforce strict relationships
+between features, samples, and components to enable specialised
+analyses.</p></li>
+<li><p><strong>Analysis Methods</strong>: <code>ReducedExperiment</code>
+provides integrated workflows for specific analysis approaches. For
+example, when working with ICA, it offers methods for assessing
+component stability and interpreting feature loadings. Some methods,
+like enrichment analysis, are available for multiple analysis types,
+with specific considerations for each.</p></li>
 </ul>
 <p>For workflows focused primarily on visualisation, clustering, or
 other downstream analyses, other Bioconductor containers may be more
 appropriate depending on your data type and analysis goals.
-ReducedExperiment is best suited for analyses where the interpretation
-of the components themselves (such as ICA factors or gene modules) is
-central to the research question.</p>
+<code>ReducedExperiment</code> is best suited for analyses where the
+interpretation of the components themselves (such as ICA factors or gene
+modules) is central to the research question.</p>
 </div>
 </div>
 <div class="section level2">
@@ -273,7 +276,8 @@ stability. This results in the identification of 34 factors.</p>
 <span>    nc <span class="op">=</span> <span class="fl">35</span>,</span>
 <span>    use_stability <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    n_runs <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>    stability_threshold <span class="op">=</span> <span class="fl">0.25</span></span>
+<span>    stability_threshold <span class="op">=</span> <span class="fl">0.25</span>, </span>
+<span>    BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SerialParam-class.html" class="external-link">SerialParam</a></span><span class="op">(</span>RNGseed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wave1_fe</span></span></code></pre></div>
@@ -289,35 +293,36 @@ stability. This results in the identification of 34 factors.</p>
 <span><span class="co">## colData names(8): sample_id individual_id ... case_control</span></span>
 <span><span class="co">##   time_from_first_x</span></span>
 <span><span class="co">## 34 components</span></span></code></pre>
-<p>The output of factor analysis is a FactorisedExperiment object. This
-is not dissimilar from a SummarizedExperiment object, with some
-additional slots. The FactorisedExperiment contains an additional matrix
-for the dimensionally-reduced data (i.e., samples vs. factors) and one
-for the factor loadings (i.e., genes vs. factors).</p>
+<p>The output of factor analysis is a <code>FactorisedExperiment</code>
+object. This is not dissimilar from a <code>SummarizedExperiment</code>
+object, with some additional slots. The
+<code>FactorisedExperiment</code> contains an additional matrix for the
+dimensionally-reduced data (i.e., samples vs. factors) and one for the
+factor loadings (i.e., genes vs. factors).</p>
 <p>We can get the reduced data as so.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get reduced data for first 5 samples and factors</span></span>
 <span><span class="fu"><a href="../reference/reduced.html">reduced</a></span><span class="op">(</span><span class="va">wave1_fe</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##                   factor_1   factor_2    factor_3   factor_4   factor_5</span></span>
-<span><span class="co">## C37_positive_9  -1.8742894 -0.1655574 -0.66122658 -0.9574319 -0.3178588</span></span>
-<span><span class="co">## C48_positive_4  -0.2628469 -1.3042165  0.08213643 -1.2612979 -0.4672834</span></span>
-<span><span class="co">## C65_positive_15  0.9018593  1.3751605 -1.57289607  0.1069855 -0.2844302</span></span>
-<span><span class="co">## C99_positive_13  0.6241889  1.0271388  2.31212088 -1.9156409 -1.0412782</span></span>
-<span><span class="co">## C114_positive_9  0.7921572 -1.3391072  0.98924680 -0.5214401 -0.1244891</span></span></code></pre>
+<pre><code><span><span class="co">##                   factor_1   factor_2    factor_3    factor_4   factor_5</span></span>
+<span><span class="co">## C37_positive_9  -1.6909747 -0.1230713 -0.64673200 -0.11119477  1.3972446</span></span>
+<span><span class="co">## C48_positive_4  -0.1725823 -1.3320940  0.09903561 -0.26666390  2.6840856</span></span>
+<span><span class="co">## C65_positive_15  1.0376609  1.3907660 -1.83762069 -0.27675565 -0.2291595</span></span>
+<span><span class="co">## C99_positive_13  0.8324329  0.8401592  2.16820328 -0.95320588  1.7979158</span></span>
+<span><span class="co">## C114_positive_9  0.8091819 -1.3398282  1.02681508  0.04833564  0.4211883</span></span></code></pre>
 <p>And we get the factor loadings below.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># get loadings for first 5 genes and factors</span></span>
 <span><span class="fu"><a href="../reference/loadings.html">loadings</a></span><span class="op">(</span><span class="va">wave1_fe</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">##                   factor_1    factor_2   factor_3   factor_4   factor_5</span></span>
-<span><span class="co">## ENSG00000004799 -0.7353942 -0.02457126 -1.6803118  1.0464845 -2.5116900</span></span>
-<span><span class="co">## ENSG00000007038 -1.1548395  0.00891117 -1.0740779 -2.4954370 -0.5970052</span></span>
-<span><span class="co">## ENSG00000008516  0.2029360  0.14144833 -0.2431667  0.1431371 -1.0194654</span></span>
-<span><span class="co">## ENSG00000009950 -0.8038760 -1.02355242 -0.6933070  1.5624287 -1.4787632</span></span>
-<span><span class="co">## ENSG00000011201 -0.6410203  0.79622046  0.7976763 -0.6894007  0.0934250</span></span></code></pre>
+<pre><code><span><span class="co">##                   factor_1    factor_2   factor_3    factor_4   factor_5</span></span>
+<span><span class="co">## ENSG00000004799 -0.7933532  0.04413147 -1.6614968 -2.67334503 -0.7278725</span></span>
+<span><span class="co">## ENSG00000007038 -1.2118399  0.09286032 -0.9813305 -0.62207550 -1.0048629</span></span>
+<span><span class="co">## ENSG00000008516  0.1902868  0.17123996 -0.2609275 -0.91819722 -0.1415753</span></span>
+<span><span class="co">## ENSG00000009950 -0.7733616 -0.94008770 -0.8200011 -1.56984592 -0.3755558</span></span>
+<span><span class="co">## ENSG00000011201 -0.6963746  0.99585966  0.8700726  0.09843149 -0.1388988</span></span></code></pre>
 <p>Most of the normal operations that can be performed on
-SummarizedExperiment objects can also be performed on
-FactorisedExperiments. We can slice them by samples, features and
-components, like so.</p>
+<code>SummarizedExperiment</code> objects can also be performed on
+<code>FactorisedExperiment</code>s. We can slice them by samples,
+features and components, like so.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">wave1_fe</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   Features    Samples Components </span></span>
@@ -328,15 +333,15 @@ components, like so.</p>
 </h3>
 <p>Similarly, we can run a module analysis using the weighted gene
 correlation network analysis (WGCNA) package: <a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559" class="external-link uri">https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559</a></p>
-<p>The ReducedExperiment package provides wrapper functions for running
-such an analysis, before packaging them into a ModularExperiment
-class.</p>
+<p>The <code>ReducedExperiment</code> package provides wrapper functions
+for running such an analysis, before packaging them into a
+<code>ModularExperiment</code> class.</p>
 <p>First, we use the <code>assessSoftThreshold</code> function to
 determine the soft-thresholding power appropriate for our dataset. By
 default, the function selects the minimal power satisfying a minimal
 scale free topology fitting index of <code>0.85</code> and a maximal
 average connectivity of <code>100</code>. See WGCNA’s
-<code>pickSoftThreshold</code> function for more details.</p>
+<code><a href="https://rdrr.io/pkg/WGCNA/man/pickSoftThreshold.html" class="external-link">WGCNA::pickSoftThreshold</a></code> function for more details.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">WGCNA</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/WGCNA/man/allowWGCNAThreads.html" class="external-link">disableWGCNAThreads</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span></code></pre>
@@ -407,8 +412,8 @@ genes, and we’ve used a different soft thresholding power. While
 <code>identifyModules</code> can suggest a soft thresholding power
 automatically, it is generally recommended that the user carefully
 consider the parameters used to generate modules (e.g., by considering
-the output of WGCNA::pickSoftThreshold). For now, however, we will move
-forward with our 8 modules.</p>
+the output of <code><a href="https://rdrr.io/pkg/WGCNA/man/pickSoftThreshold.html" class="external-link">WGCNA::pickSoftThreshold</a></code>). For now, however,
+we will move forward with our 8 modules.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wave1_me</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: ModularExperiment </span></span>
@@ -423,10 +428,11 @@ forward with our 8 modules.</p>
 <span><span class="co">## colData names(8): sample_id individual_id ... case_control</span></span>
 <span><span class="co">##   time_from_first_x</span></span>
 <span><span class="co">## 9 components</span></span></code></pre>
-<p>The ModularExperiment functions much like a FactorisedExperiment,
-with a slot for the dimensionally-reduced data (samples vs. modules) and
-loadings (a vector containing a value for each gene). There is
-additionally a slot for the module assignments.</p>
+<p>The <code>ModularExperiment</code> functions much like a
+<code>FactorisedExperiment</code>, with a slot for the
+dimensionally-reduced data (samples vs. modules) and loadings (a vector
+containing a value for each gene). There is additionally a slot for the
+module assignments.</p>
 <p>The reduced data contain expression profiles for each module that are
 representative of the member genes, also referred to as an “eigengene”.
 We can get these data as in the following chunk.</p>
@@ -520,31 +526,31 @@ status.</p>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"term"</span>, <span class="st">"component"</span>, <span class="st">"estimate"</span>, <span class="st">"stderr"</span>, <span class="st">"adj_pvalue"</span><span class="op">)</span></span>
 <span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                                term component   estimate</span></span>
-<span><span class="co">## factor_5_case_controlPOSITIVE  case_controlPOSITIVE  factor_5 -0.5842111</span></span>
-<span><span class="co">## factor_6_case_controlPOSITIVE  case_controlPOSITIVE  factor_6 -0.7482798</span></span>
-<span><span class="co">## factor_7_case_controlPOSITIVE  case_controlPOSITIVE  factor_7  1.0596379</span></span>
-<span><span class="co">## factor_8_case_controlPOSITIVE  case_controlPOSITIVE  factor_8 -0.5266462</span></span>
-<span><span class="co">## factor_9_case_controlPOSITIVE  case_controlPOSITIVE  factor_9  0.8407413</span></span>
-<span><span class="co">## factor_11_case_controlPOSITIVE case_controlPOSITIVE factor_11  0.8984984</span></span>
-<span><span class="co">## factor_12_case_controlPOSITIVE case_controlPOSITIVE factor_12  1.3031566</span></span>
-<span><span class="co">## factor_16_case_controlPOSITIVE case_controlPOSITIVE factor_16 -0.6976722</span></span>
-<span><span class="co">## factor_19_case_controlPOSITIVE case_controlPOSITIVE factor_19 -0.6042988</span></span>
-<span><span class="co">## factor_20_case_controlPOSITIVE case_controlPOSITIVE factor_20 -0.7152554</span></span>
-<span><span class="co">## factor_21_case_controlPOSITIVE case_controlPOSITIVE factor_21 -0.6562182</span></span>
-<span><span class="co">## factor_33_case_controlPOSITIVE case_controlPOSITIVE factor_33  0.7496849</span></span>
+<span><span class="co">## factor_4_case_controlPOSITIVE  case_controlPOSITIVE  factor_4 -0.5365225</span></span>
+<span><span class="co">## factor_5_case_controlPOSITIVE  case_controlPOSITIVE  factor_5  1.0142974</span></span>
+<span><span class="co">## factor_6_case_controlPOSITIVE  case_controlPOSITIVE  factor_6 -0.5454102</span></span>
+<span><span class="co">## factor_8_case_controlPOSITIVE  case_controlPOSITIVE  factor_8 -0.7450610</span></span>
+<span><span class="co">## factor_9_case_controlPOSITIVE  case_controlPOSITIVE  factor_9  0.9025663</span></span>
+<span><span class="co">## factor_10_case_controlPOSITIVE case_controlPOSITIVE factor_10  1.3293240</span></span>
+<span><span class="co">## factor_13_case_controlPOSITIVE case_controlPOSITIVE factor_13 -0.5888254</span></span>
+<span><span class="co">## factor_15_case_controlPOSITIVE case_controlPOSITIVE factor_15 -0.6457925</span></span>
+<span><span class="co">## factor_16_case_controlPOSITIVE case_controlPOSITIVE factor_16 -0.6304351</span></span>
+<span><span class="co">## factor_19_case_controlPOSITIVE case_controlPOSITIVE factor_19 -0.6170465</span></span>
+<span><span class="co">## factor_25_case_controlPOSITIVE case_controlPOSITIVE factor_25 -0.5326069</span></span>
+<span><span class="co">## factor_30_case_controlPOSITIVE case_controlPOSITIVE factor_30 -0.5939576</span></span>
 <span><span class="co">##                                   stderr   adj_pvalue</span></span>
-<span><span class="co">## factor_5_case_controlPOSITIVE  0.2156308 2.554615e-02</span></span>
-<span><span class="co">## factor_6_case_controlPOSITIVE  0.2076976 3.108944e-03</span></span>
-<span><span class="co">## factor_7_case_controlPOSITIVE  0.1901681 5.727354e-06</span></span>
-<span><span class="co">## factor_8_case_controlPOSITIVE  0.2161560 4.840283e-02</span></span>
-<span><span class="co">## factor_9_case_controlPOSITIVE  0.2031807 7.388283e-04</span></span>
-<span><span class="co">## factor_11_case_controlPOSITIVE 0.2018969 3.150151e-04</span></span>
-<span><span class="co">## factor_12_case_controlPOSITIVE 0.1696010 1.221799e-09</span></span>
-<span><span class="co">## factor_16_case_controlPOSITIVE 0.2117732 6.280238e-03</span></span>
-<span><span class="co">## factor_19_case_controlPOSITIVE 0.2140711 2.046673e-02</span></span>
-<span><span class="co">## factor_20_case_controlPOSITIVE 0.2101641 5.089951e-03</span></span>
-<span><span class="co">## factor_21_case_controlPOSITIVE 0.2133102 1.087516e-02</span></span>
-<span><span class="co">## factor_33_case_controlPOSITIVE 0.2079091 3.108944e-03</span></span></code></pre>
+<span><span class="co">## factor_4_case_controlPOSITIVE  0.2173879 4.586735e-02</span></span>
+<span><span class="co">## factor_5_case_controlPOSITIVE  0.1932897 2.146815e-05</span></span>
+<span><span class="co">## factor_6_case_controlPOSITIVE  0.2155776 4.554267e-02</span></span>
+<span><span class="co">## factor_8_case_controlPOSITIVE  0.2078114 4.939723e-03</span></span>
+<span><span class="co">## factor_9_case_controlPOSITIVE  0.1992191 2.334042e-04</span></span>
+<span><span class="co">## factor_10_case_controlPOSITIVE 0.1665895 3.247707e-10</span></span>
+<span><span class="co">## factor_13_case_controlPOSITIVE 0.2137396 2.752296e-02</span></span>
+<span><span class="co">## factor_15_case_controlPOSITIVE 0.2132976 2.262750e-02</span></span>
+<span><span class="co">## factor_16_case_controlPOSITIVE 0.2143364 2.337058e-02</span></span>
+<span><span class="co">## factor_19_case_controlPOSITIVE 0.2126742 2.337058e-02</span></span>
+<span><span class="co">## factor_25_case_controlPOSITIVE 0.2167430 4.586735e-02</span></span>
+<span><span class="co">## factor_30_case_controlPOSITIVE 0.2153104 2.752296e-02</span></span></code></pre>
 <p>We can plot out these results. In the plot below, factors that are
 “upregulated” in COVID-19 patients are shown in red, whereas
 “downregulated” factors are in blue. The vertical line indicates
@@ -602,9 +608,9 @@ Associations between modules and COVID-19 status.
 COVID-19, we want to know more about the genes and pathways that are
 associated with our factors.</p>
 <p>As shown before, we know which genes belong to each module by
-accessing the module assignments in the ModularExperiment object. We can
-also estimate the centrality of the genes in the module, based on the
-<code><a href="https://rdrr.io/pkg/WGCNA/man/signedKME.html" class="external-link">WGCNA::signedKME</a></code> function.</p>
+accessing the module assignments in the <code>ModularExperiment</code>
+object. We can also estimate the centrality of the genes in the module,
+based on the <code><a href="https://rdrr.io/pkg/WGCNA/man/signedKME.html" class="external-link">WGCNA::signedKME</a></code> function.</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">module_centrality</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCentrality.html">getCentrality</a></span><span class="op">(</span><span class="va">wave1_me</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">module_centrality</span><span class="op">)</span></span></code></pre></div>
@@ -622,12 +628,12 @@ aligned with each factor, as follows:</p>
 <code class="sourceCode R"><span><span class="va">aligned_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getAlignedFeatures.html">getAlignedFeatures</a></span><span class="op">(</span><span class="va">wave1_fe</span>, format <span class="op">=</span> <span class="st">"data.frame"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aligned_features</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"component"</span>, <span class="st">"feature"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                 component         feature     value</span></span>
-<span><span class="co">## ENSG00000165246  factor_1 ENSG00000165246 11.398750</span></span>
-<span><span class="co">## ENSG00000288049  factor_1 ENSG00000288049  8.799785</span></span>
-<span><span class="co">## ENSG00000267320 factor_10 ENSG00000267320  8.921427</span></span>
-<span><span class="co">## ENSG00000278212 factor_11 ENSG00000278212  6.533160</span></span>
-<span><span class="co">## ENSG00000225210 factor_11 ENSG00000225210  5.550446</span></span>
-<span><span class="co">## ENSG00000171772 factor_11 ENSG00000171772  4.105921</span></span></code></pre>
+<span><span class="co">## ENSG00000165246  factor_1 ENSG00000165246 11.361359</span></span>
+<span><span class="co">## ENSG00000288049  factor_1 ENSG00000288049  8.756050</span></span>
+<span><span class="co">## ENSG00000278212 factor_10 ENSG00000278212  4.413615</span></span>
+<span><span class="co">## ENSG00000077063 factor_10 ENSG00000077063 -3.522138</span></span>
+<span><span class="co">## ENSG00000204099 factor_10 ENSG00000204099  3.464273</span></span>
+<span><span class="co">## ENSG00000259316 factor_10 ENSG00000259316  3.096032</span></span></code></pre>
 <p>This shows the value of the loadings for the genes most highly
 associated with each factor. Some factors display moderate associations
 with many genes, whereas others show strong associations with just a few
@@ -642,8 +648,8 @@ we’ll just do an overrepresentation analysis for factor 5 and module
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">TERM2GENE</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getMsigdbT2G.html">getMsigdbT2G</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">factor_6_enrich</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enrichment.html">runEnrich</a></span><span class="op">(</span></span>
-<span>    <span class="va">wave1_fe</span><span class="op">[</span>, , <span class="st">"factor_6"</span><span class="op">]</span>, </span>
+<span><span class="va">factor_5_enrich</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enrichment.html">runEnrich</a></span><span class="op">(</span></span>
+<span>    <span class="va">wave1_fe</span><span class="op">[</span>, , <span class="st">"factor_5"</span><span class="op">]</span>, </span>
 <span>    method <span class="op">=</span> <span class="st">"overrepresentation"</span>, </span>
 <span>    as_dataframe <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    TERM2GENE <span class="op">=</span> <span class="va">TERM2GENE</span></span>
@@ -655,13 +661,15 @@ we’ll just do an overrepresentation analysis for factor 5 and module
 <span>    as_dataframe <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    TERM2GENE <span class="op">=</span> <span class="va">TERM2GENE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Factor 6 is enriched for the pathway
+<p>Factor 5 is enriched for the pathway
 “WP_NETWORK_MAP_OF_SARSCOV2_SIGNALING_PATHWAY”.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">factor_6_enrich</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
-<span><span class="va">factor_6_enrich</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ID"</span>, <span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"geneID"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] ID       pvalue   p.adjust geneID  </span></span>
-<span><span class="co">## &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">factor_5_enrich</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span><span class="va">factor_5_enrich</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ID"</span>, <span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"geneID"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">##                                             ID       pvalue     p.adjust</span></span>
+<span><span class="co">## 1 WP_NETWORK_MAP_OF_SARSCOV2_SIGNALING_PATHWAY 5.031317e-06 5.031317e-06</span></span>
+<span><span class="co">##                                            geneID</span></span>
+<span><span class="co">## 1 ENSG00000137959/ENSG00000185745/ENSG00000126709</span></span></code></pre>
 <p>Module 1 was upregulated in COVID-19 patients, and we see that it is
 primarily enriched for pathways related to complement.</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
@@ -686,9 +694,9 @@ Top 15 enriched pathways for module 1.
 <p>Sometimes, we might want to calculate sample-level values of our
 factors and modules in a new dataset. In this instance, we have a second
 cohort that we might want to validate our results in. The
-ReducedExperiment package has methods for projecting new data into the
-factor-space defined previously and for recalculating eigengenes in new
-data.</p>
+<code>ReducedExperiment</code> package has methods for projecting new
+data into the factor-space defined previously and for recalculating
+eigengenes in new data.</p>
 <div class="section level4">
 <h4 id="factor-projection">Factor projection<a class="anchor" aria-label="anchor" href="#factor-projection"></a>
 </h4>
@@ -771,7 +779,7 @@ similar.</p>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">geom_point</span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">"-log10(adjusted p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ylab</span><span class="op">(</span><span class="st">"Module nafe (ordered by adjusted p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ylab</span><span class="op">(</span><span class="st">"Module name (ordered by adjusted p-value)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">scale_fill_gradient2</span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#3A3A98"</span>, high <span class="op">=</span> <span class="st">"#832424"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">expand_limits</span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
@@ -801,13 +809,13 @@ the 2021 (wave 2) cohort.</p>
 <span><span class="co">##  Pearson's product-moment correlation</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## data:  original_estimates and replication_estimates</span></span>
-<span><span class="co">## t = 9.2399, df = 32, p-value = 1.512e-10</span></span>
+<span><span class="co">## t = 9.5767, df = 32, p-value = 6.462e-11</span></span>
 <span><span class="co">## alternative hypothesis: true correlation is not equal to 0</span></span>
 <span><span class="co">## 95 percent confidence interval:</span></span>
-<span><span class="co">##  0.7232994 0.9244165</span></span>
+<span><span class="co">##  0.7376086 0.9287552</span></span>
 <span><span class="co">## sample estimates:</span></span>
 <span><span class="co">##       cor </span></span>
-<span><span class="co">## 0.8528598</span></span></code></pre>
+<span><span class="co">## 0.8610094</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="applying-modules-to-new-data">Applying modules to new data<a class="anchor" aria-label="anchor" href="#applying-modules-to-new-data"></a>
