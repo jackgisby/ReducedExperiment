@@ -195,6 +195,7 @@ identifyModules <- function(
 #'
 #' @author Jack Gisby
 #'
+#' @importFrom utils capture.output
 #' @export
 assessSoftThreshold <- function(
     X, assay_name = "normal", powerVector = 1:30, RsquaredCut = 0.85,
