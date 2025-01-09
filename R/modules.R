@@ -207,13 +207,26 @@ assessSoftThreshold <- function(
     if (inherits(X, "SummarizedExperiment"))
         X <- assay(X, assay_name)
 
-    # Apply soft thresholding function
-    threshold_output <- WGCNA::pickSoftThreshold(
-        t(X),
-        powerVector = powerVector, RsquaredCut = RsquaredCut,
-        corFnc = corFnc, networkType = networkType,
-        blockSize = maxBlockSize, verbose = verbose, ...
+    args <- list(
+        data = t(X),
+        powerVector = powerVector,
+        RsquaredCut = RsquaredCut,
+        corFnc = corFnc,
+        networkType = networkType,
+        blockSize = maxBlockSize,
+        verbose = verbose,
+        ...
     )
+
+    # Apply soft thresholding function (if verbose == 0 suppress the print)
+    threshold_output <- if (verbose == 0) {
+        capture.output(
+            do.call(WGCNA::pickSoftThreshold, args),
+            file = NULL
+        )
+    } else {
+        do.call(WGCNA::pickSoftThreshold, args)
+    }
 
     # Get the output
     wgcna_power_estimate <- threshold_output$powerEstimate
