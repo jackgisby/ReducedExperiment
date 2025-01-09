@@ -219,13 +219,13 @@ assessSoftThreshold <- function(
     )
 
     # Apply soft thresholding function (if verbose == 0 suppress the print)
-    threshold_output <- if (verbose == 0) {
+    if (verbose == 0) {
         capture.output(
-            do.call(WGCNA::pickSoftThreshold, args),
+            threshold_output <- do.call(WGCNA::pickSoftThreshold, args),
             file = NULL
         )
     } else {
-        do.call(WGCNA::pickSoftThreshold, args)
+        threshold_output <- do.call(WGCNA::pickSoftThreshold, args)
     }
 
     # Get the output
