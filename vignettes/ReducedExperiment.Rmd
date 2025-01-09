@@ -50,7 +50,7 @@ devtools::install_github("jackgisby/ReducedExperiment")
 
 # Introduction
 
-```{r load-packages, message=FALSE, warning=FALSE, include=FALSE}
+```{r load-packages, message=FALSE, warning=FALSE, include=TRUE}
 library(SummarizedExperiment)
 library(ReducedExperiment)
 library(ggplot2)
