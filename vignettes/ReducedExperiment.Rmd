@@ -24,9 +24,6 @@ knitr::opts_chunk$set(
   fig.align = "center",
   dpi = 300
 )
-
-# Seed
-set.seed(1)
 ```
 
 # Installation
