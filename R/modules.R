@@ -73,6 +73,7 @@ identifyModules <- function(
     if ("transformed" %in% assayNames(X)) {
         warning("Overwriting 'transformed' assay slot in X")
     }
+
     assay(X, "transformed") <-
         t(scale(t(assay(X, "normal")), center = center_X, scale = scale_X))
 
@@ -203,10 +204,11 @@ assessSoftThreshold <- function(
     maxBlockSize = 30000, verbose = 0, ...
 ) {
     .maxBlockSizeCheck(maxBlockSize, nrow(X))
-    cor <- corFnc <- .getCorFn(cor_type) # Get correlation function
+    cor <- corFnc <- .getCorFn(cor_type)  # Get correlation function
 
-    if (inherits(X, "SummarizedExperiment"))
+    if (inherits(X, "SummarizedExperiment")){
         X <- assay(X, assay_name)
+    }
 
     args <- list(
         data = t(X),

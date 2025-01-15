@@ -551,11 +551,7 @@ estimateStability <- function(
     ...
 ) {
     if (inherits(X, "SummarizedExperiment")) {
-        X <- assay(X, "normal")
-    }
-
-    if (assay_name != "normal") {
-        assay(X, "normal") <- assay(X, assay_name)
+        X <- assay(X, assay_name)
     }
 
     if (dim(X)[2] < max_components) {
