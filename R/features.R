@@ -209,23 +209,30 @@ reducedGSEA <- function(
 #' head(pathways)
 #'
 #' @export
-getMsigdbT2G <- function(species = "Homo sapiens",
+getMsigdbT2G <- function(
+    species = "Homo sapiens",
     category = "C2",
     subcategory = NULL,
     subcategory_to_remove = "CGP",
     gene_id = "ensembl_gene"
 ) {
-    t2g <- data.frame(msigdbr::msigdbr(
-        species = species,
-        category = category,
-        subcategory = subcategory
-    ))
-
-    if (!is.null(subcategory_to_remove)) {
-        t2g <- t2g[which(t2g$gs_subcat != subcategory_to_remove), ]
+    if (!requireNamespace("msigdbdf")) {
+        warning("The full MSigDB pathways will not be loaded unless msigdbdf is installed")
     }
 
-    t2g <- t2g[, which(colnames(t2g) %in% c("gs_name", gene_id))]
+    t2g <- data.frame(msigdbr::msigdbr(
+        species = species,
+        collection = category,
+        subcollection = subcategory
+    ))
+
+    # Changes depending on version
+    if (!is.null(subcategory_to_remove)) {
+        subcat_col <- ifelse("gs_subcollection" %in% colnames(t2g), "gs_subcollection", "gs_subcat")
+        t2g <- t2g[which(t2g[[subcat_col]] != subcategory_to_remove), ]
+    }
+
+    t2g <- t2g[, c("gs_name", gene_id)]
 
     return(t2g)
 }

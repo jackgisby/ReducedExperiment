@@ -109,9 +109,14 @@ S4Vectors::setValidity2("ModularExperiment", function(object) {
         msg <- c(msg, "Assignments have invalid length")
     }
 
-    if (!all(assignments(object) == rownames(object))) {
+    if (is.null(rownames(object))) {
+        if (length(assignments(object)) != 0) {
+            msg <- c(msg, "Expect rownames to be set if assignments are present")
+        }
+    } else if (!all.equal(assignments(object), rownames(object), check.attributes = FALSE)) {
         msg <- c(msg, "Assignments have incompatible names (rownames)")
     }
+
 
     # Loadings
     if (!is.null(loadings(object))) {
@@ -119,7 +124,9 @@ S4Vectors::setValidity2("ModularExperiment", function(object) {
             msg <- c(msg, "Loadings have invalid length")
         }
 
-        if (!all(names(loadings(object)) == rownames(object))) {
+        if (is.null(rownames(object)) & length(loadings(object)) != 0) {
+            msg <- c(msg, "Expect rownames to be set if loadings are present")
+        } else if (!all.equal(names(loadings(object)), rownames(object), check.attributes = FALSE)) {
             msg <- c(msg, "Loadings have incompatible names (rownames)")
         }
     }
