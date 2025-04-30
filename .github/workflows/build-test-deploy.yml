@@ -250,12 +250,12 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
+          extra-repositories: https://igordot.r-universe.dev
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::covr, any::xml2
-          extra-repositories: https://igordot.r-universe.dev
           needs: coverage
 
       - name: Test coverage
