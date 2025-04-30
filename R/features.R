@@ -223,7 +223,8 @@ getMsigdbT2G <- function(
     ))
 
     if (!is.null(subcategory_to_remove)) {
-        t2g <- t2g[which(t2g$gs_subcollection != subcategory_to_remove), ]
+        subcat_col <- ifelse("gs_subcollection" %in% colnames(t2g), "gs_subcollection", "gs_subcat")
+        t2g <- t2g[which(t2g[[subcat_col]] != subcategory_to_remove), ]
     }
 
     t2g <- t2g[, c("gs_name", gene_id)]
