@@ -1,9 +1,9 @@
 pandoc: '3.6'
-pkgdown: 2.1.1
+pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   ReducedExperiment: ReducedExperiment.html
-last_built: 2025-01-15T15:04Z
+last_built: 2025-04-30T11:55Z
 urls:
   reference: https://jackgisby.github.io/ReducedExperiment/reference
   article: https://jackgisby.github.io/ReducedExperiment/articles
