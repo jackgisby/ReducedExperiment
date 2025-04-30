@@ -225,7 +225,7 @@ getMsigdbT2G <- function(species = "Homo sapiens",
         t2g <- t2g[which(t2g$gs_subcat != subcategory_to_remove), ]
     }
 
-    t2g <- t2g[, which(colnames(t2g) %in% c("gs_name", gene_id))]
+    t2g <- t2g[, c("gs_name", gene_id)]
 
     return(t2g)
 }
