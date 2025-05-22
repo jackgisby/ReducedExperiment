@@ -195,6 +195,10 @@ reducedGSEA <- function(
 #' of a pathway, and the `gene_id` column indicates genes that belong to
 #' said pathway.
 #'
+#' @note
+#' If the `msigdbdf` package is not installed, the function will only return
+#' a subset of the full MSigDB pathways.
+#'
 #' @author Jack Gisby
 #'
 #' @examples
@@ -216,9 +220,6 @@ getMsigdbT2G <- function(
     subcategory_to_remove = "CGP",
     gene_id = "ensembl_gene"
 ) {
-    if (!requireNamespace("msigdbdf")) {
-        warning("The full MSigDB pathways will not be loaded unless msigdbdf is installed")
-    }
 
     t2g <- data.frame(msigdbr::msigdbr(
         species = species,
