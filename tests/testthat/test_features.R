@@ -79,6 +79,8 @@ test_that("ModularExperiment enrichment and preservation", {
 })
 
 test_that("Get MSGIDB data", {
+
+    testthat::skip_if_not_installed("msigdbdf")
     t2g <- getMsigdbT2G()
 
     expect_equal(ncol(t2g), 2)
