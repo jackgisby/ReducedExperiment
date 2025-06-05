@@ -195,10 +195,6 @@ reducedGSEA <- function(
 #' of a pathway, and the `gene_id` column indicates genes that belong to
 #' said pathway.
 #'
-#' @note
-#' If the `msigdbdf` package is not installed, the function will only return
-#' a subset of the full MSigDB pathways.
-#'
 #' @author Jack Gisby
 #'
 #' @examples
